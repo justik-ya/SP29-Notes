@@ -1,0 +1,175 @@
+%% ============================================================
+%%  Вопрос 5: Многочлен Татта (через стат-сумму)
+%% ============================================================
+\section{Многочлен Татта (через стат-сумму)}
+
+\subsection{Формула по подмножествам}
+
+\begin{Theorem}{Формула по подмножествам (стат-сумма)}{}
+  Для любого графа $G=(V,E)$:
+  \[
+    T_G(x,y)
+    = \sum_{A\subseteq E}
+      (x-1)^{\,c(A)-c(E)}\,(y-1)^{\,c(A)+|A|-|V|},
+  \]
+  где $c(A)$ --- число компонент связности подграфа $(V,A)$,
+  а $c(E)=c(G)$.
+\end{Theorem}
+
+\begin{Example}{Проверка на $K_3$}{}
+  $G=K_3$: $|V|=3$, $|E|=3$, $c(E)=1$.
+  Перебираем все $2^3=8$ подмножеств $A\subseteq\{e_1,e_2,e_3\}$:
+
+  \medskip
+  \begin{center}
+  \begin{tabular}{c|c|c|c|c}
+    $A$ & $|A|$ & $c(A)$ & $(x-1)^{c(A)-1}$ & $(y-1)^{c(A)+|A|-3}$\\\hline
+    $\varnothing$   & 0 & 3 & $(x-1)^2$ & $1$ \\
+    $\{e_i\}$ (3 шт.)       & 1 & 2 & $(x-1)^1$ & $1$ \\
+    $\{e_i,e_j\}$ (3 шт.)   & 2 & 1 & $1$        & $1$ \\
+    $\{e_1,e_2,e_3\}$        & 3 & 1 & $1$        & $(y-1)$\\
+  \end{tabular}
+  \end{center}
+
+  \medskip\noindent
+  Суммируем:
+  \[
+    F = (x-1)^2 + 3(x-1) + 3 + (y-1)
+      = x^2-2x+1+3x-3+3+y-1
+      = x^2+x+y.
+  \]
+  Совпадает с $T(K_3)$ из рекурсии. $\checkmark$
+\end{Example}
+
+\begin{proof}
+  Обозначим правую часть через $F_G(x,y)$.
+  Покажем, что $F_G$ удовлетворяет тем же рекурсии и базе, что и $T_G$.
+
+  \subsubsection*{База}
+
+  Если $E=\varnothing$, то единственное $A=\varnothing$,
+  $c(\varnothing)=|V|=c(E)$, и $F_G=1=T_G$.
+
+  \subsubsection*{Шаг: разложение по ребру $e$}
+
+  Разобьём сумму на слагаемые с $e\notin A$ и с $e\in A$:
+  \begin{align*}
+    F_G
+    &= \underbrace{\sum_{\substack{A\subseteq E \\ e\notin A}}}_{=:\,S_1}
+      (x-1)^{c(A)-c(E)}(y-1)^{c(A)+|A|-|V|}
+    + \underbrace{\sum_{\substack{A\subseteq E \\ e\in A}}}_{=:\,S_2}
+      (x-1)^{c(A)-c(E)}(y-1)^{c(A)+|A|-|V|}.
+  \end{align*}
+
+  \subsubsection*{Случай: $e$ --- мост}
+
+  $c(E\setminus\{e\})=c(E)+1$.
+  Первая сумма $S_1$: все $A\subseteq E\setminus\{e\}$, $c(E)=c(E\setminus\{e\})-1$:
+  \[
+    S_1 = (x-1)\sum_{A\subseteq E\setminus\{e\}}(x-1)^{c(A)-c(E\setminus\{e\})}
+          (y-1)^{c(A)+|A|-|V|} = (x-1)\,F_{G-e}.
+  \]
+  Вторая сумма $S_2$: замена $A \mapsto A\setminus\{e\}$ и $c(A)=c(A\setminus\{e\})-1$:
+  \[
+    S_2 = \sum_{A'\subseteq E\setminus\{e\}}(x-1)^{c(A')-1-c(E)+1}
+          (y-1)^{(c(A')-1)+|A'|+1-|V|} = F_{G-e}.
+  \]
+  Итого $F_G=(x-1)F_{G-e}+F_{G-e}=x\,F_{G-e}$. $\checkmark$
+
+  \subsubsection*{Случай: $e$ --- петля}
+
+  $c(E\setminus\{e\})=c(E)$, $c(A\cup\{e\})=c(A)$ (петля не меняет связность).
+  Первая сумма: $S_1=F_{G-e}$.
+  Вторая: добавление $e$ к $A$ увеличивает $|A|$ на $1$, не меняя $c(A)$:
+  \[
+    S_2 = (y-1)\sum_{A'\subseteq E\setminus\{e\}}(x-1)^{c(A')-c(E)}
+          (y-1)^{c(A')+|A'|-|V|} = (y-1)\,F_{G-e}.
+  \]
+  Итого $F_G=F_{G-e}+(y-1)F_{G-e}=y\,F_{G-e}$. $\checkmark$
+
+  \subsubsection*{Случай: $e$ --- не мост и не петля}
+
+  $c(E\setminus\{e\})=c(E)$.
+  Первая сумма: $S_1=F_{G-e}$.
+  Вторая сумма: применим биекцию $A\mapsto A^*\subseteq E(G\cdot e)$
+  (стягивание $e$ отождествляет его концы):
+  \[
+    c_{G\cdot e}(A^*) = c_G(A\cup\{e\}),\quad
+    |A^*| = |A|,\quad
+    |V(G\cdot e)| = |V|-1,\quad
+    c(E(G\cdot e)) = c(E).
+  \]
+  Поэтому $S_2 = F_{G\cdot e}$, и $F_G = F_{G-e}+F_{G\cdot e}$. $\checkmark$
+
+  \medskip\noindent
+  Таким образом, $F_G$ удовлетворяет тем же рекурсиям и той же базе,
+  что и $T_G$, следовательно $F_G \equiv T_G$.
+\end{proof}
+
+\subsection{Специализации и связь с хроматическим многочленом}
+
+\begin{Remark}{}{}
+  Все коэффициенты $T_G(x,y)$ (как многочлена от $x$ и $y$)
+  являются неотрицательными целыми числами.
+  Это немедленно следует из формулы стат-суммы.
+\end{Remark}
+
+\begin{Statement}{Специализации $T_G$}{}
+  Пусть $G=(V,E)$ --- конечный граф. Тогда:
+  \begin{enumerate}
+    \item $T_G(2,2)=2^{|E|}$.
+    \item $T_G(2,1)$ --- число остовных лесов
+          (подмножеств $A\subseteq E$, не содержащих цикла).
+    \item Если $G$ связен, то $T_G(1,1)$ --- число остовных деревьев.
+  \end{enumerate}
+\end{Statement}
+
+\begin{Theorem}{Связь с хроматическим многочленом}{}
+  Пусть $\chi_G(n)$ --- хроматический многочлен, $c(G)$ --- число компонент. Тогда:
+  \[
+    \chi_G(n) = (-1)^{|V|-c(G)}\,n^{c(G)}\,T_G(1-n,\,0).
+  \]
+\end{Theorem}
+
+\begin{proof}
+  Положим $F_G(n):=(-1)^{|V|-c(G)}\,n^{c(G)}\,T_G(1-n,0)$.
+  Покажем, что $F_G$ совпадает с $\chi_G$ на базе и на всех рекурсивных шагах.
+
+  \subsubsection*{База: $E = \varnothing$}
+
+  $F_G(n)=(-1)^0\cdot n^{|V|}\cdot 1 = n^{|V|} = \chi_G(n)$. $\checkmark$
+
+  \subsubsection*{Случай: $e$ --- петля}
+
+  $\chi_G(n)=0$ (нельзя покрасить петлю корректно).
+  При $y=0$: правило Татта даёт $T_G(1-n,0)=0\cdot T_{G-e}(1-n,0)=0$,
+  поэтому $F_G(n)=0$. $\checkmark$
+
+  \subsubsection*{Случай: $e$ --- мост}
+
+  Из определения $\chi_G(n)=\frac{n-1}{n}\,\chi_{G-e}(n)$ и
+  $T_G(x,y)=x\,T_{G-e}(x,y)$, $c(G-e)=c(G)+1$:
+  \begin{align*}
+    F_G(n)
+    &= (-1)^{|V|-c(G)}\,n^{c(G)}\,(1-n)\,T_{G-e}(1-n,0) \\
+    &= \frac{n-1}{n}\,(-1)^{|V|-c(G-e)}\,n^{c(G-e)}\,T_{G-e}(1-n,0)
+    = \frac{n-1}{n}\,F_{G-e}(n). \checkmark
+  \end{align*}
+
+  \subsubsection*{Случай: $e$ --- не петля и не мост}
+
+  $\chi_G=\chi_{G-e}-\chi_{G\cdot e}$,
+  $T_G=T_{G-e}+T_{G\cdot e}$,
+  $c(G-e)=c(G\cdot e)=c(G)$, $|V(G\cdot e)|=|V|-1$:
+  \begin{align*}
+    F_G(n)
+    &= (-1)^{|V|-c(G)}\,n^{c(G)}
+      \bigl(T_{G-e}(1-n,0)+T_{G\cdot e}(1-n,0)\bigr) \\
+    &= F_{G-e}(n)
+     + (-1)^{1}\,(-1)^{(|V|-1)-c(G\cdot e)}\,n^{c(G\cdot e)}\,T_{G\cdot e}(1-n,0) \\
+    &= F_{G-e}(n) - F_{G\cdot e}(n)
+    = \chi_{G-e}(n) - \chi_{G\cdot e}(n). \checkmark
+  \end{align*}
+
+  Итак, $F_G(n)\equiv\chi_G(n)$ на всех шагах рекурсии.
+\end{proof}

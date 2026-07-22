@@ -1,0 +1,38 @@
+% !TEX root = ../algebra_02.tex
+
+\section{Связь внутренней и внешней прямой суммы}
+
+\begin{Definition}{Внешняя прямая сумма}{}
+	Пусть $V_1, \ldots, V_k$~--- линейные пространства над полем $K$.
+	\textbf{Внешняя прямая сумма} --- это их декартово произведение $V_1 \times \ldots \times V_k$ с покомпонентно заданными операциями:
+	\begin{itemize}
+		\item Сложение: $(v_1, \ldots, v_k) + (v'_1, \ldots, v'_k) = (v_1 + v'_1, \ldots, v_k + v'_k)$
+		\item Умножение на скаляр: $\lambda\,(v_1, \ldots, v_k) = (\lambda v_1, \ldots, \lambda v_k)$
+	\end{itemize}
+	Легко проверить, что множество $V_1 \times \ldots \times V_k$ с такими операциями само является линейным пространством.
+\end{Definition}
+
+Внутренняя и внешняя прямые суммы тесно связаны через понятие изоморфизма. Пусть $W_1, \ldots, W_k \subset V$ --- линейные подпространства одного пространства $V$. Мы можем построить из них внешнюю прямую сумму $W_1 \times \ldots \times W_k$, а также рассмотреть отображение сложения:
+\[
+\varphi \colon W_1 \times \ldots \times W_k \longrightarrow V,
+\qquad
+\varphi(w_1, \ldots, w_k) = w_1 + \ldots + w_k.
+\]
+
+\begin{Proposition}{}{}
+	\begin{enumerate}
+		\item Отображение $\varphi$~--- \textbf{всегда} является линейным.
+		\item Внутренняя сумма совпадает с пространством $V$ ($V = W_1 \oplus \ldots \oplus W_k$) $\;\Longleftrightarrow\; \varphi$~--- биекция (изоморфизм).
+	\end{enumerate}
+\end{Proposition}
+
+\begin{proof}
+	\begin{enumerate}
+		\item Для $\varphi$ выполнены условия линейности:
+		\begin{itemize}
+			\item Аддитивность: $\varphi((w_1, \ldots) + (w_1', \ldots)) = \varphi(w_1 + w_1', \ldots) = \sum (w_i + w_i') = \sum w_i + \sum w_i' = \varphi(w) + \varphi(w')$.
+			\item Однородность: $\varphi(\lambda(w_1, \dots)) = \varphi(\lambda w_1, \dots) = \sum \lambda w_i = \lambda \sum w_i = \lambda\,\varphi(w)$.
+		\end{itemize}
+		\item По определению, $V = W_1 \oplus \dots \oplus W_k$ означает, что любой $v \in V$ представим в виде $v = w_1 + \dots + w_k$ (это равносильно сюръективности отображения $\varphi$) и притом единственным образом (это равносильно инъективности отображения $\varphi$). Следовательно, внутренняя прямая сумма совпадает с $V$ тогда и только тогда, когда $\varphi$ --- биекция.
+	\end{enumerate}
+\end{proof}

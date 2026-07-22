@@ -1,0 +1,103 @@
+% !TEX root = ../discretemath.tex
+
+\section{Биматричные игры и примеры}
+
+\subsection{Постановка задачи}
+
+\begin{Definition}{Биматричная игра}{}
+	\emph{Биматричная игра} задаётся парой матриц $M_1,M_2\in\mathbb{R}^{m\times n}$:
+	\begin{itemize}
+		\item 1-й игрок выбирает строку $i$, 2-й — столбец $j$;
+		\item выигрыш 1-го равен $M_1(i,j)$, 2-го — $M_2(i,j)$.
+	\end{itemize}
+	При смешанных стратегиях $\vec p,\vec q$ ожидаемые выигрыши:
+	\[
+	M_1(\vec p,\vec q)=\sum_{i,j}M_1(i,j)\,p_i\,q_j,\qquad
+	M_2(\vec p,\vec q)=\sum_{i,j}M_2(i,j)\,p_i\,q_j.
+	\]
+\end{Definition}
+
+\begin{Remark}{}{}
+	Матричная игра $A$ — частный случай биматричной: $(M_1,M_2)=(A,-A)$ (нулевая сумма). В общем случае выигрыши не противоположны, поэтому возможны исходы, выгодные обоим.
+\end{Remark}
+
+\subsection{Равновесие Нэша}
+
+\begin{Definition}{Равновесие Нэша}{}
+	Пара $(\vec p^{\,*},\vec q^{\,*})$ — \emph{равновесие Нэша}, если ни один игрок не может увеличить свой выигрыш односторонним отклонением:
+	\[
+	M_1(\vec p,\vec q^{\,*})\le M_1(\vec p^{\,*},\vec q^{\,*})\ \forall\vec p,
+	\qquad
+	M_2(\vec p^{\,*},\vec q)\le M_2(\vec p^{\,*},\vec q^{\,*})\ \forall\vec q.
+	\]
+\end{Definition}
+
+\begin{Example}{Дилемма заключённого}{}
+	\[
+	M_1=\begin{pmatrix}-8&0\\-10&-1\end{pmatrix},\qquad
+	M_2=\begin{pmatrix}-8&-10\\0&-1\end{pmatrix},
+	\]
+	где $i=1$ — «признаться», $i=2$ — «молчать». Для каждого игрока «признаться» — \textbf{доминирующая стратегия} ($-8>-10$, если другой признался; $0>-1$, если молчит). Единственное равновесие Нэша — $(1,1)$: оба признаются и получают по $8$ лет.
+\end{Example}
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[font=\small]
+		% сетка 2x2
+		\foreach \x in {0,2,4}{ \draw (\x,0)--(\x,-3); }
+		\foreach \y in {0,-1.5,-3}{ \draw (0,\y)--(4,\y); }
+		% заголовки столбцов (игрок 2)
+		\node at (3,0.55) {Игрок 2};
+		\node at (1,0.2) {\scriptsize признаться};
+		\node at (3,0.2) {\scriptsize молчать};
+		% заголовки строк (игрок 1)
+		\node[rotate=90] at (-0.55,-1.5) {Игрок 1};
+		\node[left] at (0,-0.75) {\scriptsize признаться};
+		\node[left] at (0,-2.25) {\scriptsize молчать};
+		% ячейки (M1, M2) ; выделим равновесие (1,1)
+		\fill[yellow!40] (0,0) rectangle (2,-1.5);
+		\node at (1,-0.75) {$(-8,\,-8)$};
+		\node at (3,-0.75) {$(0,\,-10)$};
+		\node at (1,-2.25) {$(-10,\,0)$};
+		\node at (3,-2.25) {$(-1,\,-1)$};
+		\node[red!70!black] at (1,-1.25) {\scriptsize равновесие};
+	\end{tikzpicture}
+	\caption{Дилемма заключённого.}
+\end{figure}
+
+\begin{Example}{Семейный спор}{}
+	\[
+	M_1=\begin{pmatrix}1&0\\0&4\end{pmatrix},\qquad
+	M_2=\begin{pmatrix}4&0\\0&1\end{pmatrix},
+	\qquad \vec p=(p,1-p),\ \vec q=(q,1-q).
+	\]
+	\begin{enumerate}
+		\item $\vec p^{\,*}=(1,0),\ \vec q^{\,*}=(1,0)$ — равновесие с выигрышами $(1,4)$.
+		\item $\vec p^{\,*}=(0,1),\ \vec q^{\,*}=(0,1)$ — равновесие с выигрышами $(4,1)$.
+		\item Внутреннее (смешанное) равновесие: из $M_1(p,q^*)=p(5q^*-4)+4-4q^*$ получаем $q^*=\tfrac45$; аналогично $p^*=\tfrac15$. Выигрыши
+		\[
+		v_1=v_2=\tfrac15\cdot\tfrac45\cdot 1+\tfrac45\cdot\tfrac15\cdot 4=\tfrac45.
+		\]
+	\end{enumerate}
+	Смешанное равновесие неэффективно: $0.8$ меньше минимального выигрыша $1$ в любом чистом равновесии — отсутствие координации ведёт к потерям.
+\end{Example}
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[font=\small, >=Stealth, x=1.3cm, y=1.3cm]
+		\draw[->] (-0.2,0) -- (3.4,0) node[right]{$p$};
+		\draw[->] (0,-0.2) -- (0,3.4) node[above]{$q$};
+		\foreach \t/\lab in {0/0, 3/1}{ \draw (\t,0.05)--(\t,-0.05) node[below]{$\lab$}; \draw (0.05,\t)--(-0.05,\t) node[left]{$\lab$}; }
+		% BR игрока 1 (красная): p=0 при q<4/5; flat q=4/5; p=1 при q>4/5
+		\draw[very thick, red] (0,0) -- (0,2.4) -- (3,2.4) -- (3,3);
+		% BR игрока 2 (синяя): q=0 при p<1/5; flat p=1/5; q=1 при p>1/5
+		\draw[very thick, blue] (0,0) -- (0.6,0) -- (0.6,3) -- (3,3);
+		% равновесия
+		\filldraw (0,0) circle (2.4pt) node[above right=1pt]{\scriptsize $(0,0)$};
+		\filldraw (0.6,2.4) circle (2.4pt) node[right=2pt]{\scriptsize $(\tfrac15,\tfrac45)$};
+		\filldraw (3,3) circle (2.4pt) node[below left=1pt]{\scriptsize $(1,1)$};
+		\node[red] at (2.3,2.66) {\scriptsize BR$_1$};
+		\node[blue] at (1.05,1.2) {\scriptsize BR$_2$};
+	\end{tikzpicture}
+	\caption{Семейный спор: лучшие ответы игроков как ступенчатые кривые в квадрате стратегий. Их пересечения — три равновесия Нэша: два чистых $(0,0),(1,1)$ и одно смешанное $(\tfrac15,\tfrac45)$.}
+\end{figure}

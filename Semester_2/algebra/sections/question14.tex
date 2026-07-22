@@ -1,0 +1,69 @@
+% !TEX root = ../algebra_02.tex
+
+\section{Инъективные и сюръективные линейные отображения. Принцип Дирихле для линейных операторов}
+
+Ядро и образ служат точными мерами инъективности и сюръективности отображения соответственно.
+Линейное отображение $\mathcal{A}$ называется мономорфизмом, если оно инъективно, и эпиморфизмом, если сюръективно.
+
+\begin{Proposition}{Критерий инъективности}{}
+	Линейное отображение $\mathcal{A} \in \mathrm{Hom}(V, W)$ инъективно $\;\Longleftrightarrow\; \Ker\mathcal{A} = \{0\}$.
+\end{Proposition}
+\begin{proof}
+	$(\Rightarrow)$: При инъективности прообраз каждого элемента содержит не более одного вектора. Так как $\mathcal{A}(0) = 0$, то прообраз нуля состоит ровно из одного нулевого вектора, т.е. $\Ker\mathcal{A} = \{0\}$.
+	
+	$(\Leftarrow)$: Пусть $\mathcal{A}v_1 = \mathcal{A}v_2$. В силу линейности $\mathcal{A}(v_1 - v_2) = 0$, то есть $v_1 - v_2 \in \Ker\mathcal{A} = \{0\}$, откуда $v_1 = v_2$.
+\end{proof}
+
+Поведение базиса при отображении полностью характеризует его свойства:
+\begin{Proposition}{}{}
+	Пусть $(e_1, \ldots, e_n)$~--- базис $V$. Тогда:
+	\begin{enumerate}
+		\item $\mathcal{A}$ инъективно $\;\Leftrightarrow\;$ векторы $\mathcal{A}e_1, \ldots, \mathcal{A}e_n$ \textbf{линейно независимы} в $W$.
+		\item $\mathcal{A}$ сюръективно $\;\Leftrightarrow\;$ векторы $\mathcal{A}e_1, \ldots, \mathcal{A}e_n$ являются \textbf{системой образующих} для $W$.
+		\item $\mathcal{A}$ биективно (изоморфизм) $\;\Leftrightarrow\;$ векторы $\mathcal{A}e_1, \ldots, \mathcal{A}e_n$ образуют \textbf{базис} $W$.
+	\end{enumerate}
+\end{Proposition}
+
+\begin{proof}
+	\begin{enumerate}
+		\item
+		\begin{itemize}
+			\item $(\Rightarrow)$: Пусть $\lambda_1\,\mathcal{A}e_1 + \ldots + \lambda_n\,\mathcal{A}e_n = 0$.
+			Тогда $\mathcal{A}(\lambda_1 e_1 + \ldots + \lambda_n e_n) = 0$,
+			и из $\Ker\mathcal{A} = \{0\}$ следует $\lambda_1 e_1 + \ldots + \lambda_n e_n = 0$,
+			откуда $\lambda_1 = \ldots = \lambda_n = 0$.
+			\item $(\Leftarrow)$: Пусть $\mathcal{A}v = 0$, $v = \lambda_1 e_1 + \ldots + \lambda_n e_n$.
+			Тогда $\lambda_1\,\mathcal{A}e_1 + \ldots + \lambda_n\,\mathcal{A}e_n = 0$,
+			и из линейной независимости $\lambda_1 = \ldots = \lambda_n = 0$, то есть $v = 0$.
+		\end{itemize}
+		\item
+		\begin{itemize}
+			\item $(\Rightarrow)$: Для любого $w \in W$ найдём $v \in V$ с $\mathcal{A}v = w$.
+			Разложив $v$ по базису:
+			\[
+			w = \mathcal{A}(\lambda_1 e_1 + \ldots + \lambda_n e_n) = \lambda_1\,\mathcal{A}e_1 + \ldots + \lambda_n\,\mathcal{A}e_n.
+			\]
+			\item $(\Leftarrow)$: Для любого $w \in W$ запишем $w = \lambda_1\,\mathcal{A}e_1 + \ldots + \lambda_n\,\mathcal{A}e_n = \mathcal{A}(\lambda_1 e_1 + \ldots + \lambda_n e_n) \in \Im\mathcal{A}$.
+		\end{itemize}
+		\item Следует из пунктов 1 и 2.
+	\end{enumerate}
+\end{proof}
+
+\begin{Statement}{Принцип Дирихле для линейных операторов}{}
+	Пусть размерности пространств совпадают и конечны: $\dim V = \dim W = n < \infty$, и $\mathcal{A} \in \mathrm{Hom}(V, W)$.
+	Тогда следующие три условия эквивалентны:
+	\begin{enumerate}
+		\item $\mathcal{A}$~--- инъективно (мономорфизм),
+		\item $\mathcal{A}$~--- сюръективно (эпиморфизм),
+		\item $\mathcal{A}$~--- биективно (изоморфизм).
+	\end{enumerate}
+\end{Statement}
+\begin{proof}
+	Согласно теореме о ранге и дефекте:
+	\[
+	\dim\Ker\mathcal{A} + \dim\Im\mathcal{A} = n.
+	\]
+	Инъективность означает $\Ker\mathcal{A} = \{0\}$, то есть $\dim\Ker\mathcal{A} = 0$.
+	Подставляя это в формулу, получаем $\dim\Im\mathcal{A} = n$. Поскольку $\dim W = n$, это равносильно тому, что $\Im\mathcal{A} = W$, то есть отображение сюръективно.
+	Следовательно, любое инъективное или сюръективное отображение между пространствами равной размерности автоматически является биективным.
+\end{proof}

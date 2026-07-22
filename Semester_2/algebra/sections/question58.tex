@@ -1,0 +1,56 @@
+% !TEX root = ../algebra_02.tex
+\section{Теорема Лагранжа}
+
+\subsection*{Симметрические формы}
+
+\begin{Definition}{Симметрическая форма}{}
+	$\mathcal{B}$ называется \textit{симметрической}, если $\forall\, v, w \in V$: $\mathcal{B}(v, w) = \mathcal{B}(w, v)$.
+\end{Definition}
+
+\begin{Statement}{}{}
+	Пусть $B = [\mathcal{B}]_E$.
+	Тогда $\mathcal{B}$ симметрична $\Longleftrightarrow$ $B = B^{\top}$.
+\end{Statement}
+\textbf{Очевидно}.
+
+\subsection*{Теорема Лагранжа (диагонализация)}
+
+\begin{Theorem}{Лагранжа}{lagrange}
+	Пусть $\mathrm{char}\,K \neq 2$, $\dim V = n < \infty$, $\mathcal{B}$ — симметрическая билинейная форма на $V$.
+	Тогда существует базис $E$ такой, что $[\mathcal{B}]_E$ диагональна.
+\end{Theorem}
+
+\begin{proof}
+	Доказательство проведем индукцией по $n$.
+	\textit{База} $n = 1$: любой базис даёт матрицу $1 \times 1$ — диагональную.
+
+	\textit{Шаг} $n \geq 2$.
+	\textbf{Случай 1:} $\mathcal{B} = 0$. Тогда $[\mathcal{B}]_E = 0$ для любого $E$.
+
+	\textbf{Случай 2:} $\mathcal{B} \neq 0$.
+	Покажем, что $\exists\, v \in V\colon \mathcal{B}(v,v) \neq 0$.
+	Предположим $\mathcal{B}(v,v) = 0$ для всех $v$.
+	Поскольку $\mathcal{B} \neq 0$, $\exists\, u, v$ с $\mathcal{B}(u,v) \neq 0$.
+	Тогда:
+	\[
+	0 = \mathcal{B}(u+v,\,u+v)
+	= \underbrace{\mathcal{B}(u,u)}_{0} + \mathcal{B}(u,v) + \mathcal{B}(v,u) + \underbrace{\mathcal{B}(v,v)}_{0}
+	= 2\,\mathcal{B}(u,v).
+	\] 
+	Так как $\mathrm{char}\,K \neq 2$, то $2 \neq 0$, значит $\mathcal{B}(u,v) = 0$ — противоречие.
+	Итак, $\exists\, v\colon \mathcal{B}(v,v) \neq 0$. Рассмотрим функционал $\lambda_v\colon w \mapsto \mathcal{B}(w, v)$.
+	Так как $\lambda_v(v) \neq 0$, функционал сюръективен, поэтому
+	\[
+	W = \ker\lambda_v = \{w \in V \mid \mathcal{B}(w,v)=0\}, \quad \dim W = n-1.
+	\] 
+	По гипотезе индукции $\exists$ базис $E'' = (e_2,\ldots,e_n)$ пространства $W$ с
+	$[\mathcal{B}|_{W\times W}]_{E''} = \mathrm{diag}(d_2,\ldots,d_n)$.
+	Так как $e_i \in W$, т.е.\ $\mathcal{B}(v,e_i) = 0$ при $i \geq 2$, базис $E = (v, e_2, \ldots, e_n)$ даёт
+	\[
+	[\mathcal{B}]_E = \mathrm{diag}\bigl(\mathcal{B}(v,v),\; d_2,\; \ldots,\; d_n\bigr).
+	\] 
+\end{proof}
+
+\begin{Remark}{}{}
+	При замене $e_i \mapsto \gamma_i e_i$ диагональная матрица $\mathrm{diag}(d_1,\ldots,d_n)$ переходит в $\mathrm{diag}(\gamma_1^2 d_1,\ldots,\gamma_n^2 d_n)$.
+\end{Remark}

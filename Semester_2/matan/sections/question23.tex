@@ -1,0 +1,82 @@
+% !TEX root = ../matan.tex
+
+\section{Комплексные числа. Основные определения, свойства.}
+
+\begin{Definition}{Поле комплексных чисел}{}
+	\textbf{Комплексные числа} $\C$~--- это множество $\RR^2$ с операциями сложения и умножения. Элемент $z \in \C$ записывается в виде $z = x + iy$, где $x, y \in \RR$, причём $1 = (1, 0)$, $i = (0, 1)$ и $i^2 = -1$. Сложение покомпонентное, а умножение задаётся правилом: если $z_1 = x_1 + iy_1$, $z_2 = x_2 + iy_2$, то
+	\[
+	z_1 z_2 = (x_1 x_2 - y_1 y_2) + i(x_1 y_2 + x_2 y_1).
+	\]
+\end{Definition}
+
+Число $x = \operatorname{Re} z$ называется вещественной, $y = \operatorname{Im} z$~--- мнимой частью $z$. С этими операциями $\C$ является полем: операции коммутативны, ассоциативны, дистрибутивны, а у каждого ненулевого $z$ есть обратный (см. ниже).
+
+\begin{Definition}{Сопряжение, модуль, обратный элемент}{}
+	Для $z = x + iy$ определяются:
+	\[
+	\overline{z} = x - iy \quad (\text{сопряжённое}), \qquad
+	|z| = \sqrt{x^2 + y^2} \quad (\text{модуль}).
+	\]
+	При этом $z\,\overline{z} = x^2 + y^2 = |z|^2$, и для $z \neq 0$
+	\[
+	\frac{1}{z} = \frac{\overline{z}}{|z|^2} = \frac{x - iy}{x^2 + y^2} = \frac{x}{x^2 + y^2} - i\,\frac{y}{x^2 + y^2}.
+	\]
+\end{Definition}
+
+\begin{Statement}{Свойства сопряжения и модуля}{}
+	Для любых $z, w \in \C$:
+	\begin{enumerate}
+		\item $\overline{z + w} = \overline{z} + \overline{w}$, \quad $\overline{zw} = \overline{z}\,\overline{w}$, \quad $\overline{\overline{z}} = z$;
+		\item $\operatorname{Re} z = \dfrac{z + \overline{z}}{2}$, \quad $\operatorname{Im} z = \dfrac{z - \overline{z}}{2i}$;
+		\item $|z| \ge 0$, причём $|z| = 0 \iff z = 0$; \quad $|\overline{z}| = |z|$;
+		\item $|zw| = |z|\,|w|$ (мультипликативность);
+		\item $|z + w| \le |z| + |w|$ (неравенство треугольника).
+	\end{enumerate}
+\end{Statement}
+
+\begin{proof}
+	Свойства 1--2 проверяются прямой подстановкой $z = x + iy$, $w = u + iv$. 
+	Докажем 4: пользуясь свойством 1,
+	\[
+	|zw|^2 = (zw)\overline{(zw)} = z w\,\overline{z}\,\overline{w} = (z\overline{z})(w\overline{w}) = |z|^2 |w|^2,
+	\]
+	и, извлекая неотрицательный корень, $|zw| = |z|\,|w|$.
+
+	Докажем 5. Заметим, что $\operatorname{Re}\zeta \le |\zeta|$ для всякого $\zeta$, и $z\overline{w} + \overline{z}w = 2\operatorname{Re}(z\overline{w})$. Тогда
+	\[
+	|z + w|^2 = (z + w)\overline{(z + w)} = |z|^2 + z\overline{w} + \overline{z}w + |w|^2 = |z|^2 + 2\operatorname{Re}(z\overline{w}) + |w|^2.
+	\]
+	Так как $\operatorname{Re}(z\overline{w}) \le |z\overline{w}| = |z|\,|w|$, получаем
+	\[
+	|z + w|^2 \le |z|^2 + 2|z|\,|w| + |w|^2 = (|z| + |w|)^2,
+	\]
+	откуда $|z + w| \le |z| + |w|$.
+\end{proof}
+
+\begin{Definition}{Аргумент комплексного числа}{}
+	Если $z = x + iy \neq 0$, то \textbf{аргументом} $z$ называется число $\varphi$, для которого
+	\[
+	x = |z|\cos\varphi, \qquad y = |z|\sin\varphi.
+	\]
+	Обозначение $\varphi = \arg z$; аргумент определён с точностью до прибавления $2\pi k$, $k \in \ZZ$.
+\end{Definition}
+
+\begin{Statement}{Формула Эйлера}{}
+	Для любого $\varphi \in \RR$
+	\[
+	e^{i\varphi} = \cos\varphi + i\sin\varphi,
+	\]
+	откуда $\cos\varphi = \dfrac{e^{i\varphi} + e^{-i\varphi}}{2}$, \quad $\sin\varphi = \dfrac{e^{i\varphi} - e^{-i\varphi}}{2i}$.
+\end{Statement}
+
+\begin{Remark}{Полярная форма и умножение}{}
+	Всякое ненулевое $z$ записывается в полярной форме
+	\[
+	z = |z|\,e^{i\arg z}.
+	\]
+	Для $z_1, z_2 \neq 0$
+	\[
+	z_1 z_2 = |z_1|\,|z_2|\,e^{i(\arg z_1 + \arg z_2)},
+	\]
+	то есть при умножении модули перемножаются, а аргументы складываются. В частности, $z^n = |z|^n e^{in\arg z}$ (формула Муавра $(\cos\varphi + i\sin\varphi)^n = \cos n\varphi + i\sin n\varphi$).
+\end{Remark}

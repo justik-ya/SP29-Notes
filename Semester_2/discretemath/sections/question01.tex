@@ -1,0 +1,170 @@
+% !TEX root = ../discretemath.tex
+
+\section{Теорема Геринга/Менгера}
+
+\subsection{Разделяющее множество}
+
+\begin{Definition}{Разделяющее множество}{}
+  В графе $G$ множество вершин $R \subset V$ называется
+  \emph{разделяющим} для множеств $X \subset V$ и $Y \subset V$
+  (которые могут пересекаться), если в подграфе $G[V \setminus R]$
+  не существует пути между вершинами из $X \setminus R$
+  и вершинами из $Y \setminus R$.
+\end{Definition}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  >=Stealth, font=\small,
+  vX/.style={circle, draw=blue!70!black, fill=blue!15, minimum size=8mm, inner sep=0pt},
+  vR/.style={circle, draw=green!60!black, fill=green!20, minimum size=8mm, inner sep=0pt},
+  vY/.style={circle, draw=red!70!black,  fill=red!15,  minimum size=8mm, inner sep=0pt},
+  vN/.style={circle, draw=gray!60, fill=gray!10, minimum size=7mm, inner sep=0pt}]
+
+\node[vX] (x1) at (0,  1.2) {$x_1$};
+\node[vX] (x2) at (0, -1.2) {$x_2$};
+\node[vR] (r1) at (3.2,  1.2) {$r_1$};
+\node[vR] (r2) at (3.2, -1.2) {$r_2$};
+\node[vY] (y1) at (6.4,  1.2) {$y_1$};
+\node[vY] (y2) at (6.4, -1.2) {$y_2$};
+\node[vN] (v)  at (1.6, 0) {};
+
+\draw (x1)--(v)--(r1) (x2)--(v)--(r2);
+\draw[gray!50] (x1) to[bend left=18]  (r1);
+\draw[gray!50] (x2) to[bend right=18] (r2);
+\draw (r1)--(y1) (r2)--(y2) (r1)--(y2) (r1)--(r2) (y1)--(y2);
+
+\begin{scope}[on background layer]
+  \draw[blue!40,  dashed, thick, rounded corners=6pt] (-0.6,-1.9) rectangle (0.6, 1.9);
+  \draw[green!55!black, dashed, thick, rounded corners=6pt] (2.6,-1.9) rectangle (3.8, 1.9);
+  \draw[red!50,   dashed, thick, rounded corners=6pt] (5.8,-1.9) rectangle (7.0, 1.9);
+\end{scope}
+
+\node[blue!70!black,  below] at (0,   -2.1) {$X$};
+\node[green!60!black, below] at (3.2, -2.1) {$R$};
+\node[red!70!black,   below] at (6.4, -2.1) {$Y$};
+\end{tikzpicture}
+\caption{Разделяющее множество $R$ (зелёное) отделяет $X$ (синее) от $Y$ (красное):
+  в $G[V\setminus R]$ не существует пути из $X\setminus R$ в $Y\setminus R$.}
+\end{figure}
+
+\subsection{Теорема Геринга}
+
+\begin{Theorem}{Геринга}{}
+  Пусть задан граф $G$ и два множества его вершин $X, Y$.
+  Если каждое $XY$-разделяющее множество содержит хотя бы $k$ вершин,
+  то существует не менее $k$ попарно непересекающихся по вершинам
+  $XY$-путей.
+\end{Theorem}
+
+\begin{Statement}{Эквивалентная переформулировка}{}
+  Максимальное число попарно непересекающихся по вершинам $XY$-путей
+  равно минимальному размеру $XY$-разделяющего множества.
+\end{Statement}
+
+\begin{proof}
+  Индукция по $|V|$.
+
+  \subsubsection*{База: $|V| = k$}
+
+  $R = X$ — $XY$-разделяющее, поэтому $|X| \ge k$.
+  Аналогично $|Y| \ge k$. При $|V|=k$ получаем $X=Y=V$,
+  и из каждой вершины в себя есть путь длины $0$ — ровно $k$ непересекающихся путей. $\checkmark$
+
+  \subsubsection*{Переход: $|V| > k$}
+
+  \noindent\textbf{Случай 1.}
+  $\exists\, R$ — $XY$-разделяющее, $|R|=k$,
+  $X\setminus R \neq \emptyset$, $Y\setminus R \neq \emptyset$.
+
+  Положим $V_X$ — вершины, достижимые из $X\setminus R$ в $G\setminus R$,
+  $V_Y$ — из $Y\setminus R$; $G_X=G[V_X\cup R]$, $G_Y=G[V_Y\cup R]$.
+  Так как $V_X\cap V_Y=\emptyset$, имеем $|V(G_X)|<|V|$ и $|V(G_Y)|<|V|$.
+
+  \begin{Statement}{}{}
+    Любое $XR$-разделяющее множество в $G_X$ является $XY$-разделяющим в $G$.
+  \end{Statement}
+  \begin{proof}
+    Пусть $S$ — $XR$-разделяющее в $G_X$, и в $G\setminus S$ есть путь $p$ из $X$ в $Y$.
+    Поскольку $R$ разделяет $X$ и $Y$ в $G$, путь $p$ проходит через некоторую $r\in R$.
+    Начальный отрезок $p$ от $X$ до первой $r$ целиком лежит в $G_X$ и не пересекает $S$
+    — противоречие.
+  \end{proof}
+
+  Любое $XR$-разделяющее в $G_X$ имеет размер $\ge k$.
+  По ИП: $k$ непересекающихся $XR$-путей в $G_X$ и $k$ непересекающихся $YR$-путей в $G_Y$.
+  Склеиваем через $R$ (возможно, так как $V_X\cap V_Y=\emptyset$) и получаем $k$ путей $X\to Y$.
+
+  \medskip
+  \noindent\textbf{Случай 2.}
+  Любое $XY$-разделяющее $R$ с $|R|=k$ поглощает $X$ или $Y$.
+
+  \noindent\textit{(а) $X\cup Y \neq V$.}
+  Возьмём $u \in V\setminus(X\cup Y)$.
+
+  \begin{Statement}{}{}
+    В $G\setminus\{u\}$ нет $XY$-разделяющего множества размера $k-1$.
+  \end{Statement}
+  \begin{proof}
+    Если такое $S$ существует, то $S' = S\cup\{u\}$ — $XY$-разделяющее в $G$
+    с $|S'|=k$ и $X\setminus S'\neq\emptyset$, $Y\setminus S'\neq\emptyset$
+    (т.\,к. $u\notin X\cup Y$) — противоречие случаю~2.
+  \end{proof}
+
+  В $G\setminus\{u\}$ все разделяющие имеют размер $\ge k$, и $|V(G\setminus\{u\})|<|V|$,
+  поэтому по ИП есть $k$ путей в $G\setminus\{u\}$, а значит и в $G$.
+
+  \noindent\textit{(б) $X\cup Y = V$.}
+  Каждая вершина $X\cap Y$ входит в любое разделяющее.
+  Граф $H = G[V\setminus(X\cap Y)]$ двудольный с долями $X'=X\setminus Y$
+  и $Y'=Y\setminus X$.
+  По теореме Кёнига:
+  \[
+    k = |\text{мин. покрытие } H| + |X\cap Y|
+      = |\text{макс. паросочетание } H| + |X\cap Y| \]
+   \[
+      = \text{число непересекающихся } XY\text{-путей.}
+  \]
+\end{proof}
+
+\subsection{Теорема Менгера}
+
+\begin{Theorem}{Менгера}{}
+  Максимальное число попарно непересекающихся по \emph{внутренним} вершинам
+  путей между несмежными $v$ и $u$ равно минимальному размеру
+  $vu$-разделяющего множества $S \subset V\setminus\{v,u\}$.
+\end{Theorem}
+
+\begin{proof}
+  Пусть минимальный разделитель имеет размер $k$.
+  Заменим $v$ на $k$ клонов $v_1,\ldots,v_k$ (с теми же соседями) и $u$ на $u_1,\ldots,u_k$.
+  Положим $X=\{v_1,\ldots,v_k\}$, $Y=\{u_1,\ldots,u_k\}$.
+  Теорема Геринга даёт $k$ непересекающихся $XY$-путей,
+  что соответствует $k$ внутренне непересекающимся $vu$-путям в $G$.
+\end{proof}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  >=Stealth, font=\small,
+  v/.style={circle, draw, fill=white, minimum size=8mm, inner sep=0pt},
+  vs/.style={circle, draw=blue!70!black, fill=blue!20, minimum size=8mm, inner sep=0pt},
+  vt/.style={circle, draw=red!70!black,  fill=red!20,  minimum size=8mm, inner sep=0pt}]
+
+\node[vs] (s) at (0, 0)   {$s$};
+\node[v]  (a) at (2, 1.2) {$a$};
+\node[v]  (b) at (2,-1.2) {$b$};
+\node[v]  (c) at (4, 1.2) {$c$};
+\node[v]  (d) at (4,-1.2) {$d$};
+\node[vt] (t) at (6, 0)   {$t$};
+
+\draw[gray!40] (a)--(b) (c)--(d) (a)--(d) (b)--(c);
+\draw[blue!70!black, very thick] (s)--(a)--(c)--(t);
+\draw[red!70!black,  very thick, dashed] (s)--(b)--(d)--(t);
+
+\node[blue!70!black] at (3,  1.9) {путь 1};
+\node[red!70!black]  at (3, -1.9) {путь 2};
+\end{tikzpicture}
+\caption{Теорема Менгера ($k=2$): два попарно непересекающихся по внутренним вершинам
+  пути $s\!\to\!t$ соответствуют минимальному разделяющему множеству размера 2.}
+\end{figure}

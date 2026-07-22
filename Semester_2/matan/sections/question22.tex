@@ -1,0 +1,91 @@
+% !TEX root = ../matan.tex
+
+\section{Пространство линейных операторов между банаховыми пространствами, его полнота. Полилинейные отображения.}
+
+\begin{Definition}{Пространство ограниченных операторов}{}
+	Пусть $X, Y$~--- нормированные пространства. Множество всех ограниченных линейных операторов $\mathcal{A}\colon X \to Y$ обозначается $\mathcal{B}(X, Y)$. Оно является линейным пространством относительно поточечных операций, а операторная норма
+	\[
+	\|\mathcal{A}\| = \sup_{x \neq 0} \frac{\|\mathcal{A}x\|_Y}{\|x\|_X}
+	\]
+	задаёт на нём норму.
+\end{Definition}
+
+\begin{Theorem}{Полнота пространства операторов}{}
+	Если $X$~--- нормированное пространство, а $Y$~--- банахово, то $\mathcal{B}(X, Y)$~--- банахово пространство относительно операторной нормы.
+\end{Theorem}
+
+\begin{proof}
+	Нужно доказать полноту. Пусть $(\mathcal{A}_n)$~--- фундаментальная последовательность в $\mathcal{B}(X, Y)$: для любого $\eps > 0$ найдётся $N$ такое, что при $n, m \ge N$ выполнено $\|\mathcal{A}_n - \mathcal{A}_m\| < \eps$.
+
+	\textbf{Поточечный предел.} Зафиксируем $x \in X$. Тогда
+	\[
+	\|\mathcal{A}_n x - \mathcal{A}_m x\|_Y = \|(\mathcal{A}_n - \mathcal{A}_m)x\|_Y \le \|\mathcal{A}_n - \mathcal{A}_m\|\,\|x\|_X < \eps\,\|x\|_X
+	\]
+	при $n, m \ge N$, поэтому $(\mathcal{A}_n x)$~--- фундаментальная последовательность в $Y$. Так как $Y$ полно, она сходится; определим
+	\[
+	\mathcal{A}x := \lim_{n \to \infty} \mathcal{A}_n x.
+	\]
+
+	\textbf{Линейность $\mathcal{A}$.} Для $x, y \in X$, $\lambda \in \RR$, пользуясь непрерывностью предела,
+	\[
+	\mathcal{A}(\lambda x + y) = \lim_{n} \mathcal{A}_n(\lambda x + y) = \lim_{n}\bigl(\lambda \mathcal{A}_n x + \mathcal{A}_n y\bigr) = \lambda \mathcal{A}x + \mathcal{A}y.
+	\]
+
+	\textbf{Сходимость по операторной норме.} Из $\|(\mathcal{A}_n - \mathcal{A}_m)x\|_Y < \eps\,\|x\|_X$ при $n, m \ge N$ перейдём к пределу при $m \to \infty$ (норма в $Y$ непрерывна):
+	\[
+	\|(\mathcal{A}_n - \mathcal{A})x\|_Y \le \eps\,\|x\|_X \qquad \forall x \in X,\ n \ge N.
+	\]
+	Деля на $\|x\|_X$ ($x \neq 0$) и беря супремум, получаем $\|\mathcal{A}_n - \mathcal{A}\| \le \eps$ при $n \ge N$, то есть $\mathcal{A}_n \to \mathcal{A}$ по операторной норме.
+
+	\textbf{Ограниченность $\mathcal{A}$.} Возьмём $n \ge N$. Тогда $\mathcal{A} = \mathcal{A}_n - (\mathcal{A}_n - \mathcal{A})$, где $\mathcal{A}_n$ ограничен по условию, а $\mathcal{A}_n - \mathcal{A}$ ограничен, поскольку $\|\mathcal{A}_n - \mathcal{A}\| \le \eps$. Значит, $\mathcal{A} \in \mathcal{B}(X, Y)$.
+
+	Таким образом, всякая фундаментальная последовательность в $\mathcal{B}(X, Y)$ сходится в $\mathcal{B}(X, Y)$, то есть это пространство банахово.
+\end{proof}
+
+\begin{Corollary}{Двойственное пространство}{}
+	Для любого нормированного пространства $X$ его \textbf{двойственное} пространство $X^* = \mathcal{B}(X, \RR)$ ограниченных линейных функционалов банахово, так как $\RR$ (и $\C$) полны.
+\end{Corollary}
+
+\subsection*{Полилинейные отображения}
+
+\begin{Definition}{Полилинейное отображение}{}
+	Пусть $X_1, \ldots, X_N, Y$~--- линейные пространства. Отображение
+	\[
+	\mathcal{A}\colon X_1 \times \cdots \times X_N \to Y
+	\]
+	называется \textbf{полилинейным} ($N$-линейным), если оно линейно по каждому аргументу при фиксированных остальных: для каждого $k$
+	\[
+	\mathcal{A}(x_1, \ldots, \lambda x_k + y_k, \ldots, x_N) = \lambda\,\mathcal{A}(x_1, \ldots, x_k, \ldots, x_N) + \mathcal{A}(x_1, \ldots, y_k, \ldots, x_N).
+	\]
+	При $N = 1$ это обычный линейный оператор, при $N = 2$~--- билинейное отображение.
+\end{Definition}
+
+\begin{Definition}{Ограниченное полилинейное отображение и его норма}{}
+	Пусть $X_1, \ldots, X_N, Y$~--- нормированные пространства. Полилинейное отображение $\mathcal{A}$ называется \textbf{ограниченным}, если
+	\[
+	\|\mathcal{A}\| := \sup_{\substack{x_k \neq 0 \\ k = 1, \ldots, N}} \frac{\|\mathcal{A}(x_1, \ldots, x_N)\|_Y}{\|x_1\|_{X_1} \cdots \|x_N\|_{X_N}} < +\infty,
+	\]
+	что равносильно существованию $C \ge 0$ с $\|\mathcal{A}(x_1, \ldots, x_N)\|_Y \le C\,\|x_1\|_{X_1}\cdots\|x_N\|_{X_N}$. %
+\end{Definition}
+
+\begin{Statement}{Ограниченность $\Leftrightarrow$ непрерывность}{}
+	Полилинейное отображение $\mathcal{A}\colon X_1 \times \cdots \times X_N \to Y$ непрерывно тогда и только тогда, когда оно ограничено. % [восстановлено]
+\end{Statement}
+
+\begin{proof}
+	\textbf{Ограниченность $\Rightarrow$ непрерывность.} Покажем для $N = 2$ (общий случай~--- та же оценка с телескопической суммой). Пусть $\|\mathcal{A}(u, v)\| \le C\,\|u\|\,\|v\|$. Тогда
+	\[
+	\mathcal{A}(x_1, x_2) - \mathcal{A}(a_1, a_2) = \mathcal{A}(x_1 - a_1, x_2) + \mathcal{A}(a_1, x_2 - a_2),
+	\]
+	откуда $\|\mathcal{A}(x_1, x_2) - \mathcal{A}(a_1, a_2)\| \le C\bigl(\|x_1 - a_1\|\,\|x_2\| + \|a_1\|\,\|x_2 - a_2\|\bigr) \to 0$ при $(x_1, x_2) \to (a_1, a_2)$.
+
+	\textbf{Непрерывность $\Rightarrow$ ограниченность.} По непрерывности в нуле для $\eps = 1$ найдётся $\delta > 0$ такое, что из $\|x_k\| \le \delta$ ($\forall k$) следует $\|\mathcal{A}(x_1, \ldots, x_N)\| \le 1$. Для произвольных $x_k \neq 0$ положим $u_k = \delta\,x_k/\|x_k\|$; тогда $\|u_k\| = \delta$ и по полилинейности
+	\[
+	\|\mathcal{A}(x_1, \ldots, x_N)\| = \frac{\|x_1\|\cdots\|x_N\|}{\delta^N}\,\|\mathcal{A}(u_1, \ldots, u_N)\| \le \frac{1}{\delta^N}\,\|x_1\|\cdots\|x_N\|,
+	\]
+	то есть $\|\mathcal{A}\| \le \delta^{-N} < +\infty$.
+\end{proof}
+
+\begin{Remark}{}{}
+	Пространство ограниченных $N$-линейных отображений в банахово $Y$ само банахово относительно нормы $\|\mathcal{A}\|$: доказательство дословно повторяет доказательство полноты $\mathcal{B}(X, Y)$ (поточечный предел существует ввиду полноты $Y$, предельное отображение полилинейно и ограничено). % [восстановлено]
+\end{Remark}

@@ -1,0 +1,464 @@
+% !TEX root = ../algorithms.tex
+
+\section{Префиксные суммы (scan), схема Ладнера–Фишера. Модель CRCW/EREW PRAM. Сортировка подсчётом в модели PRAM.}
+
+\subsection{Задача о префиксных суммах}
+
+Построить вычислительную схему, которая принимает на вход $n$ чисел $x_0, \dots, x_{n-1}$ и (используя только бинарную операцию «$+$») выдаёт числа $y_0, \dots, y_{n-1}$, где
+\[
+y_i = \sum_{j=0}^{i} x_j, \qquad i = 0, \dots, n-1.
+\]
+
+\subsection{Схема Ладнера–Фишера}
+
+Пусть $n$ чётно. Алгоритм состоит из трёх фаз.
+
+\begin{enumerate}
+	\item \textbf{Свёртка (upsweep).} Попарно складываем соседние входы:
+	\[
+	s_i = x_{2i} + x_{2i+1}, \qquad i = 0, \dots, \tfrac{n}{2} - 1.
+	\]
+	
+	\item \textbf{Рекурсия.} Считаем префиксные суммы для массива $s$:
+	\[
+	p_i = \sum_{j=0}^{i} s_j.
+	\]
+	
+	\item \textbf{Развёртка (downsweep).} Восстанавливаем выходы:
+	\[
+	y_{2i+1} = p_i, \qquad
+	y_{2i} =
+	\begin{cases}
+		x_0, & i = 0, \\
+		p_{i-1} + x_{2i}, & i \geq 1.
+	\end{cases}
+	\]
+\end{enumerate}
+
+\begin{Statement}{Оценки глубины и размера схемы Ладнера–Фишера}{}
+	Обозначим через $T(n)$ глубину схемы (длину критического пути), а через $S(n)$ — её размер (число операций). Тогда при $n = 2^m$:
+	\begin{align*}
+		T(n) &= 2 + T\!\left(\tfrac{n}{2}\right), \quad T(1) = 0
+		\quad \Longrightarrow \quad T(n) = 2\log n, \\
+		S(n) &= (n-1) + S\!\left(\tfrac{n}{2}\right)
+		\quad \Longrightarrow \quad S(n) = 2n - \log n - 2.
+	\end{align*}
+\end{Statement}
+
+\begin{center}
+	\begin{tikzpicture}[
+		adder/.style={circle, draw=black, thick, inner sep=0pt, minimum size=20pt},
+		dot/.style={circle, fill=black, inner sep=0pt, minimum size=7pt},
+		lbl/.style={font=\normalsize},
+		flow/.style={line width=1.05pt},
+		]
+		
+		%% X positions
+		\def\ColZero{0}       
+		\def\ColTA{1.0}       
+		\def\ColOne{2.0}      
+		\def\ColTwo{3.2}      
+		\def\ColTB{4.2}       
+		\def\ColThree{5.2}    
+		\def\ColFour{6.4}     
+		
+		\def\ColRprev{7.2}    
+		\def\ColFnm{9.8}      
+		\def\ColTC{10.9}      
+		\def\ColFnl{12.0}     
+		
+		%% Bottom adder midpoints
+		\def\ColBAii{2.1}     
+		\def\ColBAiv{5.3}     
+		\def\ColBAnm{8.5}     
+		
+		%% Y levels
+		\def\Yin{7.0}
+		\def\YTA{6.0}
+		\def\YBT{5.0}
+		\def\YBB{3.2}
+		\def\YBA{2.2}
+		\def\YOL{0.9}  
+		
+		%% ====================== BOX ======================
+		\draw[flow, rounded corners=4pt, fill=gray!10] (0.5,\YBT) rectangle (12.8,\YBB);
+		\node[
+		font=\normalsize,
+		fill=gray!10,
+		inner xsep=6pt,
+		inner ysep=2pt
+		] at (6.9,{(\YBT+\YBB)/2})
+		{Рекурсивно решаем для $n/2$ входов};
+		
+		%% === DASHED PASSTHROUGHS INSIDE BOX ===
+		\draw[flow,dashed] (\ColTwo, \YBT) -- (\ColTwo, \YBB);
+		\draw[flow,dashed] (\ColFour,\YBT) -- (\ColFour,\YBB);
+		\draw[flow,dashed] (\ColFnm, \YBT) -- (\ColFnm, \YBB);
+		
+		%% === INPUT LABELS ===
+		\node[lbl] at (\ColZero, \Yin) {$x_0$};
+		\node[lbl] at (\ColOne,  \Yin) {$x_1$};
+		\node[lbl] at (\ColTwo,  \Yin) {$x_2$};
+		\node[lbl] at (\ColThree,\Yin) {$x_3$};
+		\node[lbl] at (\ColFour, \Yin) {$x_4$};
+		\node[lbl] at (7.8,      \Yin) {$\cdots$};
+		\node[lbl] at (\ColFnm,  \Yin) {$x_{n-2}$};
+		\node[lbl] at (\ColFnl,  \Yin) {$x_{n-1}$};
+		
+		%% === TOP ADDERS ===
+		\node[adder] (TA) at (\ColTA,\YTA) {$+$};
+		\node[adder] (TB) at (\ColTB,\YTA) {$+$};
+		\node[adder] (TC) at (\ColTC,\YTA) {$+$};
+		
+		%% Inputs -> top adders
+		\draw[flow] (\ColZero, \Yin-0.15) -- (TA.north west);
+		\draw[flow] (\ColOne,  \Yin-0.15) -- (TA.north east);
+		\draw[flow] (\ColTwo,  \Yin-0.15) -- (TB.north west);
+		\draw[flow] (\ColThree,\Yin-0.15) -- (TB.north east);
+		\draw[flow] (\ColFnm,  \Yin-0.15) -- (TC.north west);
+		\draw[flow] (\ColFnl,  \Yin-0.15) -- (TC.north east);
+		
+		%% x_0: vertical passthrough outside box
+		\draw[flow] (\ColZero,\Yin-0.15) -- (\ColZero,\YOL+0.15);
+		
+		%% x_2, x_4, x_{n-2}: solid down to box top, then dashed inside
+		\draw[flow] (\ColTwo, \Yin-0.15) -- (\ColTwo, \YBT);
+		\draw[flow] (\ColFour,\Yin-0.15) -- (\ColFour, \YBT);
+		\draw[flow] (\ColFnm, \Yin-0.15) -- (\ColFnm, \YBT);
+		
+		%% Top adder outputs -> box top
+		\draw[flow] (TA.south) -- (\ColTA,\YBT);
+		\draw[flow] (TB.south) -- (\ColTB,\YBT);
+		\draw[flow] (TC.south) -- (\ColTC,\YBT);
+		
+		%% === DOTS ON BOX TOP ===
+		\node[dot] at (\ColTA,  \YBT) {};
+		\node[dot] at (\ColTB,  \YBT) {};
+		\node[dot] at (\ColTC,  \YBT) {};
+		
+		
+		%% === DOTS ON BOX BOTTOM ===
+		\node[dot] (RZ)  at (\ColTA,   \YBB) {};
+		\node[dot] (RI)  at (\ColTB,   \YBB) {};
+		\node[dot] (RP)  at (\ColRprev,\YBB) {};
+		\node[dot] (RL)  at (\ColTC,   \YBB) {};
+		\coordinate (PII) at (\ColTwo,  \YBB);
+		\coordinate (PIV) at (\ColFour, \YBB);
+		\coordinate (PNM) at (\ColFnm,  \YBB);
+		
+		%% === BOTTOM ADDERS ===
+		\node[adder] (BAii) at (\ColBAii,\YBA) {$+$};
+		\node[adder] (BAiv) at (\ColBAiv,\YBA) {$+$};
+		\node[adder] (BAnm) at (\ColBAnm,\YBA) {$+$};
+		
+		%% Wiring to bottom adders
+		\draw[flow] (RZ.south)  -- (BAii.north west);
+		\draw[flow] (PII.south) -- (BAii.north east);
+		\draw[flow] (RI.south)  -- (BAiv.north west);
+		\draw[flow] (PIV.south) -- (BAiv.north east);
+		\draw[flow] (RP.south)  -- (BAnm.north west);
+		\draw[flow] (PNM.south) -- (BAnm.north east);
+		
+		%% Direct outputs (odd-indexed, straight down)
+		\draw[flow] (RZ.south) -- (\ColTA,   \YOL+0.15);
+		\draw[flow] (RI.south) -- (\ColTB,   \YOL+0.15);
+		\draw[flow] (RP.south) -- (\ColRprev,\YOL+0.15);
+		\draw[flow] (RL.south) -- (\ColTC,   \YOL+0.15);
+		
+		%% Bottom adder outputs
+		\draw[flow] (BAii.south) -- (\ColBAii,\YOL+0.15);
+		\draw[flow] (BAiv.south) -- (\ColBAiv,\YOL+0.15);
+		\draw[flow] (BAnm.south) -- (\ColBAnm,\YOL+0.15);
+		
+		%% === OUTPUT LABELS ===
+		\node[lbl] at (\ColZero, \YOL) {$y_0$};
+		\node[lbl] at (\ColTA,   \YOL) {$y_1$};
+		\node[lbl] at (\ColBAii, \YOL) {$y_2$};
+		\node[lbl] at (\ColTB,   \YOL) {$y_3$};
+		\node[lbl] at (\ColBAiv, \YOL) {$y_4$};
+		\node[lbl] at (6.3,      \YOL) {$\cdots$};
+		\node[lbl] at (\ColRprev,\YOL) {$y_{n-3}$};
+		\node[lbl] at (\ColBAnm,\YOL) {$y_{n-2}$};
+		\node[lbl] at (\ColTC,   \YOL) {$y_{n-1}$};
+		
+		%% === CAPTION ===
+		\node[font=\normalsize] at (6.5,\YOL-0.9)
+		{Рис.\ 14: Схема Ладнера--Фишера для префиксных сумм};
+		
+	\end{tikzpicture}
+\end{center}
+
+\begin{Remark}{}{}
+	Схема Ладнера–Фишера хорошо ложится на GPU: на каждом уровне рекурсии выполняется большое количество независимых операций, которые можно запускать параллельно.
+\end{Remark}
+
+\subsection{Обобщение: операция \texttt{scan}}
+
+\begin{Definition}{}{}
+	Операция \textbf{\texttt{scan}} (префиксное накопление) для ассоциативной бинарной операции $\odot$ на множестве $S$ (то есть для \textbf{полугруппы} $(S, \odot)$) определяется как вычисление массива
+	\[
+	y_i = x_0 \odot x_1 \odot \cdots \odot x_i, \qquad i = 0, \dots, n-1.
+	\]
+\end{Definition}
+
+Схема Ладнера–Фишера работает для любой ассоциативной операции. Примеры допустимых операций $\odot$:
+\[
+(\mathbb{R},\, +), \quad
+(\mathbb{R},\, \min), \quad
+(\mathbb{R},\, \max), \quad
+(\mathbb{R}^{k \times k},\, \cdot) \text{ (умножение матриц)}.
+\]
+
+\subsection{Псевдокод \texttt{scan} (in-place, inclusive)}
+
+Ниже представлен алгоритм для $n = 2^m$. Он работает на исходном массиве \emph{на месте} (без дополнительной памяти) и состоит из двух проходов по уровням $d = 0, \dots, \log_2 n - 1$. На уровне $d$ массив мысленно разбит на блоки длины $2^{d+1}$; «правым концом» блока, начинающегося в позиции $k$, считается элемент $x[k + 2^{d+1} - 1]$. Для фиксированного $d$ все операции во внутреннем цикле по $k$ независимы и выполняются \emph{параллельно}.
+
+\begin{algorithm}[H]
+	\caption{\texttt{scan} (in-place, inclusive)}
+	\begin{algorithmic}[1]
+		\Require массив $x[0..n-1]$, $n = 2^m$
+		\Statex \textbf{Upsweep (свёртка):} в правом конце каждого блока копим сумму всего блока
+		\For{$d = 0$ \textbf{to} $\log_2 n - 1$} 
+		\For{$k = 0$ \textbf{to} $n-1$ \textbf{step} $2^{d+1}$} 
+		\State $x[k + 2^{d+1} - 1] \mathrel{+}= x[k + 2^d - 1]$ \Comment{правый конец блока $\mathrel{+}=$ правый конец его левой половины}
+		\EndFor
+		\EndFor
+		\Statex \emph{После upsweep в } $x[n-1]$ \emph{ лежит сумма всего массива.}
+		\Statex \textbf{Downsweep (развёртка):} раздаём накопленный слева префикс в левые подблоки
+		\For{$d = \log_2 n - 1$ \textbf{downto} $0$} 
+		\For{$k = 0$ \textbf{to} $n-1$ \textbf{step} $2^{d+1}$}
+		\If{$k > 0$} \Comment{у самого левого блока префикса слева нет}
+		\State $x[k + 2^d - 1] \mathrel{+}= x[k - 1]$ \Comment{в середину блока добавляем готовый префикс из $x[k-1]$}
+		\EndIf
+		\EndFor
+		\EndFor
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[
+		>=Stealth,
+		font=\small,
+		wire/.style={line width=0.9pt, gray!65},
+		op/.style={circle, draw=black, fill=white, thick, inner sep=0pt, minimum size=13pt},
+		add/.style={->, line width=0.9pt},
+		phase/.style={font=\small\itshape},
+		lvl/.style={font=\footnotesize, gray!55!black},
+		]
+		
+		%% spacing
+		\def\dx{1.5}
+		%% y-levels
+		\def\Ytop{0.5}
+		\def\Yu{0}      % upsweep d=0
+		\def\Yv{-1}     % upsweep d=1
+		\def\Yw{-2}     % upsweep d=2
+		\def\Yp{-3.2}   % downsweep d=1
+		\def\Yq{-4.2}   % downsweep d=0
+		\def\Ybot{-5.2}
+		
+		%% wires + index/output labels
+		\foreach \i in {0,...,7} {
+			\draw[wire] (\dx*\i,\Ytop) -- (\dx*\i,\Ybot);
+			\node[above] at (\dx*\i,\Ytop) {$x_{\i}$};
+			\node[below] at (\dx*\i,\Ybot) {$y_{\i}$};
+		}
+		
+		%% --- Upsweep d=0: dest 1,3,5,7 <- 0,2,4,6 ---
+		\foreach \s/\t in {0/1, 2/3, 4/5, 6/7} {
+			\draw[add] (\dx*\s,\Yu) -- (\dx*\t-0.18,\Yu);
+			\node[op] at (\dx*\t,\Yu) {$+$};
+		}
+		%% --- Upsweep d=1: dest 3<-1, 7<-5 ---
+		\foreach \s/\t in {1/3, 5/7} {
+			\draw[add] (\dx*\s,\Yv) -- (\dx*\t-0.18,\Yv);
+			\node[op] at (\dx*\t,\Yv) {$+$};
+		}
+		%% --- Upsweep d=2: dest 7<-3 ---
+		\draw[add] (\dx*3,\Yw) -- (\dx*7-0.18,\Yw);
+		\node[op] at (\dx*7,\Yw) {$+$};
+		
+		%% --- Downsweep d=1: dest 5<-3 ---
+		\draw[add] (\dx*3,\Yp) -- (\dx*5-0.18,\Yp);
+		\node[op] at (\dx*5,\Yp) {$+$};
+		%% --- Downsweep d=0: dest 2<-1, 4<-3, 6<-5 ---
+		\foreach \s/\t in {1/2, 3/4, 5/6} {
+			\draw[add] (\dx*\s,\Yq) -- (\dx*\t-0.18,\Yq);
+			\node[op] at (\dx*\t,\Yq) {$+$};
+		}
+		
+		%% phase labels (left)
+		\node[phase, rotate=90] at (-1.15,{(\Yu+\Yw)/2}) {upsweep};
+		\node[phase, rotate=90] at (-1.15,{(\Yp+\Yq)/2}) {downsweep};
+		
+		%% level labels (right)
+		\node[lvl] at (11.4,\Yu) {$d=0$};
+		\node[lvl] at (11.4,\Yv) {$d=1$};
+		\node[lvl] at (11.4,\Yw) {$d=2$};
+		\node[lvl] at (11.4,\Yp) {$d=1$};
+		\node[lvl] at (11.4,\Yq) {$d=0$};
+		
+		%% separating guide between phases
+		\draw[gray!40, dashed] (-1.6,{(\Yw+\Yp)/2}) -- (11.9,{(\Yw+\Yp)/2});
+		
+	\end{tikzpicture}
+	\caption{Алгоритм \texttt{scan} (in-place) для $n = 8$. Узлы $+$ — это операции $\mathrel{+}=$ из псевдокода: узел стоит на проводе-приёмнике, стрелка указывает прибавляемое слагаемое. Фаза \emph{upsweep} накапливает сумму всего массива в позиции $n-1$; фаза \emph{downsweep} раздаёт уже готовые префиксы в левые подблоки. После обеих фаз в позиции $i$ оказывается $y_i = x_0 + \dots + x_i$.}
+\end{figure}
+
+\subsection{Сведение к \texttt{scan}: линейная рекуррента}
+
+\begin{Example}{Рекуррента вида $c_{k+1} = a_k + b_k c_k$}{}
+	Даны числа $a_0, \dots, a_{n-1}$ и $b_0, \dots, b_{n-1}$. Требуется найти $c_0, \dots, c_n$ такие, что
+	\[
+	c_0 = 0, \qquad c_{k+1} = a_k + b_k\, c_k.
+	\]
+	
+	Определим строчный вектор $C_k = (1,\ c_k)$. Тогда
+	\[
+	C_{k+1} = C_k X_k, \qquad
+	X_k = \begin{pmatrix} 1 & a_k \\ 0 & b_k \end{pmatrix}.
+	\]
+	Отсюда
+	\[
+	C_1 = C_0 X_0, \quad
+	C_2 = C_0 X_0 X_1, \quad
+	C_3 = C_0 X_0 X_1 X_2, \quad \dots
+	\]
+	Таким образом, задача сводится к вычислению \textbf{префиксных произведений} матриц $X_0, X_1, \dots, X_{n-1}$. Поскольку умножение матриц ассоциативно, это делается через \texttt{scan} за $O(\log n)$ времени в параллельной модели.
+\end{Example}
+
+\begin{Remark}{}{}
+	В примере с матрицами при перемножении используются \emph{две} операции над элементами:
+	\[
+	(A \cdot B)_{ij} = \bigoplus_k (A_{ik} \odot B_{kj}).
+	\]
+	Поэтому обобщение работает не для одной операции, а для \textbf{полукольца} $(S, \oplus, \odot)$, в котором:
+	\begin{itemize}
+		\item $\oplus$ ассоциативна (обычно коммутативна) и имеет нейтральный элемент $0$;
+		\item $\odot$ ассоциативна и имеет нейтральный элемент $1$;
+		\item $\odot$ дистрибутивна относительно $\oplus$:
+		\[
+		a \odot (b \oplus c) = (a \odot b) \oplus (a \odot c), \qquad
+		(a \oplus b) \odot c = (a \odot c) \oplus (b \odot c);
+		\]
+		\item $0$ поглощает умножение: $0 \odot a = a \odot 0 = 0$.
+	\end{itemize}
+	Примеры полуколец $(S, \oplus, \odot)$:
+	\[
+	\bigl(\{0,1\},\ \vee,\ \wedge\bigr), \qquad
+	\bigl(\{0,1\},\ \oplus,\ \wedge\bigr), \qquad
+	\bigl(\mathbb{R} \cup \{+\infty\},\ \min,\ +\bigr).
+	\]
+\end{Remark}
+
+\subsection{Сумматор Ладнера–Фишера}
+
+\begin{Definition}{}{}
+	\textbf{Сумматор} — это вычислительная схема над булевыми операциями $(\vee, \wedge, \oplus, \neg, \dots)$, которая принимает на вход биты $x_0, \dots, x_{n-1}$ и $y_0, \dots, y_{n-1}$ и выдаёт биты $z_0, \dots, z_n$ такие, что $z = x + y$, где
+	\[
+	x = \sum_{k=0}^{n-1} x_k 2^k, \qquad
+	y = \sum_{k=0}^{n-1} y_k 2^k, \qquad
+	z = \sum_{k=0}^{n} z_k 2^k.
+	\]
+\end{Definition}
+
+\subsubsection*{Биты переноса и сведение к \texttt{scan}}
+
+Обозначим через $c_k$ перенос \emph{в} разряд $k$ (по определению $c_0 = 0$). Тогда для $k = 0, \dots, n-1$ выполняется \textbf{формула переноса}:
+\[
+c_{k+1} = (x_k \wedge y_k) \vee (x_k \wedge c_k) \vee (y_k \wedge c_k).
+\]
+Введём обозначения $a_k := x_k \wedge y_k$ и $b_k := x_k \vee y_k$. Тогда формула переноса принимает компактный вид $c_{k+1} = a_k \vee (b_k \wedge c_k)$. Если все переносы $c_0, \dots, c_n$ известны, ответ восстанавливается по формулам
+\[
+z_k = x_k \oplus y_k \oplus c_k \quad (k = 0, \dots, n-1), \qquad z_n = c_n.
+\]
+
+\textbf{Ключевая идея: сведение к \texttt{scan}.}
+Рекуррента $c_{k+1} = a_k \vee (b_k \wedge c_k)$ является аффинным преобразованием. Положим
+\[
+C_k = (1,\ c_k), \qquad
+X_k = \begin{pmatrix} 1 & a_k \\ 0 & b_k \end{pmatrix},
+\]
+где операции понимаются над булевым полукольцом $(\{0,1\},\ \vee,\ \wedge)$. Тогда $C_{k+1} = C_k X_k$, и задача нахождения всех переносов сводится к вычислению префиксных произведений
+\[
+C_k = C_0 X_0 X_1 \cdots X_{k-1},
+\]
+что выполняется через \texttt{scan} за $O(\log n)$ времени в параллельной модели.
+
+\subsection{Модель PRAM}
+
+\begin{Definition}{}{}
+	\textbf{PRAM} (Parallel Random Access Machine) — идеализированная модель параллельных вычислений:
+	\begin{itemize}
+		\item имеется общая глобальная память;
+		\item число процессоров теоретически не ограничено; каждый процессор является RAM-машиной с собственным номером $p = 1, 2, \dots$;
+		\item процессоры работают \textbf{синхронно}: за единицу времени каждый выполняет одну инструкцию.
+	\end{itemize}
+\end{Definition}
+
+\subsubsection*{Разрешение конфликтов доступа к памяти}
+
+Различают два режима для чтения и записи: \emph{concurrent} (одновременный доступ нескольких процессоров к одной ячейке разрешён) и \emph{exclusive} (одновременный доступ запрещён). Стандартные варианты модели:
+\[
+\text{CRCW PRAM}, \quad \text{CREW PRAM}, \quad \text{ERCW PRAM}, \quad \text{EREW PRAM}.
+\]
+В модели \textbf{CRCW} при одновременной записи нескольких процессоров в одну ячейку необходимо задать правило разрешения конфликта (например, \emph{arbitrary}: в ячейке остаётся одно из записанных значений).
+
+\begin{Definition}{}{}
+	\textbf{NC} — класс задач, которые решаются на PRAM за время $(\log n)^{O(1)}$ при использовании полиномиального числа процессоров $n^{O(1)}$, где $n$ — размер входа.
+\end{Definition}
+
+\subsection{\texttt{Scan} на $p$ процессорах в модели PRAM}
+
+Пусть дан массив $A[0..n-1]$ и $p$ процессоров. Разобьём массив на блоки длины $m = n/p$ (считаем $p \mid n$).
+
+\begin{enumerate}
+	\item Каждый процессор $i$ вычисляет \textbf{локальный \texttt{scan}} на своём блоке $A[im..(i+1)m-1]$ последовательно за время $O(m) = O(n/p)$. Обозначим сумму $i$-го блока через $T_i$.
+	
+	\item Вычисляем \textbf{\texttt{scan} по массиву блок-сумм} $T_0, T_1, \dots, T_{p-1}$ за время $O(\log p)$. Пусть
+	\[
+	P_i = \sum_{j=0}^{i-1} T_j
+	\]
+	— сумма всех предшествующих блоков (смещение для блока $i$).
+	
+	\item Каждый процессор прибавляет смещение $P_i$ ко всем элементам своего блока за время $O(n/p)$.
+\end{enumerate}
+
+\begin{Statement}{Время работы \texttt{scan} на $p$ процессорах}{}
+	Суммарное время составляет
+	\[
+	O\!\left(\frac{n}{p} + \log p\right).
+	\]
+	В частности, при $p = \Theta\!\left(\dfrac{n}{\log n}\right)$ получаем время $O(\log n)$.
+\end{Statement}
+
+\begin{Example}{Сортировка подсчётом (counting sort) в PRAM}{}
+	Дан массив $a[0..n-1]$, где $a[k] \in \{0, \dots, U\}$ при $U = O(1)$. Используем $p$ процессоров с блоками длины $m = n/p$.
+	
+	\begin{enumerate}
+		\item \textbf{Локальный подсчёт частот.} Процессор $i$ строит таблицу частот $c_i[0..U]$:
+		\[
+		c_i(x) = \#\{\, k \in [im,\, (i+1)m - 1] \mid a[k] = x \,\}.
+		\]
+		Время: $O(n/p)$.
+		
+		\item \textbf{Сборка и \texttt{scan}.} Формируем массив длины $(U+1)p$:
+		\[
+		C[xp + i] = c_i(x), \qquad x = 0, \dots, U,\ \ i = 0, \dots, p-1.
+		\]
+		Вычисляем \texttt{scan} по $C$ и получаем массив $P$.
+		
+		\item \textbf{Расстановка элементов.} Процессор $i$ знает, что элементы значения $x$ из его блока нужно поместить в позиции
+		\[
+		\bigl[\, P[xp + i] - c_i(x),\ P[xp + i] \,\bigr).
+		\]
+		Время: $O(n/p)$.
+	\end{enumerate}
+	
+	\paragraph{Итоговое время.}
+	Локальный подсчёт — $O(n/p)$; \texttt{scan} по массиву длины $(U+1)p$ — $O(\log p)$, так как $U = O(1)$. Итого:
+	\[
+	O\!\left(\frac{n}{p} + \log p\right).
+	\]
+\end{Example}

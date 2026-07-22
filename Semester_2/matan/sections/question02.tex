@@ -1,0 +1,133 @@
+% !TEX root = ../matan.tex
+
+\section{Интегральные неравенства: неравенство Иенсена}
+
+\begin{Definition}{Выпуклая (вниз) функция}{}
+	Функция $\vphi:\RR\to\RR$ называется \textbf{выпуклой вниз}, если для любых
+	$x,y\in\RR$ и любого $\lambda\in[0,1]$
+	\[
+	\vphi\bigl(\lambda x+(1-\lambda)y\bigr)\le \lambda\,\vphi(x)+(1-\lambda)\,\vphi(y).
+	\]
+	Геометрически: график функции лежит не выше любой своей хорды.
+\end{Definition}
+
+Нам понадобится дискретный вариант неравенства, который выражает то же
+свойство для произвольной выпуклой комбинации точек.
+
+\begin{Lemma}{Дискретное неравенство Иенсена}{}
+	Пусть $\vphi:\RR\to\RR$ выпукла вниз, $\alpha_1,\dots,\alpha_N\ge0$ и
+	$\sum_{k=1}^N\alpha_k=1$. Тогда для любых $x_1,\dots,x_N\in\RR$
+	\[
+	\vphi\!\left(\sum_{k=1}^N \alpha_k x_k\right)\le \sum_{k=1}^N \alpha_k\,\vphi(x_k).
+	\]
+\end{Lemma}
+
+\begin{proof}
+	Индукция по $N$. При $N=1$ имеем $\alpha_1=1$ и неравенство обращается в
+	равенство. При $N=2$ это в точности определение выпуклости.
+
+	Пусть утверждение верно для $N$ слагаемых; докажем для $N+1$. Пусть
+	$\alpha_1,\dots,\alpha_{N+1}\ge0$, $\sum_{k=1}^{N+1}\alpha_k=1$. Если
+	$\alpha_{N+1}=1$, то остальные нули и неравенство тривиально. Иначе положим
+	$s:=\sum_{k=1}^{N}\alpha_k=1-\alpha_{N+1}\in(0,1]$ и $\beta_k:=\alpha_k/s$;
+	тогда $\beta_k\ge0$ и $\sum_{k=1}^N\beta_k=1$. Обозначим
+	$y:=\sum_{k=1}^N\beta_k x_k$. По определению выпуклости (для двух точек $y$ и
+	$x_{N+1}$ с весами $s$ и $\alpha_{N+1}$, $s+\alpha_{N+1}=1$):
+	\[
+	\vphi\!\left(\sum_{k=1}^{N+1}\alpha_k x_k\right)
+	=\vphi\bigl(s\,y+\alpha_{N+1}x_{N+1}\bigr)
+	\le s\,\vphi(y)+\alpha_{N+1}\vphi(x_{N+1}).
+	\]
+	По предположению индукции $\vphi(y)\le\sum_{k=1}^N\beta_k\vphi(x_k)$, поэтому
+	\[
+	\vphi\!\left(\sum_{k=1}^{N+1}\alpha_k x_k\right)
+	\le s\sum_{k=1}^N\beta_k\vphi(x_k)+\alpha_{N+1}\vphi(x_{N+1})
+	=\sum_{k=1}^{N+1}\alpha_k\vphi(x_k),
+	\]
+	так как $s\beta_k=\alpha_k$. Шаг индукции завершён.
+\end{proof}
+
+\begin{Theorem}{Неравенство Иенсена (интегральная форма)}{}
+	Пусть $f,g$ интегрируемы по Риману на каждом $[c,d]\subset\langle a,b\rangle$,
+	причём соответствующие несобственные интегралы сходятся, и пусть
+	\[
+	g(x)\ge0,\qquad \int_a^b g(x)\,dx=1
+	\]
+	Пусть $\vphi:\RR\to\RR$ выпукла вниз.
+	Тогда
+	\[
+	\vphi\!\left(\int_a^b g(x)f(x)\,dx\right)
+	\le
+	\int_a^b \vphi\bigl(f(x)\bigr)\,g(x)\,dx.
+	\]
+	Иными словами, $\vphi$ от среднего не превосходит среднего от $\vphi$.
+
+	В частности, если $\langle a,b\rangle\subset\RR$ конечен, то, взяв
+	$g\equiv\frac{1}{b-a}$, получаем
+	\[
+	\vphi\!\left(\frac{1}{b-a}\int_a^b f(x)\,dx\right)
+	\le
+	\frac{1}{b-a}\int_a^b \vphi\bigl(f(x)\bigr)\,dx.
+	\]
+\end{Theorem}
+
+\begin{proof}
+	Воспользуемся ключевым свойством выпуклых функций: \emph{в каждой точке у
+	выпуклой функции есть опорная прямая}. Точнее, для выпуклой
+	$\vphi:\RR\to\RR$ в любой точке $c\in\RR$ существуют конечные односторонние
+	производные $\vphi'_-(c)\le\vphi'_+(c)$, и для любого
+	$m\in[\vphi'_-(c),\vphi'_+(c)]$ выполнено
+	\[
+	\vphi(y)\ge \vphi(c)+m\,(y-c)\qquad\forall\,y\in\RR. \tag{$\ast$}
+	\]
+	(Это прямое следствие выпуклости: разностное отношение
+	$\frac{\vphi(y)-\vphi(c)}{y-c}$ монотонно по $y$, поэтому для $y>c$ оно не
+	меньше $\vphi'_+(c)$, а для $y<c$ не больше $\vphi'_-(c)$; в обоих случаях
+	$(\ast)$ выполнено.)
+
+	Положим
+	\[
+	c:=\int_a^b g(x)f(x)\,dx
+	\]
+	 и выберем $m$ из
+	неравенства $(\ast)$ для этой точки $c$. Подставляя $y=f(x)$ в $(\ast)$,
+	имеем для всех $x$:
+	\[
+	\vphi\bigl(f(x)\bigr)\ge \vphi(c)+m\bigl(f(x)-c\bigr).
+	\]
+	Умножим обе части на $g(x)\ge0$ и
+	проинтегрируем по $\langle a,b\rangle$:
+	\[
+	\int_a^b \vphi\bigl(f(x)\bigr)g(x)\,dx
+	\ge
+	\vphi(c)\int_a^b g(x)\,dx + m\left(\int_a^b f(x)g(x)\,dx - c\int_a^b g(x)\,dx\right).
+	\]
+	Учитывая $\int_a^b g=1$ и $\int_a^b fg=c$, правая часть равна
+	\[
+	\vphi(c)\cdot1 + m\,(c-c\cdot1)=\vphi(c).
+	\]
+	Следовательно,
+	\[
+	\int_a^b \vphi\bigl(f(x)\bigr)g(x)\,dx\ge \vphi(c)
+	=\vphi\!\left(\int_a^b g(x)f(x)\,dx\right),
+	\]
+	что и требовалось. 
+\end{proof}
+
+\begin{Remark}{}{}
+	Дискретное неравенство из леммы --- частный случай интегрального: взяв
+	ступенчатые $f,g$ (т.е. сосредоточив "массу" $g$ в точках с весами
+	$\alpha_k$), из интегральной формы получаем
+	$\vphi\!\bigl(\sum\alpha_k x_k\bigr)\le\sum\alpha_k\vphi(x_k)$.
+\end{Remark}
+
+\begin{Example}{}{}
+	Для $\vphi(x)=e^{x}$ (выпукла вниз) и конечного отрезка $[a,b]$ неравенство
+	Иенсена даёт неравенство между средним геометрическим и средним
+	арифметическим в интегральной форме:
+	\[
+	\exp\!\left(\frac{1}{b-a}\int_a^b f\,dx\right)
+	\le
+	\frac{1}{b-a}\int_a^b e^{f(x)}\,dx.
+	\]
+\end{Example}

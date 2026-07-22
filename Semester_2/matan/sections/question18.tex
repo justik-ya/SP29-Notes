@@ -1,0 +1,69 @@
+% !TEX root = ../matan.tex
+
+\section{Ортогонализация линейно независимой системы.}
+
+\begin{Theorem}{Процесс ортогонализации Грама--Шмидта}{}
+	Пусть $\mathcal{H}$~--- гильбертово пространство, $\{f_k\}_{k \in \NN}$~--- линейно независимая система ненулевых векторов. Тогда существует система $\{\vphi_k\}_{k \in \NN}$ со свойствами:
+	\begin{enumerate}
+		\item $\{\vphi_k\}$~--- ортонормированная система в $\mathcal{H}$;
+		\item $\vphi_k = \sum_{j=1}^{k} \lambda_{jk} f_j$~--- линейная комбинация первых $k$ векторов $\{f_j\}$;
+		\item $f_k = \sum_{j=1}^{k} \tilde{\lambda}_{jk} \vphi_j$~--- линейная комбинация первых $k$ векторов $\{\vphi_j\}$.
+	\end{enumerate}
+	В частности, $\operatorname{span}\{\vphi_1, \ldots, \vphi_k\} = \operatorname{span}\{f_1, \ldots, f_k\}$ при каждом $k$.
+\end{Theorem}
+
+\begin{proof}
+	Строим $\{\vphi_k\}$ по индукции.
+
+	\textbf{База.} Так как $f_1 \neq 0$, положим $\vphi_1 := \dfrac{f_1}{\|f_1\|}$. Тогда $\|\vphi_1\| = 1$, и свойства 2--3 при $k = 1$ очевидны ($f_1 = \|f_1\|\,\vphi_1$).
+
+	\textbf{Переход.} Пусть уже построены $\vphi_1, \ldots, \vphi_{k-1}$, образующие ортонормированную систему, причём $\operatorname{span}\{\vphi_1, \ldots, \vphi_{k-1}\} = \operatorname{span}\{f_1, \ldots, f_{k-1}\}$. Покажем, как из $f_k$ получить $\vphi_k$.
+
+	Если требуемое представление $f_k = \sum_{j=1}^{k} \tilde{\lambda}_{jk}\vphi_j$ существует, то, скалярно умножая на $\vphi_{j_0}$ ($j_0 < k$) и пользуясь ортонормированностью $\vphi_1, \ldots, \vphi_{k-1}$, получаем
+	\[
+	\langle f_k, \vphi_{j_0}\rangle = \sum_{j=1}^{k-1} \tilde{\lambda}_{jk}\langle \vphi_j, \vphi_{j_0}\rangle + \tilde{\lambda}_{kk}\langle \vphi_k, \vphi_{j_0}\rangle = \tilde{\lambda}_{j_0 k},
+	\]
+	поскольку $\langle \vphi_j, \vphi_{j_0}\rangle = \delta_{j j_0}$ и (как мы хотим) $\vphi_k \perp \vphi_{j_0}$. Значит, коэффициенты обязаны быть
+	\[
+	\tilde{\lambda}_{jk} = \langle f_k, \vphi_j\rangle, \qquad j = 1, \ldots, k-1.
+	\]
+	Руководствуясь этим, определим вспомогательный вектор
+	\[
+	g_k := f_k - \sum_{j=1}^{k-1} \langle f_k, \vphi_j\rangle\, \vphi_j.
+	\]
+
+	\emph{$g_k \neq 0$.} В противном случае $f_k = \sum_{j=1}^{k-1}\langle f_k, \vphi_j\rangle \vphi_j \in \operatorname{span}\{\vphi_1, \ldots, \vphi_{k-1}\} = \operatorname{span}\{f_1, \ldots, f_{k-1}\}$, что противоречит линейной независимости системы $\{f_k\}$. 
+	Поэтому корректно положить
+	\[
+	\vphi_k := \frac{g_k}{\|g_k\|}, \qquad \tilde{\lambda}_{kk} := \|g_k\| \neq 0.
+	\]
+
+	Проверим свойства 1--3 для набора $\vphi_1, \ldots, \vphi_k$.
+
+	\textbf{(1) Ортонормированность.} По построению $\|\vphi_k\| = 1$. Для $j_0 < k$
+	\[
+	\langle g_k, \vphi_{j_0}\rangle
+	= \langle f_k, \vphi_{j_0}\rangle - \sum_{j=1}^{k-1} \langle f_k, \vphi_j\rangle \langle \vphi_j, \vphi_{j_0}\rangle
+	= \langle f_k, \vphi_{j_0}\rangle - \langle f_k, \vphi_{j_0}\rangle = 0,
+	\]
+	так как $\langle \vphi_j, \vphi_{j_0}\rangle = \delta_{j j_0}$. Поэтому $\vphi_k = g_k/\|g_k\| \perp \vphi_{j_0}$, и вместе с индуктивным предположением вся система $\vphi_1, \ldots, \vphi_k$ ортонормированна.
+
+	\textbf{(3) Представление $f_k$.} Прямо из определения $g_k$:
+	\[
+	f_k = g_k + \sum_{j=1}^{k-1}\langle f_k, \vphi_j\rangle \vphi_j
+	= \|g_k\|\,\vphi_k + \sum_{j=1}^{k-1}\langle f_k, \vphi_j\rangle \vphi_j
+	= \sum_{j=1}^{k} \tilde{\lambda}_{jk}\,\vphi_j.
+	\]
+
+	\textbf{(2) Представление $\vphi_k$.} Имеем
+	\[
+	\vphi_k = \frac{1}{\|g_k\|}\Bigl( f_k - \sum_{j=1}^{k-1}\langle f_k, \vphi_j\rangle \vphi_j \Bigr).
+	\]
+	По индуктивному предположению каждый $\vphi_j$ ($j < k$) есть линейная комбинация $f_1, \ldots, f_{k-1}$; подставляя, получаем, что $\vphi_k$~--- линейная комбинация $f_1, \ldots, f_k$, то есть $\vphi_k = \sum_{j=1}^{k}\lambda_{jk} f_j$.
+
+	Свойства 2 и 3 при всех $k$ дают равенство линейных оболочек $\operatorname{span}\{\vphi_1, \ldots, \vphi_k\} = \operatorname{span}\{f_1, \ldots, f_k\}$. Индукция завершена.
+\end{proof}
+
+\begin{Remark}{}{}
+	Геометрически $g_k$~--- это «остаток» вектора $f_k$ после вычитания его ортогональной проекции на $\operatorname{span}\{\vphi_1, \ldots, \vphi_{k-1}\}$; нормируя $g_k$, получаем очередной орт. Применённый к полной линейно независимой системе, процесс даёт ортонормированный базис (вопрос~17).
+\end{Remark}

@@ -1,0 +1,46 @@
+% !TEX root = ../algebra_02.tex
+
+\section{Линейные отображения. Примеры. Свойство универсальности базиса. Ядро и образ}
+
+\begin{Definition}{Линейное отображение}{}
+	Пусть $V, W$~--- линейные пространства над полем $K$.
+	Отображение $\mathcal{A} \colon V \longrightarrow W$ называется \textbf{линейным}, если
+	\[
+	\forall\, v_1, v_2 \in V,\quad \forall\, \lambda_1, \lambda_2 \in K \colon
+	\qquad
+	\mathcal{A}(\lambda_1 v_1 + \lambda_2 v_2) = \lambda_1\,\mathcal{A}v_1 + \lambda_2\,\mathcal{A}v_2.
+	\]
+\end{Definition}
+
+Это равносильно выполнению двух свойств: аддитивности ($\mathcal{A}(v_1 + v_2) = \mathcal{A}v_1 + \mathcal{A}v_2$) и однородности ($\mathcal{A}(\lambda v) = \lambda\,\mathcal{A}v$).
+Множество всех линейных отображений из $V$ в $W$ обозначается $\mathrm{Hom}(V, W)$.
+
+\begin{Example}{Примеры линейных отображений}{}
+	\begin{enumerate}
+		\item Нулевое отображение: $0 \colon V \to W$, $v \mapsto 0$.
+		\item Гомотетия (растяжение): $\lambda\,\mathrm{id}_V \colon V \to V$, $v \mapsto \lambda v$.
+		\item Умножение на матрицу: $A \cdot \colon K^{n \times p} \to K^{m \times p}$, $B \mapsto AB$ для $A \in K^{m \times n}$.
+		\item Дифференцирование многочленов: $D \colon K[x] \to K[x]$, $D(f) = f'$. 
+	\end{enumerate}
+\end{Example}
+
+Линейное отображение полностью и однозначно определяется своими значениями на базисных векторах.
+
+\begin{Proposition}{Свойство универсальности базиса}{}
+	Пусть $V$, $W$~--- пространства над $K$, $\;(e_1, \ldots, e_n)$~--- базис $V$,
+	и $w_1, \ldots, w_n \in W$~---  произвольный набор векторов. Тогда
+	\[
+	\exists!\; \mathcal{A} \in \mathrm{Hom}(V, W) \colon \mathcal{A}(e_j) = w_j \quad \forall\, j.
+	\]
+\end{Proposition}
+\begin{proof}
+	\textit{Существование.} Зададим $\mathcal{A}$ на произвольном векторе $v = \sum \alpha_i e_i$ формулой $\mathcal{A}(v) = \sum \alpha_i w_i$. Очевидно $\mathcal{A}(e_j) = w_j$. Линейность проверяется напрямую.\\
+	\textit{Единственность.} Если $\mathcal{A}'$ --- другое линейное отображение с $\mathcal{A}'(e_j) = w_j$, то $\mathcal{A}'(\sum \alpha_i e_i) = \sum \alpha_i \mathcal{A}'(e_i) = \sum \alpha_i w_i = \mathcal{A}(v)$, следовательно $\mathcal{A} = \mathcal{A}'$.
+\end{proof}
+
+\begin{Definition}{Ядро и образ}{}
+  $\Ker\mathcal{A} := \{\, v \in V \mid \mathcal{A}v = 0_W \,\}$ --- \textbf{ядро} линейного отображения $\mathcal{A}$.
+  
+ $\Im\mathcal{A} := \{\, w \in W \mid \exists\, v \in V \colon \mathcal{A}v = w \,\}$ --- 	\textbf{образ} линейного отображения $\mathcal{A}$.
+\end{Definition}
+Оба множества являются подпространствами: $\Ker\mathcal{A} \leq V$, $\Im\mathcal{A} \leq W$. Действительно, если $v_1, v_2 \in \Ker\mathcal{A}$, то $\mathcal{A}(\lambda_1v_1 + \lambda_2v_2) = \lambda_1\cdot0 + \lambda_2\cdot0 = 0$. Аналогично для $\Im\mathcal{A}$.

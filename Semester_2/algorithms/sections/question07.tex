@@ -1,0 +1,249 @@
+% !TEX root = ../algorithms.tex
+
+\section{Задача линейного программирования. Допустимые и оптимальные решения. Стандартная и каноническая формы. Существование оптимального решения (без доказательства). Лемма Фаркаша.}
+
+\subsection{Постановка задачи}
+
+\begin{Definition}{Задача линейного программирования (стандартная форма)}{}
+	\[
+	\max \; c^T x
+	\quad \text{при} \quad
+	Ax \le b,
+	\]
+	где $A \in \RR^{m \times n}$, $b \in \RR^m$, $c \in \RR^n$. Неравенство $Ax \le b$ понимается покомпонентно: $(Ax)_i \le b_i$ для всех $i = 1, \dots, m$.
+\end{Definition}
+
+\begin{Definition}{Каноническая форма}{}
+	\[
+	\min \; c^T x
+	\quad \text{при} \quad
+	Ax = b,\quad x \ge 0.
+	\]
+\end{Definition}
+
+Обе формы эквивалентны; стандартная является удобной для теоретических рассуждений, каноническая --- для алгоритмов.
+
+\subsection{Эквивалентные преобразования}
+
+\begin{itemize}
+	\item $\min\; c^T x \;\Longleftrightarrow\; \max\; (-c)^T x$.
+	\item $a_k^T x \ge b_k \;\Longleftrightarrow\; {-a_k^T x \le -b_k}$.
+	\item $a_k^T x = b_k \;\Longleftrightarrow\; \bigl\{a_k^T x \le b_k,\; {-a_k^T x \le -b_k}\bigr\}$.
+	\item Свободная переменная $x_j$ заменяется разностью $x_j = x_j^+ - x_j^-$, где $x_j^+, x_j^- \ge 0$.
+	\item Неравенство $a_k^T x \le b_k$ заменяется равенством $a_k^T x + s_k = b_k$, $s_k \ge 0$ (добавочная переменная; её смысл --- остаток ресурса до границы ограничения).
+\end{itemize}
+
+\paragraph{Каноническая форма из стандартной.}
+Дана задача $\max\; c^T x$, $Ax \le b$.
+\begin{enumerate}
+	\item Меняем знак: $\min\; (-c)^T x$.
+	\item Каждое неравенство $a_k^T x \le b_k$ заменяем равенством $a_k^T x + s_k = b_k$, $s_k \ge 0$.
+	\item Каждую переменную $x_j$ заменяем $x_j^+ - x_j^-$, $x_j^+, x_j^- \ge 0$.
+\end{enumerate}
+
+\paragraph{Стандартная форма из канонической.}
+Дана задача $\min\; c^T x$, $Ax = b$, $x \ge 0$.
+Каждое равенство $a_k^T x = b_k$ заменяем парой $a_k^T x \le b_k$ и $-a_k^T x \le -b_k$.
+Условие $x \ge 0$ записывается как $-x \le 0$.
+
+\subsection{Допустимые и оптимальные решения}
+
+\begin{Definition}{Множество допустимых решений}{}
+	Множество
+	\[
+	P = \{x \in \RR^n : Ax \le b\}
+	\]
+	называется \textbf{множеством допустимых решений}. Оно является \textbf{выпуклым}:
+	\[
+	\forall x, y \in P \ \forall \lambda \in (0,1)\colon \lambda x + (1-\lambda)y \in P.
+	\]
+	Это следует из того, что $P$ есть пересечение полупространств $\{x : a_k^T x \le b_k\}$, а каждое полупространство выпукло.
+\end{Definition}
+
+\begin{Definition}{Оптимальное решение}{}
+	Точка $x^* \in P$ называется \textbf{оптимальным решением}, если $x^* \in \arg\max_{x \in P} c^T x$.
+\end{Definition}
+
+\begin{Definition}{Ограниченность}{}
+	Задача называется \textbf{ограниченной}, если $P \ne \varnothing$ и
+	\[
+	\exists M \in \RR \; \forall x \in P\colon c^T x \le M
+	\]
+	(для задачи на максимум; для минимума аналогично $c^T x \ge M$).
+\end{Definition}
+
+\subsection{Вершины}
+
+\begin{Definition}{Вершина}{}
+	Точка $z \in P$ называется \textbf{вершиной}, если её нельзя представить в виде нетривиальной выпуклой комбинации двух различных точек из $P$:
+	\[
+	\nexists\, y, z' \in P,\; y \ne z',\; \nexists\, \lambda \in (0,1)\colon z = \lambda y + (1-\lambda)z'.
+	\]
+\end{Definition}
+
+Интуитивно, если задача ограничена, то оптимальное решение достигается в одной из вершин $P$.
+
+\begin{Theorem}{}{}
+	Если задача линейного программирования ограничена, то её оптимум достигается.
+\end{Theorem}
+
+Количество вершин может быть экспоненциальным, поэтому простой перебор вершин неэффективен.
+
+\begin{Example}{}{}
+	$n$-мерный куб $\{0 \le x_i \le 1 : i = 1,\dots,n\}$ задаётся $2n$ неравенствами и имеет $2^n$ вершин.
+\end{Example}
+
+\subsection{Лемма Фаркаша}
+
+\begin{Theorem}{Лемма Фаркаша}{}
+	Для любых $A \in \RR^{m \times n}$, $c \in \RR^n$ выполняется ровно одно из двух условий:
+	\begin{enumerate}
+		\item $\exists\, y \ge 0\colon A^T y = c$;
+		\item $\exists\, z \in \RR^n\colon Az \le 0 \ \text{и} \ c^T z > 0$.
+	\end{enumerate}
+\end{Theorem}
+
+\subsubsection*{Геометрическая интерпретация}
+
+Обозначим строки матрицы $A$ через $a_1^T, \dots, a_m^T$. Тогда $K = \{A^T y : y \ge 0\}$ --- конус, натянутый на векторы $a_1, \dots, a_m$ (все их неотрицательные линейные комбинации). Условие (1) равносильно $c \in K$. Если $c \notin K$, то существует гиперплоскость $\{x : x^T z = 0\}$, отделяющая $c$ от $K$: каждое $a_i^T z \le 0$ (то есть $Az \le 0$), а $c^T z > 0$.
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[
+		>=Stealth, font=\small,
+		cone/.style={fill=gray!15},
+		ray/.style={gray!55, line width=0.6pt},
+		vec/.style={->, line width=1pt},
+		cc/.style={red!70!black},
+		zz/.style={blue!60!black},
+		lbl/.style={font=\small},
+		slbl/.style={font=\footnotesize, gray!50!black},
+		]
+		%% --- Panel 1: c in K ---
+		\coordinate (O) at (0,0);
+		\coordinate (a1) at (3,1.8);
+		\coordinate (a2) at (3,-0.6);
+		\fill[cone] (O) -- (a1) -- (a2) -- cycle;
+		\draw[ray] (O)--(a1); \draw[ray] (O)--(a2);
+		\draw[vec] (O)--($(O)!0.8!(a1)$) node[right,lbl]{$a_1$};
+		\draw[vec] (O)--($(O)!0.8!(a2)$) node[right,lbl]{$a_2$};
+		\draw[vec,cc] (O)--(2.5,0.7) node[above right,lbl,cc]{$c$};
+		\filldraw (O) circle(1.2pt); \node[below left,slbl] at (O){$O$};
+		\node[lbl] at (1.5,-1.5){$c\in K \ \Rightarrow\ $ условие (1)};
+		
+		%% --- Panel 2: c not in K ---
+		\coordinate (P) at (8,0);
+		\coordinate (b1) at (11,1.6);
+		\coordinate (b2) at (11,-0.4);
+		\fill[cone] (P) -- (b1) -- (b2) -- cycle;
+		\draw[ray] (P)--(b1); \draw[ray] (P)--(b2);
+		\draw[vec] (P)--($(P)!0.8!(b1)$) node[right,lbl]{$a_1$};
+		\draw[vec] (P)--($(P)!0.8!(b2)$) node[right,lbl]{$a_2$};
+		\draw[vec,cc] (P)--(7.6,2.1) node[above,lbl,cc]{$c$};
+		\draw[zz, dashed, line width=0.9pt] (6.4,-0.96)--(10.4,1.44)
+		node[above right,slbl]{$\{x:x^Tz=0\}$};
+		\draw[vec,zz] (P)--(7.1,1.4) node[left,lbl,zz]{$z$};
+		\filldraw (P) circle(1.2pt); \node[below left,slbl] at (P){$O$};
+		\node[lbl] at (9.5,-1.5){$c\notin K \ \Rightarrow\ $ условие (2)};
+	\end{tikzpicture}
+	\caption{Дихотомия леммы Фаркаша. Слева: $c$ лежит в конусе $K=\{A^Ty:y\ge0\}$, то есть $c$ --- неотрицательная комбинация строк $A$ (условие (1)). Справа: $c\notin K$; тогда конус и $c$ разделяет гиперплоскость с нормалью $z$, для которой все $a_i^Tz\le0$ (конус по одну сторону), а $c^Tz>0$ (условие (2)).}
+\end{figure}
+
+\subsubsection*{Доказательство}
+
+\textbf{Условия (1) и (2) не могут выполняться одновременно.}
+Если $A^T y = c$, $y \ge 0$ и $Az \le 0$, то $c^T z = (A^T y)^T z = y^T (Az) \le 0$, что противоречит $c^T z > 0$.
+
+\textbf{Если (1) не выполнено, то выполнено (2).}
+
+Рассмотрим конус $K = \{A^T y : y \ge 0\}$. Предположим, что $c \notin K$.
+
+Выберем точку $\delta \in K$, ближайшую к $c$:
+\[
+|\delta - c| = \inf_{u \in K} |u - c|.
+\]
+Существование $\delta$ получается стандартным предельным переходом: берём $\delta_k \in K$ с $|c - \delta_k| \le \inf |c - u| + 1/k$, выделяем сходящуюся подпоследовательность, используем замкнутость $K$.
+
+Положим $z = c - \delta$. В двумерном подпространстве $\mathrm{Lin}(c, \delta)$ из элементарной геометрии следует, что $z$ ортогонален опорной прямой к конусу $K$ в точке $\delta$:
+\[
+\delta^T z = 0, \qquad c^T z > 0.
+\]
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[
+		>=Stealth, font=\small,
+		cone/.style={fill=gray!15},
+		ray/.style={gray!55, line width=0.6pt},
+		vec/.style={->, line width=1pt},
+		cc/.style={red!70!black},
+		zz/.style={blue!60!black},
+		lbl/.style={font=\small},
+		slbl/.style={font=\footnotesize, gray!50!black},
+		]
+		\coordinate (O) at (0,0);
+		\coordinate (a1) at (3.4,1.5);
+		\coordinate (a2) at (3.4,-0.7);
+		\fill[cone] (O)--(a1)--(a2)--cycle;
+		\draw[ray] (O)--(a1) node[right,lbl]{$a_1$};
+		\draw[ray] (O)--(a2) node[right,lbl]{$a_2$};
+		\coordinate (D) at (1.7,0.75);
+		\coordinate (C) at (0.8,2.6);
+		\draw[vec,cc] (O)--(C) node[above,lbl,cc]{$c$};
+		\draw[vec,zz] (D)--(C) node[midway,right,slbl,zz]{$z=c-\delta$};
+		\filldraw (D) circle(1.7pt) node[below right,slbl]{$\delta$};
+		%% right-angle marker between cone ray and z at delta
+		\draw[gray!60, line width=0.5pt]
+		(1.846,0.814) -- (1.776,0.958) -- (1.630,0.894);
+		\filldraw (O) circle(1.2pt) node[below left,slbl]{$O$};
+		\node[slbl] at (1.9,-1.0){$\delta^Tz=0,\quad c^Tz>0$};
+	\end{tikzpicture}
+	\caption{Ближайшая к $c$ точка конуса $\delta$ и вектор $z=c-\delta$. Поскольку $\delta$ --- проекция $c$ на $K$, вектор $z$ ортогонален опорной прямой конуса в точке $\delta$, откуда $\delta^Tz=0$ и $c^Tz>0$.}
+\end{figure}
+
+Докажем, что $Az \le 0$, то есть $a_i^T z \le 0$ для всех $i$.
+
+Предположим противное: для некоторого $k$ выполнено $a_k^T z > 0$. Так как $\delta \in K$ и $a_k \in K$, весь отрезок
+\[
+[a_k, \delta] = \{\lambda a_k + (1-\lambda)\delta : \lambda \in [0,1]\}
+\]
+лежит в $K$. Из условий $\delta^T z = 0$ и $a_k^T z > 0$ следует, что точки отрезка $[a_k, \delta)$ лежат по положительную сторону гиперплоскости $\{x : x^T z = 0\}$. Из геометрии в подпространстве $\mathrm{Lin}(c, \delta, a_k)$ найдётся точка $\delta' \in [a_k, \delta]$ с $|c - \delta'| < |c - \delta|$, что противоречит выбору $\delta$ как ближайшей точки.
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[
+		>=Stealth, font=\small,
+		ray/.style={gray!55, line width=0.6pt},
+		vec/.style={->, line width=1pt},
+		cc/.style={red!70!black},
+		zz/.style={blue!60!black},
+		seg/.style={black, line width=1.1pt},
+		lbl/.style={font=\small},
+		slbl/.style={font=\footnotesize, gray!50!black},
+		]
+		\coordinate (O) at (0,0);
+		\coordinate (D) at (1.0,0.9);
+		\coordinate (AK) at (2.8,0.2);
+		\coordinate (C) at (-0.2,2.6);
+		\coordinate (Dp) at ($(D)!0.45!(AK)$);
+		\draw[zz, dashed, line width=0.9pt] (-0.6,-1.05)--(3.3,1.7)
+		node[right,slbl]{$x^Tz=0$};
+		\draw[ray] (O)--(2.4,2.0) node[above right,lbl]{$a_1$};
+		\draw[ray] (O)--(3.0,0.1) node[below right,lbl]{$a_k$};
+		\draw[seg] (AK)--(D);
+		\filldraw (AK) circle(1.6pt);
+		\filldraw (D) circle(1.6pt) node[above left,slbl]{$\delta$};
+		\filldraw[cc] (Dp) circle(1.9pt) node[below,slbl]{$\delta'$};
+		\draw[vec,cc] (O)--(C) node[above,lbl,cc]{$c$};
+		\draw[cc, dashed, line width=0.5pt] (C)--(D) node[midway,left,slbl]{$|c-\delta|$};
+		\draw[gray!55, dashed, line width=0.5pt] (C)--(Dp) node[midway,right,slbl]{$|c-\delta'|$};
+		\draw[vec,zz] (D)--($(D)!0.5!(C)$) node[right,slbl,zz]{$z$};
+		\filldraw (O) circle(1.2pt) node[below left,slbl]{$O$};
+		\node[slbl] at (1.7,-0.95){$|c-\delta'|<|c-\delta|$ --- противоречие};
+	\end{tikzpicture}
+	\caption{Шаг от противного. Если бы какой-то $a_k$ давал $a_k^Tz>0$, то отрезок $[a_k,\delta]\subset K$ заходил бы на положительную сторону гиперплоскости, и нашлась бы точка $\delta'$ конуса ближе к $c$, чем $\delta$, --- противоречие с минимальностью $\delta$.}
+\end{figure}
+
+Следовательно, $a_i^T z \le 0$ для всех $i$, то есть $Az \le 0$.
+
+Вместе с $c^T z > 0$ это и даёт условие (2). \qed

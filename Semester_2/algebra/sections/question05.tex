@@ -1,0 +1,51 @@
+% !TEX root = ../algebra_02.tex
+
+\section{Ранг произведения матриц. Связь ранга с \\ PDQ-разложением}
+
+\subsection{Ранг произведения матриц}
+
+\begin{Theorem}{Неравенства для рангов}{}
+	Для матриц $A \in k^{m \times n}$, $B \in k^{n \times p}$:
+	\begin{enumerate}
+		\item $\mathrm{rk}(A + B) \leq \mathrm{rk}(A) + \mathrm{rk}(B)$.
+		\item $\mathrm{rk}(AB) \leq \min(\mathrm{rk}(A),\, \mathrm{rk}(B))$.
+		\item Если $U \in GL_m(k)$, то $\mathrm{rk}(UA) = \mathrm{rk}(A)$. Если $V \in GL_n(k)$, то $\mathrm{rk}(AV) = \mathrm{rk}(A)$.
+	\end{enumerate}
+\end{Theorem}
+
+\begin{proof}
+	\begin{enumerate}
+		\item Пункт 1 следует из $\mathrm{Lin}(A+B) \subseteq \mathrm{Lin}(A) + \mathrm{Lin}(B)$.
+		\item По определению матричного умножения, каждый столбец матрицы $AB$ является линейной комбинацией столбцов матрицы $A$. Поэтому столбцы $AB$ лежат в линейной оболочке столбцов $A$, откуда $\mathrm{rk}(AB) \leq \mathrm{rk}(A)$.
+		Оценка $\mathrm{rk}(AB) \leq \mathrm{rk}(B)$ следует из операции транспонирования: 
+		\[
+		\mathrm{rk}(AB) = \mathrm{rk}((AB)^T) = \mathrm{rk}(B^T A^T) \leq \mathrm{rk}(B^T) = \mathrm{rk}(B).
+		\]
+		Объединяя два неравенства, получаем $\mathrm{rk}(AB) \leq \min(\mathrm{rk}(A),\, \mathrm{rk}(B))$.
+		
+		\item Это следствие пункта 2: $\mathrm{rk}(UA) \leq \mathrm{rk}(A)$. С другой стороны, так как $U$ обратима, мы можем записать $A = U^{-1}(UA)$, откуда $\mathrm{rk}(A) \leq \mathrm{rk}(UA)$. Следовательно, $\mathrm{rk}(UA) = \mathrm{rk}(A)$.
+		Аналогично, $\mathrm{rk}(AV) \leq \mathrm{rk}(A)$ и $\mathrm{rk}(A) = \mathrm{rk}((AV)V^{-1}) \leq \mathrm{rk}(AV)$, поэтому $\mathrm{rk}(AV) = \mathrm{rk}(A)$.
+	\end{enumerate}
+\end{proof}
+
+\subsection{Связь ранга с PDQ-разложением}
+
+\begin{Theorem}{PDQ-разложение и ранг}{}
+	Любая матрица $A \in k^{m \times n}$ ранга $r$ допускает представление в виде
+	\[
+	A = P D Q,
+	\]
+	где $P \in GL_m(k)$ и $Q \in GL_n(k)$ — обратимые матрицы, а матрица $D \in k^{m \times n}$ имеет нормальный блочный вид
+	\[
+	D = \begin{pmatrix} E_r & 0 \\ 0 & 0 \end{pmatrix},
+	\]
+	где $E_r$ — единичная матрица порядка $r$. Ранг матрицы $A$ в точности равен размеру блока $E_r$.
+\end{Theorem}
+
+\begin{proof}
+	Матрицу $A$ можно элементарными преобразованиями строк и столбцов привести к окаймлённой единичной матрице $D = \begin{pmatrix} E_r & 0 \\ 0 & 0 \end{pmatrix}$. 
+	Каждое элементарное преобразование строк равносильно умножению слева на некоторую обратимую матрицу, а преобразование столбцов — умножению справа. Следовательно, существуют обратимые матрицы $U \in GL_m(k)$ и $V \in GL_n(k)$ такие, что $U A V = D$. 
+	
+	Отсюда выражается сама матрица: $A = U^{-1} D V^{-1}$. Полагая $P = U^{-1}$ и $Q = V^{-1}$, получаем искомое разложение $A = P D Q$.
+	Поскольку умножение на обратимые матрицы не меняет ранг, $\mathrm{rk}(A) = \mathrm{rk}(D)$. Ранг матрицы $D$ равен количеству единиц на главной диагонали, то есть $r$. Таким образом, ранг неразрывно связан с размером единичного блока в PDQ-разложении.
+\end{proof}

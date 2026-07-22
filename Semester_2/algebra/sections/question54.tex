@@ -1,0 +1,43 @@
+% !TEX root = ../algebra_02.tex
+
+\section{Свободная группа, аксиоматическое определение}
+
+\begin{Definition}{Свободная группа}{}
+	Пусть $F$ — группа, $f_1, \dots, f_n$ — её элементы.
+	Группа $F$ называется свободной со свободными образующими $f_1, \dots, f_n$, если выполняется следующее универсальное свойство: для любой группы $G$ и любых элементов $g_1, \dots, g_n \in G$ существует единственный гомоморфизм $\varphi: F \to G$ такой, что $\varphi(f_i) = g_i$ для $i = 1, \dots, n$.
+\end{Definition}
+
+\begin{Example}{Свободная группа с одним образующим}{}
+	Группа целых чисел $\mathbb{Z}$ является свободной группой со свободным образующим $1$.
+	Действительно, для любого $g \in G$ существует гомоморфизм $\varphi: \mathbb{Z} \to G$, заданный правилом $k \mapsto g^k$, при котором $1 \mapsto g$.
+\end{Example}
+
+\begin{Proposition}{Единственность свободной группы}{}
+	Пусть $F$ и $F'$ — свободные группы со свободными образующими $f_1, \dots, f_n$ и $f_1', \dots, f_n'$ соответственно.
+	Тогда существует единственный изоморфизм $\varepsilon: F \to F'$ такой, что $\varepsilon(f_i) = f_i'$ для $i = 1, \dots, n$.
+\end{Proposition}
+
+\begin{proof}
+	По определению свободной группы существует единственный гомоморфизм $\varepsilon: F \to F'$ с требуемым свойством $\varepsilon(f_i) = f_i'$.
+	Аналогично, в обратную сторону существует единственный гомоморфизм $\varepsilon': F' \to F$ такой, что $\varepsilon'(f_i') = f_i$ для $i = 1, \dots, n$.
+	Рассмотрим композицию $\varepsilon' \circ \varepsilon: F \to F$. Для образующих имеем:
+	\[ (\varepsilon' \circ \varepsilon)(f_i) = f_i, \quad i = 1, \dots, n \]
+	Тождественное отображение $id_F: F \to F$ также удовлетворяет условию $id_F(f_i) = f_i$.
+	Из единственности гомоморфизма следует, что $\varepsilon' \circ \varepsilon = id_F$.
+
+	Аналогично показывается, что $\varepsilon \circ \varepsilon' = id_{F'}$.
+	Поскольку гомоморфизм $\varepsilon$ обратим, он является изоморфизмом.
+\end{proof}
+
+\begin{Proposition}{Представление конечно порожденной группы}{}
+	Пусть группа $G = \langle g_1, \dots, g_n \rangle$ конечно порождена, а $F$ — свободная группа с $n$ свободными образующими.
+	Тогда существует нормальная подгруппа $N \triangleleft F$ такая, что $G \cong F/N$.
+\end{Proposition}
+
+\begin{proof}
+	Пусть $f_1, \dots, f_n$ — свободные образующие группы $F$. По определению свободной группы существует гомоморфизм $\varphi: F \to G$, переводящий $f_i \mapsto g_i$.
+	Так как $g_1, \dots, g_n \in \operatorname{Im} \varphi$, а эти элементы порождают $G$, получаем, что $\langle g_1, \dots, g_n \rangle \subset \operatorname{Im} \varphi$, следовательно, $\operatorname{Im} \varphi = G$.
+	По теореме о гомоморфизме:
+	\[ \operatorname{Im} \varphi \cong F / \ker \varphi \]
+	Поскольку $\operatorname{Im} \varphi = G$, достаточно положить $N = \ker \varphi$.
+\end{proof}

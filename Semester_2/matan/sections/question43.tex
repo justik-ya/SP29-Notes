@@ -1,0 +1,99 @@
+% !TEX root = ../matan.tex
+
+\section{Вторая теорема (Юнга) о равенстве частных производных}
+
+\subsection*{Постановка}
+
+Теорема Юнга даёт условие равенства смешанных производных, отличное от условия
+Шварца: вместо непрерывности \emph{вторых} (смешанных) производных требуется
+\emph{дифференцируемость первых} производных в рассматриваемой точке. 
+
+\begin{Theorem}{Юнга}{}
+	Пусть $f\colon\Omega\to\RR$, $x$ --- внутренняя точка $\Omega$. Если частные
+	производные $\partial_j f$ и $\partial_k f$ определены в некоторой окрестности
+	$B(x,\eps)\subset\Omega$ и дифференцируемы в точке $x$, то
+	\[
+	\partial_j\partial_k f(x)=\partial_k\partial_j f(x).
+	\]
+\end{Theorem}
+
+\begin{proof}
+	Без ограничения общности $d=2$, $j=1$, $k=2$ (прочие координаты фиксированы).
+	Как и в теореме Шварца, рассмотрим приращение по прямоугольнику со сторонами
+	$\theta_1,\theta_2$:
+	\[
+	A:=f(x_1+\theta_1,\,x_2+\theta_2)
+	- f(x_1+\theta_1,\,x_2)
+	- f(x_1,\,x_2+\theta_2)
+	+ f(x_1,\,x_2).
+	\]
+	Чтобы рассуждения были симметричны, будем считать $\theta_1=\theta_2=\theta$ и
+	устремим $\theta\to 0$ (этого достаточно: ниже обе величины окажутся пределами
+	одного и того же отношения $A/\theta^2$).
+
+	\textbf{Способ 1} (Лагранж по $x_1$, затем дифференцируемость $\partial_1 f$).
+	Введём $\Phi(\sigma):=f(\sigma,x_2+\theta)-f(\sigma,x_2)$, тогда
+	$A=\Phi(x_1+\theta)-\Phi(x_1)$. Функция $\Phi$ дифференцируема по $\sigma$, поэтому
+	по теореме Лагранжа существует $t$ между $x_1$ и $x_1+\theta$ такое, что
+	\[
+	A=\theta\,\Phi'(t)
+	=\theta\bigl(\partial_1 f(t,\,x_2+\theta)-\partial_1 f(t,\,x_2)\bigr).
+	\]
+	Так как $\partial_1 f$ дифференцируема в точке $x=(x_1,x_2)$, запишем каждое
+	слагаемое через дифференциал $d_x(\partial_1 f)$, обозначив
+	$L:=d_x(\partial_1 f)$ (линейный функционал на $\RR^2$):
+	\[
+	\partial_1 f(t,x_2+\theta)
+	=\partial_1 f(x)+L(t-x_1,\ \theta)+o\!\bigl(\|(t-x_1,\theta)\|\bigr),
+	\]
+	\[
+	\partial_1 f(t,x_2)
+	=\partial_1 f(x)+L(t-x_1,\ 0)+o\!\bigl(\|(t-x_1,0)\|\bigr).
+	\]
+	Поскольку $t$ лежит между $x_1$ и $x_1+\theta$, имеем $|t-x_1|\le|\theta|$, так что
+	все остаточные члены суть $o(\theta)$. Вычитая и пользуясь линейностью $L$
+	(слагаемые с $(t-x_1)$ взаимно уничтожаются, так как $L(t-x_1,\theta)-L(t-x_1,0)=L(0,\theta)$):
+	\[
+	\partial_1 f(t,x_2+\theta)-\partial_1 f(t,x_2)
+	=L(0,\theta)+o(\theta)
+	=\theta\,\partial_2\partial_1 f(x)+o(\theta),
+	\]
+	где использовано, что $L(0,1)=\partial_2(\partial_1 f)(x)=\partial_2\partial_1 f(x)$.
+	Подставляя в выражение для $A$:
+	\[
+	A=\theta\bigl(\theta\,\partial_2\partial_1 f(x)+o(\theta)\bigr)
+	=\theta^2\,\partial_2\partial_1 f(x)+o(\theta^2),
+	\]
+	откуда
+	\[
+	\frac{A}{\theta^2}\;\xrightarrow{\theta\to 0}\;\partial_2\partial_1 f(x).
+	\]
+
+	\textbf{Способ 2} (Лагранж по $x_2$, затем дифференцируемость $\partial_2 f$).
+	Полностью симметрично: вводим $\Psi(\tau):=f(x_1+\theta,\tau)-f(x_1,\tau)$, так что
+	$A=\Psi(x_2+\theta)-\Psi(x_2)=\theta\,\Psi'(\tilde t)$ для некоторого $\tilde t$
+	между $x_2$ и $x_2+\theta$, и
+	\[
+	A=\theta\bigl(\partial_2 f(x_1+\theta,\tilde t)-\partial_2 f(x_1,\tilde t)\bigr).
+	\]
+	Используя дифференцируемость $\partial_2 f$ в точке $x$ и обозначая
+	$M:=d_x(\partial_2 f)$, получаем (с $|\tilde t-x_2|\le|\theta|$ и
+	$M(1,0)=\partial_1\partial_2 f(x)$):
+	\[
+	\partial_2 f(x_1+\theta,\tilde t)-\partial_2 f(x_1,\tilde t)
+	=M(\theta,0)+o(\theta)
+	=\theta\,\partial_1\partial_2 f(x)+o(\theta),
+	\]
+	откуда
+	\[
+	A=\theta^2\,\partial_1\partial_2 f(x)+o(\theta^2),
+	\qquad
+	\frac{A}{\theta^2}\;\xrightarrow{\theta\to 0}\;\partial_1\partial_2 f(x).
+	\]
+
+	Левая часть $A/\theta^2$ в обоих способах одинакова, поэтому пределы совпадают:
+	\[
+	\partial_1\partial_2 f(x)=\partial_2\partial_1 f(x).\qedhere
+	\]
+\end{proof}
+

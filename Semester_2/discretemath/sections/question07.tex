@@ -1,0 +1,254 @@
+% !TEX root = ../discretemath.tex
+
+\section{Лемма Линдстрёма–Гесселя–Вьенно}
+
+\subsection{Взвешенные ориентированные ациклические графы}
+
+\begin{Definition}{Взвешенный орграф}{}
+	\emph{Взвешенный ориентированный ациклический граф} (dag) — ориентированный граф $G$ без ориентированных циклов, в котором каждому ребру $e$ сопоставлено вещественное число $w(e)$ (\emph{вес ребра}).
+\end{Definition}
+
+\begin{Definition}{Вес пути и весовая функция}{}
+	Для ориентированного пути $P = e_1, e_2, \ldots, e_k$ его \emph{вес}:
+	\[
+	w(P) = w(e_1)\cdot w(e_2) \cdots w(e_k).
+	\]
+	Для вершин $a, b \in V(G)$ определяем:
+	\[
+	w(a,b) = \sum_{P:\,a \to b} w(P),
+	\]
+	где суммирование ведётся по всем ориентированным путям из $a$ в $b$.
+\end{Definition}
+
+\begin{Remark}{}{}
+	Ацикличность гарантирует, что путей из $a$ в $b$ конечное число, поэтому сумма $w(a,b)$ корректно определена.
+\end{Remark}
+
+\begin{Remark}{}{}
+	Если ребро $e$ с весом $w$ заменить двумя параллельными рёбрами с весами $w_1$ и $w_2$,
+	где $w_1 + w_2 = w$, то $w(a,b)$ для всех пар $(a,b)$ не изменится. В частности, при всех весах $w(e)=1$ величина $w(a,b)$ равна просто \emph{числу} путей из $a$ в $b$.
+\end{Remark}
+
+\begin{Example}{Пример взвешенного орграфа}{}
+	Рассмотрим двудольный орграф с вершинами $\{1,2,3\}$ (источники) и $\{4,5,6\}$ (стоки),
+	в котором из каждого источника идут пути ко всем стокам через промежуточные вершины,
+	все веса рёбер $w_i = 1$.
+
+	\begin{center}
+		\begin{tikzpicture}[
+			->, >=Stealth,
+			v/.style={circle, draw, fill=black!80, inner sep=0pt, minimum size=6pt},
+			m/.style={circle, draw, fill=black!20, inner sep=1pt, minimum size=16pt},
+			lbl/.style={font=\small},
+			thick
+			]
+			\node[v, label={[lbl]left:$1$}] (s1) at (0,3) {};
+			\node[v, label={[lbl]left:$2$}] (s2) at (0,2) {};
+			\node[v, label={[lbl]left:$3$}] (s3) at (0,1) {};
+
+			\node[m] (x1) at (2,3.5) {$x_1$};
+			\node[m] (x2) at (2,2.5) {$x_2$};
+			\node[m] (x3) at (2,1.5) {$x_3$};
+			\node[m] (x4) at (2,0.5) {$x_4$};
+
+			\node[v, label={[lbl]right:$4$}] (t1) at (4,3) {};
+			\node[v, label={[lbl]right:$5$}] (t2) at (4,2) {};
+			\node[v, label={[lbl]right:$6$}] (t3) at (4,1) {};
+
+			% sources to intermediate vertices
+			\draw (s1) -- (x1);
+			\draw (s1) -- (x2);
+
+			\draw (s2) -- (x1);
+			\draw (s2) -- (x2);
+			\draw (s2) -- (x3);
+
+			\draw (s3) -- (x1);
+			\draw (s3) -- (x2);
+			\draw (s3) -- (x3);
+			\draw (s3) -- (x4);
+
+			% intermediate vertices to sinks
+			\draw (x1) -- (t1);
+			\draw (x1) -- (t2);
+			\draw (x1) -- (t3);
+
+			\draw (x2) -- (t2);
+			\draw (x2) -- (t3);
+
+			\draw (x3) -- (t2);
+			\draw (x3) -- (t3);
+
+			\draw (x4) -- (t3);
+		\end{tikzpicture}
+	\end{center}
+
+	Подсчитанные весовые суммы путей (здесь — числа путей):
+	\[
+	\bigl(w(a_i, b_j)\bigr) =
+	\begin{pmatrix}
+		w(1,4) & w(1,5) & w(1,6) \\
+		w(2,4) & w(2,5) & w(2,6) \\
+		w(3,4) & w(3,5) & w(3,6)
+	\end{pmatrix}
+	=
+	\begin{pmatrix}
+		1 & 2 & 2 \\
+		1 & 3 & 3 \\
+		1 & 3 & 4
+	\end{pmatrix}.
+	\]
+	Определитель:
+	\[
+	\det
+	\begin{pmatrix}
+		1 & 2 & 2 \\
+		1 & 3 & 3 \\
+		1 & 3 & 4
+	\end{pmatrix}
+	= 1\cdot(12-9) - 2\cdot(4-3) + 2\cdot(3-3) = 3 - 2 + 0 = 1.
+	\]
+	По лемме ЛГВ это означает, что существует ровно \emph{одна} система непересекающихся путей $1\to4,\,2\to5,\,3\to6$ (и она отвечает тождественной перестановке, знак $+1$).
+\end{Example}
+
+\subsection{Формулировка леммы ЛГВ}
+
+\begin{Theorem}{Лемма Линдстрёма–Гесселя–Вьенно}{}
+	Пусть $G$ — взвешенный ориентированный ациклический граф,
+	$A = \{a_1, \ldots, a_n\}$ и $B = \{b_1, \ldots, b_n\}$ — два набора вершин. Тогда:
+	\[
+	\det\!\bigl(w(a_i, b_j)\bigr)_{1\le i,j\le n}
+	=
+	\sum_{\substack{(P_1,\ldots,P_n) \\ \text{не пересекаются}}}
+	w(P_1)\cdots w(P_n)\cdot\operatorname{sign}(P_1,\ldots,P_n),
+	\]
+	где суммирование ведётся по системам попарно \emph{непересекающихся} (вершинно-непересекающихся) путей
+	$P_i : a_i \to b_{\pi(i)}$
+	($\pi$ — некоторая перестановка), а
+	$\operatorname{sign}(P_1,\ldots,P_n) = \operatorname{sign}(\pi)$.
+\end{Theorem}
+
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[
+		->, >=Stealth,
+		v/.style={circle, draw, fill=black!80, inner sep=0pt, minimum size=5pt},
+		lbl/.style={font=\small},
+		thick
+		]
+		% непересекающаяся система: a1->b1, a2->b2 (без пересечений)
+		\node[v,label={[lbl]left:$a_1$}] at (0,1.4) {};
+		\node[v,label={[lbl]left:$a_2$}] at (0,0) {};
+		\node[v,label={[lbl]right:$b_1$}] at (4,1.4) {};
+		\node[v,label={[lbl]right:$b_2$}] at (4,0) {};
+		\draw[blue] (0,1.4) .. controls (2,1.9) .. (4,1.4);
+		\draw[red!70!black] (0,0) .. controls (2,-0.5) .. (4,0);
+		\node[lbl] at (2,-1.1) {непересекающаяся система $\Rightarrow$ выживает в сумме};
+	\end{tikzpicture}
+	\caption{Если пути не пересекаются, при «упорядоченных» источниках и стоках они вынуждены идти к стокам в том же порядке: перестановка $\pi$ тождественна, знак $+1$. Именно такие системы дают вклад в определитель.}
+\end{figure}
+
+\begin{proof}
+	\textbf{Шаг 1. Раскрытие определителя.}
+
+	По определению:
+	\begin{align*}
+		\det\!\bigl(w(a_i,b_j)\bigr)
+		&= \sum_{\pi\in S_n} \operatorname{sign}(\pi)\cdot
+		w(a_1, b_{\pi(1)}) \cdots w(a_n, b_{\pi(n)}) \\
+		&= \sum_{\pi} \operatorname{sign}(\pi)
+		\!\!\!\!\sum_{\substack{P_1:\,a_1 \to b_{\pi(1)}}}\!\!\! w(P_1)
+		\;\cdots\!\!\!\!
+		\sum_{\substack{P_n:\,a_n \to b_{\pi(n)}}}\!\!\! w(P_n) \\
+		&= \sum_{\substack{(P_1,\ldots,P_n) \\ P_i:\,a_i \to b_{\pi(i)}}}
+		w(P_1)\cdots w(P_n)\cdot\operatorname{sign}(P_1,\ldots,P_n).
+	\end{align*}
+	(Раскрыли $w(a_i,b_{\pi(i)})$ как сумму по путям и поменяли порядок суммирования.)
+
+	\textbf{Шаг 2. Обнуление пересекающихся систем.}
+
+	Разобьём сумму на две части:
+	\[
+	\underbrace{\sum_{\text{не пересекаются}}}_{=\,\text{правая часть теоремы}}
+	+
+	\underbrace{\sum_{\text{есть пересечение}}}_{=\,?}.
+	\]
+	Достаточно показать, что вторая сумма равна нулю. Определим \textbf{инволюцию}
+	$\operatorname{inv}$ на пересекающихся системах следующим образом.
+
+	Пусть $(P_1,\ldots,P_n)$ — система с хотя бы одним пересечением. Определим:
+	\begin{enumerate}
+		\item $t = \min\{i : P_i \text{ пересекает } P_j \text{ для некоторого } j>i\}$,
+		\item $x$ — \emph{первая} вершина на $P_t$, принадлежащая какому-либо $P_s$, $s > t$,
+		\item $s = \min\{j > t : x \in P_j\}$.
+	\end{enumerate}
+
+	\begin{center}
+		\begin{tikzpicture}[
+			->, >=Stealth,
+			v/.style={circle, draw, fill=black!80, inner sep=0pt, minimum size=5pt},
+			lbl/.style={font=\small},
+			thick
+			]
+			% Путь P_t: a_t -> x -> конец
+			\draw[blue, thick] (0,1) -- node[above, lbl, black]{$P_t$} (2,1)
+			-- (3,0) -- node[below, lbl, black]{} (5,0.3);
+			% Путь P_s: a_s -> x -> конец
+			\draw[red!70!black, thick] (0,0) -- node[below, lbl, black]{$P_s$} (3,0)
+			-- (5,1.3);
+			% точка пересечения
+			\node[v, fill=orange] (x) at (3,0) {};
+			\node[lbl] at (3,-0.35) {$x$};
+			% метки источников
+			\node[v] at (0,1) {};
+			\node[v] at (0,0) {};
+			\node[lbl] at (-0.35,1) {$a_t$};
+			\node[lbl] at (-0.35,0) {$a_s$};
+			% метки стоков
+			\node[lbl] at (5.3,0.3) {$b_{\pi(t)}$};
+			\node[lbl] at (5.3,1.3) {$b_{\pi(s)}$};
+			% стрелки-намёки на inv
+			\draw[blue, thick, dashed] (3,0) -- (5,1.3);
+			\draw[red!70!black, thick, dashed] (3,0) -- (5,0.3);
+		\end{tikzpicture}
+	\end{center}
+
+	Положим $\operatorname{inv}(P_1,\ldots,P_n) = (P_1,\ldots,P_t',\ldots,P_s',\ldots,P_n)$, где:
+	\begin{itemize}
+		\item $P_t'$: из $a_t$ до $x$ вдоль $P_t$, затем из $x$ до конца вдоль $P_s$\,,
+		\item $P_s'$: из $a_s$ до $x$ вдоль $P_s$, затем из $x$ до конца вдоль $P_t$\,.
+	\end{itemize}
+	Это \emph{транспозиция хвостов} путей $P_t$ и $P_s$ после точки $x$ (пунктир на рисунке).
+
+	\medskip
+	\textbf{Утверждение 1: $\operatorname{inv}\circ\operatorname{inv} = \mathrm{id}$.}
+	Действительно, для новой системы $(P_1,\ldots,P_t',\ldots,P_s',\ldots,P_n)$:
+	\begin{itemize}
+		\item $P_1,\ldots,P_{t-1}$ по-прежнему ни с кем не пересекаются (они не изменились),
+		\item $P_t'$ пересекает $P_s'$ в точке $x$, причём $x$ — первая точка пересечения и индексы те же: $t' = t$, $s' = s$,
+		\item $P_{t+1},\ldots,P_{s-1}$ не пересекали $P_t$ до $x$ $\Rightarrow$ не пересекают $P_t'$ до $x$.
+	\end{itemize}
+	Применив $\operatorname{inv}$ повторно, обменяем хвосты обратно и получим исходную систему.
+
+	\medskip
+	\textbf{Утверждение 2: знак меняется.}
+	При переходе к $\operatorname{inv}$ конечные вершины путей $P_t$ и $P_s$ меняются местами
+	($b_{\pi(t)} \leftrightarrow b_{\pi(s)}$), что отвечает транспозиции в перестановке $\pi$:
+	\[
+	\operatorname{sign}\!\bigl(\operatorname{inv}(P_1,\ldots,P_n)\bigr) = -\operatorname{sign}(P_1,\ldots,P_n).
+	\]
+	При этом мультимножество рёбер сохраняется, поэтому произведение весов $w(P_1)\cdots w(P_n)$ не меняется.
+
+	Таким образом, $\operatorname{inv}$ разбивает пересекающиеся системы на пары с противоположными
+	знаками и одинаковым произведением весов. Вклады в сумму попарно сокращаются:
+	\[
+	\sum_{\text{есть пересечение}}
+	w(P_1)\cdots w(P_n)\cdot\operatorname{sign}(P_1,\ldots,P_n) = \sum\nolimits_{\text{пары}} 0 = 0.
+	\]
+	Остаётся в точности сумма по непересекающимся системам. Лемма доказана.
+\end{proof}
+
+\begin{Remark}{Связь с теоремой Кирхгофа}{}
+	Если все источники $a_i$ и стоки $b_i$ упорядочены так, что любая система непересекающихся путей вынуждена реализовывать тождественную перестановку ($\pi=\mathrm{id}$, знак $+1$), то определитель равен \emph{числу} (взвешенному) таких систем — без знакопеременности. Именно этот эффект «отбора» лежит в основе подсчётов остовных деревьев и таблиц Юнга.
+\end{Remark}

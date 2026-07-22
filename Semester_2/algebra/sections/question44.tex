@@ -1,0 +1,52 @@
+% !TEX root = ../algebra_02.tex
+\section{Орбиты и стабилизаторы}
+
+\begin{Definition}{Орбита}{}
+	Пусть $G \curvearrowright M$.
+	\textbf{Орбитой} элемента $m \in M$ называется множество:
+	\[ Gm = \{gm \mid g \in G\} \] 
+\end{Definition}
+
+\begin{Lemma}{О непересечении орбит}{}
+	Для любых $m_1, m_2 \in M$ либо $Gm_1 = Gm_2$, либо $Gm_1 \cap Gm_2 = \emptyset$.
+\end{Lemma}
+
+\begin{proof}
+	Предположим, что $Gm_1 \cap Gm_2 \neq \emptyset$. Тогда существует $y \in Gm_1 \cap Gm_2$, то есть найдутся $g_1, g_2 \in G$ такие, что $y = g_1 m_1 = g_2 m_2$.
+	Отсюда выразим $m_2$:
+	\[ m_2 = g_2^{-1}(g_2 m_2) = g_2^{-1}(g_1 m_1) = (g_2^{-1}g_1)m_1 \] 
+	Тогда для любого $h \in G$ выполнено:
+	\[ h m_2 = (h g_2^{-1}g_1)m_1 \in Gm_1 \] 
+	Следовательно, $Gm_2 \subset Gm_1$.
+	Аналогично доказывается, что $Gm_1 \subset Gm_2$. Значит, $Gm_1 = Gm_2$.
+\end{proof}
+
+\begin{Remark}{Связь с классами эквивалентности}{}
+	Орбиты являются классами эквивалентности на $M$ по отношению: $m_2 \sim m_1 \iff \exists g \in G \colon m_2 = gm_1$.
+\end{Remark}
+
+\begin{Definition}{Стабилизатор}{}
+	Пусть $G \curvearrowright M$ и $m \in M$. \textbf{Стабилизатором} элемента $m$ называется множество:
+	\[ St_m = \{g \in G \mid gm = m\} \] 
+	Очевидно, что $St_m \le G$ (является подгруппой), так как если $gm=m$, то умножая слева на $g^{-1}$, получаем $m = g^{-1}m$, то есть $g^{-1} \in St_m$.
+\end{Definition}
+
+\begin{Proposition}{Теорема об орбите и стабилизаторе}{}
+	Если $G \curvearrowright M$, то мощность орбиты равна индексу подгруппы стабилизатора:
+	\[ |Gm| = (G : St_m) \]
+\end{Proposition}
+
+\begin{proof}
+	Построим отображение $\alpha \colon G/St_m \to Gm$, заданное правилом $\alpha(gSt_m) = gm$.
+	\begin{itemize}
+		\item \textbf{Корректность:} Если $g' = gh$ для некоторого $h \in St_m$, то $g'm = g(hm) = gm$.
+		Отображение не зависит от выбора представителя смежного класса.
+		\item \textbf{Сюръективность:} Очевидна по определению орбиты.
+		\item \textbf{Инъективность:} Пусть $\alpha(g_1 St_m) = \alpha(g_2 St_m)$. Тогда $g_1 m = g_2 m \implies m = g_1^{-1}g_2 m \implies g_1^{-1}g_2 \in St_m \implies g_2 \in g_1 St_m \implies g_1 St_m = g_2 St_m$.
+	\end{itemize}
+	Построенная биекция доказывает утверждение.
+\end{proof}
+
+\begin{Corollary}{Следствие для конечных групп}{}
+	Если группа $G$ конечна, то для любого $m \in M$ размер орбиты $|Gm|$ делит порядок группы $|G|$.
+\end{Corollary}

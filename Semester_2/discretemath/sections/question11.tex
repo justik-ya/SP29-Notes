@@ -1,0 +1,175 @@
+% !TEX root = ../discretemath.tex
+
+\section{Локальная лемма Ловаса}
+
+\subsection{Граф зависимостей}
+
+\subsubsection*{Напоминание о независимости}
+
+Пусть даны события $A, B_1, \dots, B_n$. Будем говорить, что $A$ \emph{независимо от семейства} $B_1,\dots,B_n$, если для любого $I \subseteq \{1,\dots,n\}$ выполнено
+\[
+\Pr\!\left(A \mid \bigwedge_{i \in I} B_i\right)=\Pr(A),
+\]
+когда условная вероятность определена.
+
+\begin{Definition}{Граф зависимостей}{}
+	Пусть $\mathcal A=\{A_1,\dots,A_n\}$ — семейство событий.
+	Ориентированный граф $\Gamma$ называется \emph{графом зависимостей} для $\mathcal A$,
+	если $V(\Gamma)=\{1,\dots,n\}$ и для каждого $i$ событие $A_i$ независимо от всех событий
+	\[
+	\{A_k : k \notin \Gamma^+(i)\},
+	\]
+	где $\Gamma^+(i)$ — множество исходящих соседей вершины $i$.
+\end{Definition}
+
+\begin{Remark}{}{}
+	Содержательно: рёбра $\Gamma$ показывают возможные зависимости. Если вершины $i$ и $k$ не соединены, то $A_i$ от $A_k$ (и от любого набора таких «несоседей») не зависит. Чем разреженнее граф, тем сильнее лемма.
+\end{Remark}
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[font=\small, >=Stealth,
+		v/.style={circle, draw, fill=black!10, inner sep=1pt, minimum size=16pt}]
+		\node[v] (1) at (0,0) {$A_1$};
+		\node[v] (2) at (1.8,0.6) {$A_2$};
+		\node[v] (3) at (1.8,-0.6) {$A_3$};
+		\node[v] (4) at (3.6,0) {$A_4$};
+		\node[v] (5) at (5.2,0) {$A_5$};
+		\draw[->] (1)--(2); \draw[->] (1)--(3);
+		\draw[->] (2)--(4); \draw[->] (3)--(4);
+		\node[align=left] at (3.0,-1.4) {$\Gamma^+(1)=\{2,3\}$: $A_1$ независимо от $\{A_4,A_5\}$};
+	\end{tikzpicture}
+	\caption{Граф зависимостей. У вершины $1$ исходящие соседи $\Gamma^+(1)=\{2,3\}$, поэтому $A_1$ независимо от любого набора событий из $\{A_4,A_5\}$. Лемма опирается именно на малость множеств $\Gamma^+(i)$.}
+\end{figure}
+
+\begin{Example}{Монеты}{}
+	Пусть есть $n-1$ независимых честных монет. Обозначим
+	\[
+	A_i=\{\text{$i$-я монета выпала орлом}\},\ i=1,\dots,n-1,
+	\qquad
+	A_n=\{\text{число орлов чётно}\}.
+	\]
+	Каждое событие независимо от любого набора из не более чем $n-2$ остальных, но не обязано быть независимо от всех остальных сразу (зная $A_1,\dots,A_{n-1}$, событие $A_n$ определено однозначно). Поэтому графом зависимостей служит любой граф, в котором у каждой вершины есть хотя бы один исходящий сосед.
+\end{Example}
+
+\subsection{Асимметричная форма}
+
+\begin{Theorem}{Локальная лемма Ловаса, асимметричная форма}{}
+	Пусть $\mathcal A=\{A_1,\dots,A_n\}$ — семейство событий, $\Gamma$ — граф зависимостей для $\mathcal A$.
+	Пусть существует функция $f:\mathcal A \to [0,1)$ такая, что для каждого $i$
+	\[
+	\Pr(A_i)\le f(A_i)\prod_{k\in \Gamma^+(i)}\bigl(1-f(A_k)\bigr).
+	\]
+	Тогда
+	\[
+	\Pr\!\left(\overline{A_1}\wedge \dots \wedge \overline{A_n}\right)\ge\prod_{i=1}^{n}\bigl(1-f(A_i)\bigr)>0.
+	\]
+\end{Theorem}
+
+\begin{proof}
+	\textbf{Вспомогательное утверждение.} Для любого $S\subseteq \mathcal A$ и любого $A_i\notin S$:
+	\[
+	\Pr\!\Bigl(\bigwedge_{B\in S}\overline B\Bigr)>0
+	\quad\text{и}\quad
+	\Pr\!\Bigl(A_i\mid \bigwedge_{B\in S}\overline B\Bigr)\le f(A_i).
+	\]
+
+	Индукция по $|S|$.
+
+	\textbf{База ($S=\varnothing$).}
+	\[
+	\Pr(A_i)\le f(A_i)\prod_{k\in \Gamma^+(i)}\bigl(1-f(A_k)\bigr)\le f(A_i),
+	\]
+	так как все множители $\le 1$.
+
+	\textbf{Переход.} Пусть утверждение верно для всех меньших множеств. Разобьём
+	\[
+	S_1=\{B\in S : B=A_k,\ k\in \Gamma^+(i)\},\qquad S_2=S\setminus S_1,
+	\]
+	то есть $S_1$ — события, которые могут зависеть с $A_i$, а $S_2$ — события, от которых $A_i$ независимо.
+
+	\emph{Положительность.} Для любого $A_k\in S$ по цепному правилу
+	\[
+	\Pr\!\Bigl(\bigwedge_{B\in S}\overline B\Bigr)
+	=\Pr\!\Bigl(\overline{A_k}\mid \bigwedge_{B\in S\setminus\{A_k\}}\overline B\Bigr)
+	\Pr\!\Bigl(\bigwedge_{B\in S\setminus\{A_k\}}\overline B\Bigr).
+	\]
+	По предположению индукции $\Pr(A_k\mid\cdots)\le f(A_k)$, поэтому $\Pr(\overline{A_k}\mid\cdots)\ge 1-f(A_k)>0$. Повторяя, получаем
+	\[
+	\Pr\!\Bigl(\bigwedge_{B\in S}\overline B\Bigr)\ge\prod_{B\in S}\bigl(1-f(B)\bigr)>0.
+	\]
+
+	\emph{Оценка условной вероятности.} Пусть $S_1=\{B_1,\dots,B_\ell\}$. Тогда
+	\[
+	\Pr\!\Bigl(A_i\mid \bigwedge_{B\in S}\overline B\Bigr)
+	=\frac{\Pr\!\Bigl(A_i\wedge \bigwedge_{B\in S_1}\overline B \mid \bigwedge_{B\in S_2}\overline B\Bigr)}
+	{\Pr\!\Bigl(\bigwedge_{B\in S_1}\overline B \mid \bigwedge_{B\in S_2}\overline B\Bigr)}.
+	\]
+
+	\emph{Числитель.} Отбрасывая часть условий-сомножителей,
+	\[
+	\Pr\!\Bigl(A_i\wedge \bigwedge_{B\in S_1}\overline B \mid \bigwedge_{B\in S_2}\overline B\Bigr)
+	\le \Pr\!\Bigl(A_i\mid \bigwedge_{B\in S_2}\overline B\Bigr)
+	=\Pr(A_i)
+	\le f(A_i)\prod_{k\in \Gamma^+(i)}\bigl(1-f(A_k)\bigr),
+	\]
+	где равенство — по определению графа зависимостей (события $S_2$ не являются соседями $A_i$).
+
+	\emph{Знаменатель.} По цепному правилу и предположению индукции (в каждом условии меньше чем $|S|$ событий)
+	\[
+	\Pr\!\Bigl(\bigwedge_{r=1}^{\ell}\overline{B_r}\mid \bigwedge_{B\in S_2}\overline B\Bigr)
+	=\prod_{r=1}^{\ell}\Pr\!\Bigl(\overline{B_r}\mid \bigwedge_{B\in S_2}\overline B\wedge\bigwedge_{t<r}\overline{B_t}\Bigr)
+	\ge\prod_{B\in S_1}\bigl(1-f(B)\bigr).
+	\]
+
+	Итого
+	\[
+	\Pr\!\Bigl(A_i\mid \bigwedge_{B\in S}\overline B\Bigr)
+	\le\frac{f(A_i)\prod_{k\in \Gamma^+(i)}\bigl(1-f(A_k)\bigr)}{\prod_{B\in S_1}\bigl(1-f(B)\bigr)}
+	\le f(A_i),
+	\]
+	поскольку $S_1\subseteq\{A_k:k\in\Gamma^+(i)\}$ — часть множителей сокращается, остальные $\le 1$. Утверждение доказано.
+
+	\textbf{Применение.} По цепному правилу
+	\[
+	\Pr\!\left(\overline{A_1}\wedge\dots\wedge\overline{A_n}\right)
+	=\prod_{i=1}^{n}\Pr\!\Bigl(\overline{A_i}\mid \overline{A_{i+1}}\wedge\dots\wedge\overline{A_n}\Bigr),
+	\]
+	и каждый множитель $\ge 1-f(A_i)$. Следовательно,
+	\[
+	\Pr\!\left(\overline{A_1}\wedge\dots\wedge\overline{A_n}\right)\ge\prod_{i=1}^{n}\bigl(1-f(A_i)\bigr)>0.\qedhere
+	\]
+\end{proof}
+
+\subsection{Симметричная форма}
+
+\begin{Theorem}{Локальная лемма Ловаса, симметричная форма}{}
+	Пусть $\Pr(A_i)\le q$ для всех $i$, и пусть существует граф зависимостей $\Gamma$, в котором исходящая степень каждой вершины не превосходит $d$. Если
+	\[
+	\mathrm e\,q(d+1)\le 1,
+	\]
+	то $\Pr\!\left(\overline{A_1}\wedge\dots\wedge\overline{A_n}\right)>0.$
+\end{Theorem}
+
+\begin{proof}
+	Положим $f(A_i)=\dfrac{1}{d+1}$ для всех $i$. Тогда
+	\[
+	f(A_i)\prod_{k\in\Gamma^+(i)}\bigl(1-f(A_k)\bigr)
+	\ge\frac{1}{d+1}\left(1-\frac{1}{d+1}\right)^d
+	=\frac{1}{d+1}\cdot\frac{1}{\left(1+\frac1d\right)^d}
+	\ge\frac{1}{\mathrm e(d+1)},
+	\]
+	где использовано $\left(1+\tfrac1d\right)^d<\mathrm e$. Из условия $\mathrm e q(d+1)\le 1$ следует $q\le\dfrac{1}{\mathrm e(d+1)}$, поэтому
+	\[
+	\Pr(A_i)\le q\le f(A_i)\prod_{k\in\Gamma^+(i)}\bigl(1-f(A_k)\bigr).
+	\]
+	Условия асимметричной формы выполнены, откуда и следует утверждение.
+\end{proof}
+
+\begin{Corollary}{Удобная грубая форма}{}
+	Пусть $\Pr(A_i)\le q$, и каждое событие зависит не более чем от $d$ других. Если $4qd\le 1$, то
+	\[
+	\Pr\!\left(\overline{A_1}\wedge\dots\wedge\overline{A_n}\right)>0.
+	\]
+\end{Corollary}
+

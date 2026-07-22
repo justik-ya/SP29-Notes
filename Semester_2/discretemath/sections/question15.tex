@@ -1,0 +1,157 @@
+% !TEX root = ../discretemath.tex
+
+\section{Дисперсия, неравенства и закон больших чисел}
+
+\subsection{Дисперсия}
+
+\begin{Statement}{Среднее минимизирует средний квадрат отклонения}{}
+	Для любой с.в. $\xi$ и любого $x\in\mathbb{R}$:
+	\[
+	\mathbb{E}\bigl[(\xi-x)^2\bigr]\ge\mathbb{E}\bigl[(\xi-\mathbb{E}[\xi])^2\bigr].
+	\]
+\end{Statement}
+
+\begin{proof}
+	Разложим $\xi-x=(\xi-\mathbb{E}[\xi])+(\mathbb{E}[\xi]-x)$:
+	\[
+	\mathbb{E}\bigl[(\xi-x)^2\bigr]
+	=\mathbb{E}\bigl[(\xi-\mathbb{E}[\xi])^2\bigr]
+	+\mathbb{E}\bigl[(\mathbb{E}[\xi]-x)^2\bigr]
+	+2\,\mathbb{E}\bigl[(\xi-\mathbb{E}[\xi])(\mathbb{E}[\xi]-x)\bigr].
+	\]
+	Второй член $\ge 0$. Третий равен нулю: $(\mathbb{E}[\xi]-x)$ — константа, а $\mathbb{E}[\xi-\mathbb{E}[\xi]]=0$.
+\end{proof}
+
+\begin{Definition}{Дисперсия и стандартное отклонение}{}
+	\textbf{Дисперсия} с.в. $\xi$:
+	\[
+	\mathbb{D}[\xi]:=\mathbb{E}\bigl[(\xi-\mathbb{E}[\xi])^2\bigr].
+	\]
+	\textbf{Стандартное отклонение} — $\sigma[\xi]:=\sqrt{\mathbb{D}[\xi]}$.
+\end{Definition}
+
+\begin{Statement}{}{}
+	Для константы $c\in\mathbb{R}$: $\ \mathbb{D}[c\cdot\xi]=c^2\cdot\mathbb{D}[\xi]$.
+\end{Statement}
+
+\begin{Theorem}{Аддитивность дисперсии}{}
+	Если $\xi_1,\dots,\xi_n$ — \textbf{попарно независимые} с.в., то
+	\[
+	\mathbb{D}[\xi_1+\cdots+\xi_n]=\sum_{i=1}^n\mathbb{D}[\xi_i].
+	\]
+\end{Theorem}
+
+\begin{proof}
+	Пусть $S=\xi_1+\cdots+\xi_n$. Тогда
+	\begin{align*}
+		\mathbb{D}[S]
+		&=\mathbb{E}\!\left[\Bigl(\sum_i(\xi_i-\mathbb{E}[\xi_i])\Bigr)^2\right]\\
+		&=\sum_i\mathbb{E}\bigl[(\xi_i-\mathbb{E}[\xi_i])^2\bigr]
+		+2\sum_{i<k}\mathbb{E}\bigl[(\xi_i-\mathbb{E}[\xi_i])(\xi_k-\mathbb{E}[\xi_k])\bigr]\\
+		&=\sum_i\mathbb{D}[\xi_i]+2\sum_{i<k}\mathbb{E}\bigl[(\xi_i-\mathbb{E}[\xi_i])(\xi_k-\mathbb{E}[\xi_k])\bigr].
+	\end{align*}
+	При попарной независимости перекрёстные слагаемые равны нулю (см. замечание), откуда $\mathbb{D}[S]=\sum_i\mathbb{D}[\xi_i]$.
+\end{proof}
+
+\begin{Remark}{}{}
+	Если с.в. $\alpha,\beta$ \textbf{независимы}, то $\mathbb{E}[\alpha\beta]=\mathbb{E}[\alpha]\mathbb{E}[\beta]$. Поэтому для попарно независимых $\xi_i,\xi_k$
+	\[
+	\mathbb{E}\bigl[(\xi_i-\mathbb{E}[\xi_i])(\xi_k-\mathbb{E}[\xi_k])\bigr]=0.
+	\]
+	Для аддитивности дисперсии достаточно именно \emph{попарной} независимости — независимость в совокупности не требуется.
+\end{Remark}
+
+\subsection{Неравенство Маркова}
+
+\begin{Theorem}{Неравенство Маркова}{}
+	Пусть $\xi$ — неотрицательная с.в. Тогда для любого $c>0$:
+	\[
+	\Pr[\xi\ge c]\le\frac{\mathbb{E}[\xi]}{c}.
+	\]
+\end{Theorem}
+
+\begin{proof}
+	\[
+	\mathbb{E}[\xi]=\sum_{x}x\Pr[\xi=x]\ge\sum_{x\ge c}x\Pr[\xi=x]\ge c\sum_{x\ge c}\Pr[\xi=x]=c\,\Pr[\xi\ge c].
+	\]
+\end{proof}
+
+\subsection{Неравенство Чебышёва}
+
+\begin{Theorem}{Неравенство Чебышёва}{}
+	Для любой с.в. $\xi$ и любого $c>0$:
+	\[
+	\Pr\bigl[|\xi-\mathbb{E}[\xi]|\ge c\bigr]\le\frac{\mathbb{D}[\xi]}{c^2}.
+	\]
+\end{Theorem}
+
+\begin{proof}
+	Положим $\beta=(\xi-\mathbb{E}[\xi])^2\ge 0$. Тогда
+	\[
+	\Pr\bigl[|\xi-\mathbb{E}[\xi]|\ge c\bigr]=\Pr[\beta\ge c^2]\le\frac{\mathbb{E}[\beta]}{c^2}=\frac{\mathbb{D}[\xi]}{c^2},
+	\]
+	где неравенство — это неравенство Маркова для неотрицательной $\beta$.
+\end{proof}
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[font=\small, >=Stealth]
+		\draw[->] (-3.6,0) -- (3.6,0) node[right]{$\xi$};
+		% колоколообразная кривая
+		\draw[thick, blue] plot[smooth, domain=-3:3, samples=80] (\x, {2.0*exp(-\x*\x/1.2)});
+		% центр
+		\draw[dashed] (0,0) -- (0,2.05); \node[below] at (0,0) {$\mathbb{E}[\xi]$};
+		% границы +-c
+		\draw[dashed] (-1.6,0) -- (-1.6,1.0); \draw[dashed] (1.6,0) -- (1.6,1.0);
+		\node[below] at (-1.6,0) {$\mathbb{E}[\xi]-c$}; \node[below] at (1.6,0) {$\mathbb{E}[\xi]+c$};
+		% затенённые хвосты
+		\fill[red!30, domain=-3:-1.6, samples=40] plot (\x,{2.0*exp(-\x*\x/1.2)}) -- (-1.6,0) -- (-3,0) -- cycle;
+		\fill[red!30, domain=1.6:3, samples=40] plot (\x,{2.0*exp(-\x*\x/1.2)}) -- (3,0) -- (1.6,0) -- cycle;
+		\node[red!70!black] at (0,-0.9) {суммарная масса хвостов $\le \mathbb{D}[\xi]/c^2$};
+	\end{tikzpicture}
+	\caption{Неравенство Чебышёва: вероятность уклониться от среднего более чем на $c$ (затенённые хвосты) ограничена сверху величиной $\mathbb{D}[\xi]/c^2$. Чем меньше дисперсия, тем сильнее концентрация около среднего.}
+\end{figure}
+
+\subsection{Закон больших чисел}
+
+\begin{Theorem}{Закон больших чисел}{}
+	Пусть $\xi_1,\xi_2,\dots$ — попарно независимые с.в. с одинаковым матожиданием $e$ ($\mathbb{E}[\xi_i]=e$) и одинаковой дисперсией $d$ ($\mathbb{D}[\xi_i]=d$). Пусть
+	\[
+	\beta_n=\frac{\xi_1+\cdots+\xi_n}{n}.
+	\]
+	Тогда для любого $q>0$:
+	\[
+	\lim_{n\to\infty}\Pr\bigl[|\beta_n-e|\le q\bigr]=1.
+	\]
+\end{Theorem}
+
+\begin{proof}
+	По линейности $\mathbb{E}[\beta_n]=\dfrac{ne}{n}=e$. По аддитивности дисперсии (попарная независимость) и масштабированию
+	\[
+	\mathbb{D}[\beta_n]=\frac{1}{n^2}\bigl(\mathbb{D}[\xi_1]+\cdots+\mathbb{D}[\xi_n]\bigr)=\frac{1}{n^2}\cdot nd=\frac{d}{n}.
+	\]
+	По неравенству Чебышёва
+	\[
+	\Pr\bigl[|\beta_n-e|\ge q\bigr]\le\frac{\mathbb{D}[\beta_n]}{q^2}=\frac{d}{q^2 n}\xrightarrow{n\to\infty}0,
+	\]
+	поэтому $\Pr[|\beta_n-e|\le q]=1-\Pr[|\beta_n-e|\ge q]\to 1$.
+\end{proof}
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[font=\small, >=Stealth]
+		\draw[->] (-3.4,0) -- (3.4,0) node[right]{$\beta_n$};
+		\draw[dashed] (0,0) -- (0,2.2); \node[below] at (0,-0.05) {$e$};
+		% три всё более узкие колокола (растущее n)
+		\draw[thick, blue!40] plot[smooth, domain=-3:3, samples=80] (\x, {0.9*exp(-\x*\x/2.2)});
+		\draw[thick, blue!70] plot[smooth, domain=-3:3, samples=80] (\x, {1.4*exp(-\x*\x/0.9)});
+		\draw[thick, blue]    plot[smooth, domain=-3:3, samples=80] (\x, {2.0*exp(-\x*\x/0.35)});
+		\node[blue] at (2.3,0.6) {малое $n$};
+		\node[blue] at (1.1,1.9) {большое $n$};
+	\end{tikzpicture}
+	\caption{Закон больших чисел: распределение выборочного среднего $\beta_n$ концентрируется около истинного матожидания $e$ при росте $n$, так как $\mathbb{D}[\beta_n]=d/n\to 0$.}
+\end{figure}
+
+\begin{Remark}{}{}
+	Закон больших чисел означает сходимость \emph{по вероятности} выборочного среднего $\beta_n$ к истинному матожиданию $e$. Это обоснование статистической оценки среднего по выборке.
+\end{Remark}

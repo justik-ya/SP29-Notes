@@ -1,0 +1,56 @@
+% !TEX root = ../algebra_02.tex
+
+\section{Применение теоремы о гомоморфизме к классификации циклических групп}
+
+\begin{Definition}{Циклическая группа}{def:cyclic}
+	Группа $G$ называется \emph{циклической}, если существует элемент $g\in G$ такой, что
+	\[
+	G=\langle g\rangle = \{g^k\mid k\in \ZZ\}.
+	\]
+	Элемент $g$ называется \emph{образующим} группы $G$.
+\end{Definition}
+
+\begin{Theorem}{Все подгруппы группы $\ZZ$}{subgroups-Z}
+	Всякая подгруппа $H\le \ZZ$ имеет вид
+	\[
+	H=n\ZZ=\langle n\rangle
+	\]
+	для некоторого $n\ge 0$.
+\end{Theorem}
+
+\begin{proof}
+	Если $H=\{0\}$, то утверждение верно при $n=0$.
+
+	Пусть теперь $H\ne\{0\}$. Тогда в $H$ есть положительные элементы. Пусть $n$ --- наименьший положительный элемент из $H$. Покажем, что $H=n\ZZ$. Во-первых, $n\ZZ\subseteq H$, поскольку $H$ замкнута относительно сложения и взятия противоположного.
+
+	Во-вторых, пусть $x\in H$. По алгоритму деления существует представление
+	\[
+	x=qn+r, \qquad 0\le r<n.
+	\]
+	Так как $x\in H$ и $qn\in H$, получаем $r=x-qn\in H.$
+	По минимальности $n$ имеем $r=0$. Значит, $x\in n\ZZ$.
+
+	Следовательно, $H=n\ZZ$.
+\end{proof}
+
+\begin{Theorem}{Классификация циклических групп}{thm:cyclic-classification}
+	Пусть $G=\langle g\rangle$ --- циклическая группа.
+	\begin{enumerate}
+		\item Если $|G|=\infty$, то $G\cong \ZZ$.
+		\item Если $|G|=n<\infty$, то $G\cong \ZZ/n\ZZ$.
+	\end{enumerate}
+\end{Theorem}
+
+\begin{proof}
+	Рассмотрим гомоморфизм
+	\[
+	\varphi\colon \ZZ \to G, \qquad k\mapsto g^k.
+	\]
+	Он сюръективен, поскольку $G=\langle g\rangle$. По теореме о подгруппах группы $\ZZ$ существует $n\ge 0$ такое, что $\Ker\varphi=n\ZZ.$
+
+	Если $n=0$, то $\Ker\varphi=\{0\}$, и потому $\varphi$ инъективен. Следовательно, $G\cong \ZZ$. Если $n>0$, то по первой теореме об изоморфизме
+	\[
+	\ZZ/n\ZZ = \ZZ/\Ker\varphi \cong \Im\varphi = G.
+	\]
+	Если при этом $|G|<\infty$, то обязательно $n=|G|$.
+\end{proof}

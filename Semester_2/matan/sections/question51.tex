@@ -1,0 +1,131 @@
+% !TEX root = ../matan.tex
+
+\section{Условный экстремум. Метод множителей Лагранжа}
+
+\subsection*{Постановка задачи}
+
+Пусть заданы целевая функция $h\colon\RR^d\to\RR$ и отображение связей
+$f=(f_1,\dots,f_m)\colon\RR^d\to\RR^m$, $m<d$, причём $h,f\in C^1$. Рассмотрим
+\textbf{допустимое множество} (поверхность связей)
+\[
+S=\{x\in\RR^d:f(x)=0\}.
+\]
+\textbf{Условным экстремумом} называется локальный экстремум $h$ на $S$: точка
+$a\in S$, для которой $h(a)\ge h(x)$ (или $h(a)\le h(x)$) при всех $x\in S\cap U_a$.
+
+Предполагаем выполненным \textbf{условие регулярности}: ранг матрицы Якоби $f$
+максимален во всех точках $S$,
+\[
+\operatorname{rank}\Bigl(\tfrac{\partial f_i}{\partial x_j}(x)\Bigr)_{\substack{1\le i\le m\\1\le j\le d}}=m,
+\]
+что равносильно линейной независимости градиентов $\nabla f_1(x),\dots,\nabla f_m(x)$.
+
+\begin{Definition}{Функция Лагранжа}{}
+	\textbf{Функцией Лагранжа} задачи называется
+	\[
+	\mathcal L(x,\lambda)=h(x)-\sum_{j=1}^{m}\lambda_j f_j(x),\qquad\lambda=(\lambda_1,\dots,\lambda_m)\in\RR^m.
+	\]
+	Числа $\lambda_j$ называются \textbf{множителями Лагранжа}. Условие
+	$\nabla_x\mathcal L=0$ вместе со связями $f(x)=0$ образует систему для отыскания
+	подозрительных на экстремум точек.
+\end{Definition}
+
+\subsection*{Основная теорема}
+
+\begin{Theorem}{Метод множителей Лагранжа (необходимое условие)}{}
+	Если $h$ достигает условного экстремума в точке $a\in S$ (при выполнении условия
+	регулярности), то существуют $\lambda_1,\dots,\lambda_m\in\RR$ такие, что
+	\[
+	\nabla h(a)=\sum_{j=1}^{m}\lambda_j\,\nabla f_j(a).
+	\]
+\end{Theorem}
+
+\begin{Remark}{Геометрический смысл}{}
+	Равенство означает, что $\nabla h(a)$ лежит в линейной оболочке
+	$\operatorname{span}\{\nabla f_1(a),\dots,\nabla f_m(a)\}$. Эквивалентно: всякий
+	вектор $g$, ортогональный всем $\nabla f_j(a)$ (то есть касательный к $S$ в точке
+	$a$), ортогонален и $\nabla h(a)$. Линии уровня $h$ касаются поверхности $S$.
+\end{Remark}
+
+\begin{proof}
+	По замечанию достаточно построить $n:=d-m$ линейно независимых векторов
+	$g_1,\dots,g_n\in\RR^d$, каждый из которых ортогонален и $\nabla h(a)$, и всем
+	$\nabla f_p(a)$: тогда $\operatorname{span}\{\nabla f_p(a)\}$ имеет размерность $m$,
+	его ортогональное дополнение --- размерность $n$, и из $g_k\perp\nabla h(a)$ для
+	базиса этого дополнения следует $\nabla h(a)\in\operatorname{span}\{\nabla f_p(a)\}$.
+
+	\textbf{Разбиение переменных.} Ввиду условия регулярности можно считать (переставив
+	координаты), что обратима подматрица Якоби по последним $m$ переменным. Запишем
+	$x=(\xi,y)$, где $\xi=(x_1,\dots,x_n)\in\RR^n$, $y=(x_{n+1},\dots,x_d)\in\RR^m$, и
+	рассмотрим $f$ как отображение $f(\xi,y)\colon\RR^n\times\RR^m\to\RR^m$. В точке
+	$a=(\xi_0,y_0)$ матрица $f'_y(a)$ обратима и $f(a)=0$.
+
+	\textbf{Применение теоремы о неявной функции.} По теореме о неявной функции в
+	окрестности $\xi_0$ существует отображение $\vphi\colon\RR^n\to\RR^m$ такое, что
+	$y_0=\vphi(\xi_0)$ и
+	\[
+	f(\xi,\vphi(\xi))\equiv 0.
+	\]
+	Подставляя связь в целевую функцию, получаем функцию $n$ свободных переменных
+	$H(\xi):=h(\xi,\vphi(\xi))$, для которой $\xi_0$ --- точка \emph{безусловного}
+	локального экстремума. По необходимому условию безусловного экстремума
+	\[
+	\frac{\partial H}{\partial\xi_k}(\xi_0)=0,\qquad k=1,\dots,n.
+	\]
+
+	\textbf{Дифференцирование тождеств.} По правилу цепочки
+	\[
+	\frac{\partial H}{\partial\xi_k}(\xi_0)
+	=\partial_k h(a)+\sum_{j=1}^{m}\partial_{n+j}h(a)\,\frac{\partial\vphi_j}{\partial\xi_k}(\xi_0)=0,
+	\tag{1}
+	\]
+	а дифференцируя тождества связи $f_p(\xi,\vphi(\xi))\equiv 0$ по $\xi_k$,
+	\[
+	\partial_k f_p(a)+\sum_{j=1}^{m}\partial_{n+j}f_p(a)\,\frac{\partial\vphi_j}{\partial\xi_k}(\xi_0)=0,
+	\qquad p=1,\dots,m.
+	\tag{2}
+	\]
+
+	\textbf{Построение векторов $g_k$.} Для каждого $k=1,\dots,n$ положим
+	\[
+	g_k:=\Bigl(\underbrace{0,\dots,1,\dots,0}_{n},\ \underbrace{\tfrac{\partial\vphi_1}{\partial\xi_k}(\xi_0),\dots,\tfrac{\partial\vphi_m}{\partial\xi_k}(\xi_0)}_{m}\Bigr),
+	\]
+	где единица стоит на $k$-м месте в первой группе. Эти $n$ векторов линейно
+	независимы (первые $n$ координат образуют единичную матрицу). Вычислим скалярные
+	произведения:
+	\[
+	\langle\nabla h(a),g_k\rangle
+	=\partial_k h(a)+\sum_{i=n+1}^{n+m}\partial_i h(a)\,\frac{\partial\vphi_{i-n}}{\partial\xi_k}(\xi_0)
+	\overset{(1)}{=}0,
+	\]
+	\[
+	\langle\nabla f_p(a),g_k\rangle
+	=\partial_k f_p(a)+\sum_{i=n+1}^{n+m}\partial_i f_p(a)\,\frac{\partial\vphi_{i-n}}{\partial\xi_k}(\xi_0)
+	\overset{(2)}{=}0.
+	\]
+	Итак, все $g_k$ ортогональны $\nabla h(a)$ и каждому $\nabla f_p(a)$.
+
+	Мы получили $n=d-m$ линейно независимых векторов в ортогональном дополнении к
+	$\operatorname{span}\{\nabla f_p(a)\}$ (размерность которого равна $m$). Так как
+	$g_k\perp\nabla h(a)$, вектор $\nabla h(a)$ ортогонален всему этому дополнению, а
+	значит лежит в $\operatorname{span}\{\nabla f_1(a),\dots,\nabla f_m(a)\}$:
+	\[
+	\nabla h(a)=\sum_{j=1}^{m}\lambda_j\nabla f_j(a)
+	\]
+	для некоторых $\lambda_j\in\RR$.
+\end{proof}
+
+\begin{Example}{Экстремум $xy$ на окружности}{}
+	Пусть $d=2$, связь $f(x,y)=x^2+y^2-1=0$, целевая функция $h(x,y)=xy$. Система
+	$\nabla h=\lambda\nabla f$, $f=0$ даёт
+	\[
+	\begin{cases}
+		y=2\lambda x,\\
+		x=2\lambda y,\\
+		x^2+y^2=1.
+	\end{cases}
+	\]
+	Подстановка даёт $x=4\lambda^2 x$; при $x\ne 0$ получаем $\lambda=\pm\tfrac12$ и
+	$|x|=|y|=\tfrac{1}{\sqrt2}$. Это четыре подозрительные точки: в двух из них
+	$h=\tfrac12$ (максимум), в двух $h=-\tfrac12$ (минимум).
+\end{Example}

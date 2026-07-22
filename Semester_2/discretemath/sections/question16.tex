@@ -1,0 +1,106 @@
+% !TEX root = ../discretemath.tex
+
+\section{Моменты случайной величины}
+
+
+\subsection{Основные определения}
+
+\begin{Definition}{Моменты случайной величины}{}
+	Пусть $\xi$ — случайная величина, $k\in\mathbb N$.
+	\begin{itemize}
+		\item \textbf{Начальный момент} порядка $k$:
+		\[
+		\mu'_k=\mathbb{E}[\xi^k].
+		\]
+		При $k=1$: $\mu'_1=\mathbb{E}[\xi]$ — математическое ожидание.
+		\item \textbf{Центральный момент} порядка $k\ge 2$:
+		\[
+		\mu_k=\mathbb{E}\bigl[(\xi-\mathbb{E}[\xi])^k\bigr].
+		\]
+		По определению $\mu_1=0$, а $\mu_2=\mathbb{E}\bigl[(\xi-\mathbb{E}[\xi])^2\bigr]$ — дисперсия.
+	\end{itemize}
+\end{Definition}
+
+\begin{Remark}{}{}
+	Начальный момент $\mu'_k$ «привязан к нулю», центральный $\mu_k$ — «к среднему». Первый момент задаёт положение, второй центральный (дисперсия) — разброс; моменты высших порядков характеризуют форму распределения (асимметрию, остроту).
+\end{Remark}
+
+\subsection{Связь центральных и начальных моментов}
+
+\begin{Theorem}{Выражение центрального момента через начальные}{central-via-initial}
+	Для любого $k\ge 2$:
+	\[
+	\mu_k=\sum_{s=0}^{k}(-1)^s\binom{k}{s}\bigl(\mathbb{E}[\xi]\bigr)^s\cdot\mu'_{k-s}.
+	\]
+\end{Theorem}
+
+\begin{proof}
+	Раскроем степень по биному Ньютона и применим линейность матожидания:
+	\begin{align*}
+		\mu_k
+		&=\mathbb{E}\bigl[(\xi-\mathbb{E}[\xi])^k\bigr]
+		=\mathbb{E}\!\left[\sum_{s=0}^{k}(-1)^s\binom{k}{s}(\mathbb{E}[\xi])^s\xi^{k-s}\right]\\
+		&=\sum_{s=0}^{k}(-1)^s\binom{k}{s}(\mathbb{E}[\xi])^s\,\mathbb{E}[\xi^{k-s}]
+		=\sum_{s=0}^{k}(-1)^s\binom{k}{s}(\mathbb{E}[\xi])^s\,\mu'_{k-s},
+	\end{align*}
+	где $(\mathbb{E}[\xi])^s$ — константа, вынесена из-под матожидания, и $\mathbb{E}[\xi^{k-s}]=\mu'_{k-s}$.
+\end{proof}
+
+\begin{Corollary}{}{}
+	Поскольку $\mathbb{E}[\xi]=\mu'_1$, формула принимает вид
+	\[
+	\mu_k=\sum_{s=0}^{k}(-1)^s\binom{k}{s}(\mu'_1)^s\,\mu'_{k-s}.
+	\]
+\end{Corollary}
+
+\begin{Corollary}{}{}
+	Каждый центральный момент $\mu_k$ выражается через начальные $\mu'_1,\dots,\mu'_k$, и наоборот: каждый начальный $\mu'_k$ выражается через $\mu'_1$ и центральные $\mu_2,\dots,\mu_k$.
+\end{Corollary}
+
+\begin{Remark}{}{}
+	Это возможно потому, что наборы $\{1,\xi,\xi^2,\ldots,\xi^k\}$ и $\{1,(\xi-\mathbb E\xi),(\xi-\mathbb E\xi)^2,\ldots,(\xi-\mathbb E\xi)^k\}$ — базисы одной и той же линейной оболочки. Переход между ними — треугольное (унитреугольное) преобразование, потому обратимое.
+\end{Remark}
+
+\subsection{Единственность распределения по моментам}
+
+\begin{Theorem}{Моменты определяют распределение}{}
+	Пусть $\xi$ и $\beta$ — случайные величины над конечным вероятностным пространством $P$, и все их начальные моменты совпадают: $\mu'_k(\xi)=\mu'_k(\beta)$ для всех $k$. Тогда $\xi\overset{d}{=}\beta$ (одинаковое распределение).
+\end{Theorem}
+
+\begin{proof}
+	Пусть $x_1,\dots,x_n$ — все возможные значения $\xi$ и $\beta$ (объединение). Обозначим $d_\xi(i)=P[\xi=x_i]$, $\sum_i d_\xi(i)=1$, и аналогично $d_\beta(i)=P[\beta=x_i]$.
+
+	Рассмотрим матрицу Вандермонда
+	\[
+	M=\begin{pmatrix}
+		1 & 1 & \cdots & 1\\
+		x_1 & x_2 & \cdots & x_n\\
+		x_1^2 & x_2^2 & \cdots & x_n^2\\
+		\vdots & \vdots & \ddots & \vdots\\
+		x_1^{n-1} & x_2^{n-1} & \cdots & x_n^{n-1}
+	\end{pmatrix}.
+	\]
+	Тогда
+	\[
+	M\begin{pmatrix}d_\xi(1)\\\vdots\\d_\xi(n)\end{pmatrix}
+	=\begin{pmatrix}\sum_i d_\xi(i)\\\sum_i x_i d_\xi(i)\\\vdots\\\sum_i x_i^{n-1}d_\xi(i)\end{pmatrix}
+	=\begin{pmatrix}1\\\mu'_1(\xi)\\\vdots\\\mu'_{n-1}(\xi)\end{pmatrix}.
+	\]
+	Так как моменты совпадают, $M(d_\xi-d_\beta)=\mathbf 0$.
+
+	\textbf{Невырожденность $M$.} Определитель $\det M$ — однородный многочлен от $x_1,\dots,x_n$ степени $\tfrac{n(n-1)}{2}$. Он обращается в нуль при $x_i=x_j$, поэтому каждый множитель $(x_i-x_j)$ делит $\det M$; так как
+	\[
+	\deg(\det M)=\deg\prod_{i<j}(x_i-x_j)=\frac{n(n-1)}{2},
+	\]
+	то $\det M=C\prod_{i<j}(x_i-x_j)$. Сравнивая коэффициент при мономе $x_1^0x_2^1\cdots x_n^{n-1}$ (он равен $1$ в обоих выражениях), получаем $C=1$, откуда
+	\[
+	\det M=\prod_{i<j}(x_i-x_j)\ne 0
+	\]
+	при попарно различных $x_i$.
+
+	Значит, $M$ невырождена, и из $M(d_\xi-d_\beta)=\mathbf 0$ следует $d_\xi(i)=d_\beta(i)$ для всех $i$, то есть $\xi$ и $\beta$ имеют одинаковое распределение.
+\end{proof}
+
+\begin{Remark}{}{}
+	Конечность пространства существенна: достаточно первых $n-1$ моментов (по числу значений). Для бесконечных распределений совпадение всех моментов в общем случае распределение \emph{не} определяет (проблема моментов).
+\end{Remark}

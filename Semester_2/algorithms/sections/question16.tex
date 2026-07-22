@@ -1,0 +1,176 @@
+% !TEX root = ../algorithms.tex
+
+\section{Задача проверки простоты числа. Тест Ферма. Числа Кармайкла. Алгоритм Миллера--Рабина}
+
+Пусть число $n$ задано своей двоичной записью, занимающей $\log_2 n$ бит (например, $4000$ бит). Наивный алгоритм проверки простоты --- перебор делителей от $2$ до $\sqrt{n}$ --- работает за $O(\sqrt{n})$ арифметических операций. Поскольку $\sqrt{n} = 2^{(\log_2 n)/2}$, для 4000-битного числа это порядка $2^{2000}$ операций --- на практике неосуществимо. Цель: алгоритм со сложностью $O\!\left((\log n)^{O(1)}\right)$, то есть полиномиальной от длины входа. Ключевая идея --- малая теорема Ферма.
+
+\subsection{Тест Ферма}
+
+\begin{Theorem}{Малая теорема Ферма}{}
+	Для любого простого числа $p$ и любого $a \geq 1$ выполнено $a^p \equiv a \pmod{p}$. В частности, если $\gcd(a,p)=1$, то $a^{p-1} \equiv 1 \pmod{p}$.
+\end{Theorem}
+
+Если $a^{n-1} \equiv 1 \pmod{n}$, то $a^{n-1} = 1 + kn$, откуда $\gcd(a,n) = 1$, то есть $a \in \mathbb{Z}_n^*$.
+
+\begin{Definition}{}{}
+	Множество $\mathbb{Z}_n^* = \{a \in \{1,\ldots,n-1\} : \gcd(a,n)=1\}$ образует \emph{мультипликативную группу} по умножению по модулю $n$.
+\end{Definition}
+
+\begin{Definition}{}{}
+	$F = \{a \in \mathbb{Z}_n^* : a^{n-1} \equiv 1 \pmod{n}\}$.
+\end{Definition}
+
+\begin{Statement}{}{}
+	$F \leq \mathbb{Z}_n^*$, то есть $F$ --- подгруппа.
+\end{Statement}
+
+\begin{proof}
+	Для любых $a,b \in F$:
+	\begin{align*}
+		(ab)^{n-1} &= a^{n-1} \cdot b^{n-1} \equiv 1 \cdot 1 = 1 \pmod{n},\\
+		(a^{-1})^{n-1} &= (a^{n-1})^{-1} \equiv 1^{-1} = 1 \pmod{n}.
+	\end{align*}
+	Единица $1 \in F$. Следовательно, $F$ --- подгруппа.
+\end{proof}
+
+По теореме Лагранжа $|F|$ делит $|\mathbb{Z}_n^*|$.
+
+\subsubsection*{Алгоритм (тест Ферма)}
+
+\begin{algorithmic}
+	\State $a \gets \mathrm{random}(2,\; n-2)$
+	\If{$a^{n-1} \not\equiv 1 \pmod{n}$}
+	\State \textbf{вернуть} <<составное>>
+	\Else
+	\State \textbf{вернуть} <<возможно простое>>
+	\EndIf
+\end{algorithmic}
+
+\begin{Corollary}{}{}
+	Если $\exists\, b \in \mathbb{Z}_n^* \setminus F$ (то есть $b^{n-1} \not\equiv 1 \pmod{n}$), то $|F| \leq \dfrac{|\mathbb{Z}_n^*|}{2}$. Тогда тест Ферма ошибается с вероятностью $\leq \tfrac{1}{2}$ на одной итерации и $\leq \dfrac{1}{2^k}$ при $k$ запусках.
+\end{Corollary}
+
+\subsection{Числа Кармайкла}
+
+\begin{Definition}{}{}
+	Составное $n$ называется \emph{числом Кармайкла}, если $F = \mathbb{Z}_n^*$, то есть $a^{n-1} \equiv 1 \pmod{n}$ для всех $a$ с $\gcd(a,n)=1$.
+\end{Definition}
+
+\begin{Remark}{}{}
+	На числах Кармайкла тест Ферма всегда ошибается (выдаёт <<возможно простое>>), независимо от числа итераций. Наименьшее число Кармайкла: $561 = 3 \cdot 11 \cdot 17$. Таких чисел бесконечно много.
+\end{Remark}
+
+Тест Миллера--Рабина устраняет этот недостаток.
+
+\subsection{Тест Миллера--Рабина}
+
+Пусть $n$ нечётное, $n \geq 3$. Запишем $n - 1 = d \cdot 2^t$, где $d$ нечётное, $t \geq 1$. Тогда для любого $a$:
+\begin{align*}
+	a^{n-1} \equiv 1 \pmod{n}
+	&\;\Longleftrightarrow\; a^{d\cdot 2^t} - 1 \equiv 0 \pmod{n}\\
+	&\;\Longleftrightarrow\; \bigl(a^{d\cdot 2^{t-1}}+1\bigr)\bigl(a^{d\cdot 2^{t-1}}-1\bigr) \equiv 0 \pmod{n}\\
+	&\;\Longleftrightarrow\; \bigl(a^{d\cdot 2^{t-1}}+1\bigr)
+	\bigl(a^{d\cdot 2^{t-2}}+1\bigr)
+	\cdots
+	\bigl(a^{d}+1\bigr)
+	\bigl(a^{d}-1\bigr)
+	\equiv 0 \pmod{n}.
+\end{align*}
+
+\begin{Statement}{}{}
+	Если $n$ простое и $\gcd(a,n)=1$, то выполняется одно из условий:
+	\[
+	a^d \equiv 1, \quad
+	a^d \equiv -1, \quad
+	a^{d\cdot 2} \equiv -1, \quad
+	\ldots, \quad
+	a^{d\cdot 2^{t-1}} \equiv -1 \pmod{n}.
+	\]
+\end{Statement}
+
+\begin{proof}
+	Так как $\mathbb{Z}/n\mathbb{Z}$ --- поле, $n$ делит ровно один из сомножителей разложения $a^{d\cdot 2^t}-1 = (a^d-1)(a^d+1)(a^{d\cdot 2}+1)\cdots(a^{d\cdot 2^{t-1}}+1)$.
+\end{proof}
+
+\subsubsection*{Алгоритм (тест Миллера--Рабина, $k$ итераций)}
+
+\begin{algorithmic}
+	\For{$i = 1,\ldots,k$}
+	\State $a \gets \mathrm{random}(2,\; n-2)$
+	\If{$a^{d} \not\equiv 1 \pmod{n}$
+		\textbf{ и } $a^{d} \not\equiv -1 \pmod{n}$
+		\textbf{ и } $a^{d\cdot 2} \not\equiv -1 \pmod{n}$
+		\textbf{ и } $\ldots$
+		\textbf{ и } $a^{d\cdot 2^{t-1}} \not\equiv -1 \pmod{n}$}
+	\State \textbf{вернуть} <<составное>>
+	\EndIf
+	\EndFor
+	\State \textbf{вернуть} <<возможно простое>>
+\end{algorithmic}
+
+\subsection{Анализ вероятности ошибки}
+
+\begin{Theorem}{}{}
+	Для любого нечётного составного $n \geq 3$ вероятность того, что случайный $a \in \{2,\ldots,n-2\}$ не будет обнаружен тестом Миллера--Рабина как свидетель составности $n$, не превышает $\tfrac{1}{2}$. При $k$ независимых итерациях вероятность ошибки не превышает $\dfrac{1}{2^k}$.
+\end{Theorem}
+
+\begin{proof}
+	\textbf{Случай 1: $n$ не является числом Кармайкла.} Тогда $\exists\, b \in \mathbb{Z}_n^* \setminus F$, и по следствию выше $|F| \leq |\mathbb{Z}_n^*|/2$. Поскольку тест Миллера--Рабина строже теста Ферма (все $a$, проходящие тест МР, обязательно лежат в $F$), вероятность ошибки на одной итерации $\leq \tfrac{1}{2}$.
+	
+	\medskip
+	\textbf{Случай 2: $n$ --- число Кармайкла ($F = \mathbb{Z}_n^*$).}
+	
+	\smallskip
+	\textit{Шаг 1. Выбор $j$ и $c$.}\; Выберем наибольшее $j \in \{0,1,\ldots,t-1\}$, для которого $\exists\, c \in \mathbb{Z}_n^*$ такое, что $c^{d\cdot 2^j} \equiv -1 \pmod{n}$. Такие $j$ и $c$ существуют: при $j = 0$, $c = -1$ имеем $(-1)^d \equiv -1 \pmod{n}$ (так как $d$ нечётное).
+	
+	\smallskip
+	\textit{Шаг 2. Определение $K$.}\; Положим
+	\[
+	K = \bigl\{a \in \mathbb{Z}_n^* : a^{d\cdot 2^j} \equiv \pm 1 \pmod{n}\bigr\}.
+	\]
+	Если $a$ проходит тест ($a^d \equiv 1$ или $a^{d\cdot 2^i} \equiv -1$ для некоторого $i$), то $a \in K$:
+	\begin{itemize}
+		\item $i < j$:\; $a^{d\cdot 2^j} = (a^{d\cdot 2^i})^{2^{j-i}} \equiv (-1)^{2^{j-i}} = 1$ (показатель $2^{j-i}$ чётный). $\checkmark$
+		\item $i = j$:\; $a^{d\cdot 2^j} \equiv -1$. $\checkmark$
+		\item $i > j$:\; невозможно по максимальности $j$.
+		\item $a^d \equiv 1$:\; $a^{d\cdot 2^j} \equiv 1$. $\checkmark$
+	\end{itemize}
+	Если $a$ проходит тест, то $a^{n-1} \equiv 1 \pmod{n}$, откуда $\gcd(a,n)=1$ и $a \in \mathbb{Z}_n^*$.
+	
+	\smallskip
+	\textit{Шаг 3. $K \leq \mathbb{Z}_n^*$.}\; Для $a,b \in K$:
+	\begin{align*}
+		(ab)^{d\cdot 2^j}
+		&= a^{d\cdot 2^j} \cdot b^{d\cdot 2^j} \equiv (\pm 1)(\pm 1) \equiv \pm 1 \pmod{n},\\
+		(a^{-1})^{d\cdot 2^j}
+		&= \bigl(a^{d\cdot 2^j}\bigr)^{-1} \equiv (\pm 1)^{-1} \equiv \pm 1 \pmod{n}.
+	\end{align*}
+	Следовательно, $K$ --- подгруппа $\mathbb{Z}_n^*$.
+	
+	\smallskip
+	\textit{Шаг 4. Нахождение $y \in \mathbb{Z}_n^* \setminus K$.}\; Известно (без доказательства), что число Кармайкла $n$ не является степенью простого числа $p^\ell$. Следовательно, $n = n_1 \cdot n_2$, где $\gcd(n_1,n_2)=1$ и $n_1,n_2 > 1$. По Китайской теореме об остатках найдём $y \in \mathbb{Z}_n$ такое, что
+	\[
+	y \equiv c \pmod{n_1}, \qquad y \equiv 1 \pmod{n_2}.
+	\]
+	Из $c^{d\cdot 2^j} \equiv -1 \pmod{n}$ следует $c^{d\cdot 2^j} \equiv -1 \pmod{n_1}$. Тогда:
+	\begin{enumerate}
+		\item $y^{d\cdot 2^j} \equiv c^{d\cdot 2^j} \equiv -1 \pmod{n_1}$, откуда $y^{d\cdot 2^j} \not\equiv 1 \pmod{n}$ (иначе $1 \equiv -1 \pmod{n_1}$, т.\,е. $n_1 \mid 2$; но $n_1$ нечётное --- противоречие).
+		\item $y^{d\cdot 2^j} \equiv 1 \pmod{n_2}$, откуда $y^{d\cdot 2^j} \not\equiv -1 \pmod{n}$ (иначе $-1 \equiv 1 \pmod{n_2}$, т.\,е. $n_2 \mid 2$ --- противоречие).
+	\end{enumerate}
+	Следовательно, $y \notin K$.
+	
+	\smallskip
+	\textit{Шаг 5. $y \in \mathbb{Z}_n^*$.}
+	\begin{itemize}
+		\item $\gcd(c,n_1)=1$ (так как $c \in \mathbb{Z}_n^*$) и $y \equiv c \pmod{n_1}$ влекут $\gcd(y,n_1)=1$.
+		\item $y \equiv 1 \pmod{n_2}$ влечёт $\gcd(y,n_2)=1$.
+	\end{itemize}
+	Итого $\gcd(y,n)=1$, то есть $y \in \mathbb{Z}_n^*$.
+	
+	\smallskip
+	\textit{Вывод.}\; Так как $y \in \mathbb{Z}_n^* \setminus K$, подгруппа $K$ строгая. По теореме Лагранжа $|K| \leq \dfrac{|\mathbb{Z}_n^*|}{2}$, откуда вероятность ошибки теста на одной итерации $\leq \tfrac{1}{2}$, а при $k$ независимых итерациях $\leq \dfrac{1}{2^k}$.
+\end{proof}
+
+\begin{Remark}{}{}
+	Время работы: одно умножение $N$-разрядных чисел по модулю $n$ стоит $O\!\left(N (\log N)^{O(1)}\right)$. На одну итерацию нужно $O(N)$ таких умножений, итого $O\!\left(N^2 (\log N)^{O(1)}\right)$. Существует также детерминированный тест Агравала--Каяля--Саксены (2004), работающий за полиномиальное время порядка $O(N^6)$.
+\end{Remark}

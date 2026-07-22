@@ -1,0 +1,49 @@
+% !TEX root = ../algebra_02.tex
+
+\section{Разложение конечной циклической группы}
+
+\begin{Theorem}{Классификация циклических групп}{thm:cyclic-classification}
+	Пусть $G=\langle g\rangle$ --- циклическая группа.
+	\begin{enumerate}
+		\item Если $|G|=\infty$, то $G\cong \mathbb{Z}$.
+		\item Если $|G|=n<\infty$, то $G\cong \mathbb{Z}/n\mathbb{Z}$.
+	\end{enumerate}
+\end{Theorem}
+
+\begin{proof}
+	Рассмотрим гомоморфизм
+	\[
+	\varphi\colon \mathbb{Z} \to G, \qquad k\mapsto g^k.
+	\]
+	Он сюръективен, поскольку $G=\langle g\rangle$. По теореме о подгруппах группы $\mathbb{Z}$ существует $n\ge 0$ такое, что $\Ker\varphi=n\mathbb{Z}.$
+	
+	Если $n=0$, то $\Ker\varphi=\{0\}$, и потому $\varphi$ инъективен. Следовательно, $G\cong \mathbb{Z}$.
+	
+	Если $n>0$, то по первой теореме об изоморфизме
+	\[
+	\mathbb{Z}/n\mathbb{Z} = \mathbb{Z}/\Ker\varphi \cong \Im\varphi = G.
+	\]
+	Если при этом $|G|<\infty$, то обязательно $n=|G|$.
+\end{proof}
+
+\begin{Theorem}{Разложение конечной циклической группы}{thm:cyclic-decomposition}
+	Пусть $m, n \in \mathbb{N}$ и $\gcd(m, n) = 1$. Тогда имеет место изоморфизм:
+	\[
+	\mathbb{Z}/mn\mathbb{Z} \cong (\mathbb{Z}/m\mathbb{Z}) \times (\mathbb{Z}/n\mathbb{Z}).
+	\]
+\end{Theorem}
+
+\begin{proof}
+	Рассмотрим элемент $g = ([1]_m, [1]_n) \in (\mathbb{Z}/m\mathbb{Z}) \times (\mathbb{Z}/n\mathbb{Z})$. Найдем его порядок.
+	
+	Условие $kg = 0$ в аддитивной записи означает, что $k[1]_m = [0]_m$ и $k[1]_n = [0]_n$, что равносильно $m \mid k$ и $n \mid k$. 
+	
+	Так как числа взаимно просты ($\gcd(m, n) = 1$), это эквивалентно делимости на их произведение: $mn \mid k$.
+	Значит, наименьшее натуральное $k$, зануляющее $g$, равно $mn$, то есть порядок элемента $g$ равен $mn$.
+	
+	Поскольку порядок всей группы $(\mathbb{Z}/m\mathbb{Z}) \times (\mathbb{Z}/n\mathbb{Z})$ также равен $mn$, элемент $g$ порождает всю группу:
+	\[
+	\langle ([1]_m, [1]_n) \rangle = (\mathbb{Z}/m\mathbb{Z}) \times (\mathbb{Z}/n\mathbb{Z}).
+	\]
+	Так как группа порождается одним элементом, она является циклической. Любая конечная циклическая группа порядка $mn$ изоморфна $\mathbb{Z}/mn\mathbb{Z}$. Следовательно, изоморфизм доказан.
+\end{proof}

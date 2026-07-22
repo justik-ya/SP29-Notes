@@ -1,0 +1,542 @@
+% !TEX root = ../algorithms.tex
+
+\section{Задача о максимальном потоке в сети. Формулировка в лин.~прог. Дополняющие пути. Алгоритм Форда--Фалкерсона. Анализ трудоёмкости для целочисленной задачи о максимальном потоке. Теорема о максимальном потоке и минимальном разрезе}
+
+\begin{Definition}{Транспортная сеть}{transport-network}
+	Пусть дан ориентированный граф \(G=(V,E,c)\), где функция
+	\[
+	c\colon E \to \RR_{\ge 0}
+	\]
+	задаёт пропускные способности рёбер.
+	
+	Граф \(G\) называется \emph{транспортной сетью}, если в нём выделены две вершины:
+	\[
+	s \in V \quad \text{(исток)}, \qquad
+	t \in V \quad \text{(сток)},
+	\]
+	причём
+	\[
+	\deg^{-}(s)=0, \qquad \deg^{+}(t)=0.
+	\]
+\end{Definition}
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[arr]
+		\node[nd source] (s) at (0,    0)   {$s$};
+		\node[nd]        (a) at (2.8,  1.6) {};
+		\node[nd]        (b) at (6,    1.6) {};
+		\node[nd]        (c) at (2.8, -1.6) {};
+		\node[nd]        (d) at (6,   -1.6) {};
+		\node[nd source] (t) at (8.5,  0)   {$t$};
+		
+		\draw[arr] (s) -- node[above left,  lbl] {$2$}           (a);
+		\draw[arr] (s) -- node[below left,  lbl] {$2$}           (c);
+		\draw[arr] (a) -- node[above,       lbl] {$9$}           (b);
+		\draw[arr] (a) to[bend left=18]
+		node[right, pos=0.45, lbl] {$5$}       (c);
+		\draw[arr] (c) to[bend left=18]
+		node[left,  pos=0.45, lbl] {$4$}       (a);
+		\draw[arr] (b) -- node[above right, lbl] {$1$}           (t);
+		\draw[arr] (c) -- node[below,       lbl] {$3$}           (d);
+		\draw[arr] (d) -- node[below right, lbl] {$3$}           (t);
+	\end{tikzpicture}
+	\caption{Пример транспортной сети. Числа у рёбер --- пропускные способности $c(u,v)$.}
+	\label{fig:network}
+\end{figure}
+
+\begin{Definition}{Поток}{}
+	Потоком в транспортной сети называется функция $f\colon E \to \RR_{\ge 0}$, такая что:
+	\begin{enumerate}[label=\arabic*)]
+		\item \textbf{Ограничение пропускной способности:}
+		\[
+		0 \le f(u,v) \le c(u,v)
+		\qquad \forall (u,v)\in E.
+		\]
+		\item \textbf{Закон сохранения потока:} для любой вершины $u \in V \setminus \{s,t\}$ выполнено
+		\[
+		\sum_{(v,u)\in E} f(v,u)
+		=
+		\sum_{(u,w)\in E} f(u,w).
+		\]
+	\end{enumerate}
+\end{Definition}
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[arr]
+		\node[nd source] (s) at (0,    0)   {$s$};
+		\node[nd]        (a) at (2.8,  1.6) {};
+		\node[nd]        (b) at (6,    1.6) {};
+		\node[nd]        (c) at (2.8, -1.6) {};
+		\node[nd]        (d) at (6,   -1.6) {};
+		\node[nd source] (t) at (8.5,  0)   {$t$};
+		
+		\draw[arr] (s) -- node[above left,  lbl] {$2\mid\textcolor{blue}{2}$} (a);
+		\draw[arr] (s) -- node[below left,  lbl] {$2\mid\textcolor{blue}{2}$} (c);
+		\draw[arr] (a) -- node[above,       lbl] {$9\mid\textcolor{blue}{1}$} (b);
+		\draw[arr] (a) to[bend left=18]
+		node[right, pos=0.45, lbl] {$5\mid\textcolor{blue}{1}$} (c);
+		\draw[arr] (c) to[bend left=18]
+		node[left,  pos=0.45, lbl] {$4\mid\textcolor{blue}{0}$} (a);
+		\draw[arr] (b) -- node[above right, lbl] {$1\mid\textcolor{blue}{1}$} (t);
+		\draw[arr] (c) -- node[below,       lbl] {$3\mid\textcolor{blue}{3}$} (d);
+		\draw[arr] (d) -- node[below right, lbl] {$3\mid\textcolor{blue}{3}$} (t);
+		
+		\node[lbl, align=left] at (9.6, 1.5) {%
+			$c(e)\mid{\color{blue}f(e)}$\\[2pt]
+			$\lvert f \rvert = 4$};
+	\end{tikzpicture}
+	\caption{Поток величины $4$ в транспортной сети из рис.~\ref{fig:network}.
+		Рядом с каждым ребром указана пара \emph{пропускная способность\,|\,поток}.}
+	\label{fig:flow}
+\end{figure}
+
+\begin{Definition}{Величина потока}{}
+	Величиной потока $f$ называется число
+	\[
+	|f|=\sum_{(s,v)\in E} f(s,v).
+	\]
+	Эквивалентно,
+	\[
+	|f|=\sum_{(u,t)\in E} f(u,t).
+	\]
+\end{Definition}
+
+\begin{Proposition}{}{}
+	Для любого потока $f$ выполнено
+	\[
+	\sum_{(s,v)\in E} f(s,v)=\sum_{(u,t)\in E} f(u,t).
+	\]
+\end{Proposition}
+
+\begin{proof}
+	Просуммируем закон сохранения потока по всем вершинам из множества $V\setminus\{s,t\}$. Все слагаемые, соответствующие внутренним рёбрам, сократятся попарно, и останется только суммарный поток, выходящий из истока, и суммарный поток, входящий в сток.
+\end{proof}
+
+\subsection{Задача о максимальном потоке}
+
+Требуется найти поток максимальной величины.
+
+\begin{Remark}{}{}
+	Многие комбинаторные задачи допускают сведение к задаче о максимальном потоке.
+\end{Remark}
+
+\begin{Remark}{}{}
+	Будем считать, что в графе нет кратных рёбер. Это не ограничивает общность: несколько параллельных рёбер можно заменить одним ребром с суммарной пропускной способностью.
+\end{Remark}
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[arr, node distance=2.8cm]
+		\node[nd] (A1) at (0,0) {};
+		\node[nd] (B1) at (3.2,0) {};
+		
+		\draw[arr, bend left=45]  (A1) to node[above left, lbl] {$3$} (B1);
+		\draw[arr, bend left=12]  (A1) to node[above,      lbl] {$2$} (B1);
+		\draw[arr, bend left=45]  (B1) to node[below right,lbl] {$1$} (A1);
+		
+		\node[font=\Large] at (4.8,0) {$\Longrightarrow$};
+		
+		\node[nd] (A2) at (6.5,0) {};
+		\node[nd] (B2) at (9.7,0) {};
+		
+		\draw[arr, bend left=35] (A2) to node[above, lbl] {$5$} (B2);
+		\draw[arr, bend left=35] (B2) to node[below, lbl] {$1$} (A2);
+	\end{tikzpicture}
+	\caption{Два параллельных ребра $u\to v$ с пропускными способностями $3$ и $2$
+		заменяются одним ребром с суммарной пропускной способностью $5$.
+		Ребро $v\to u$ остаётся без изменений.}
+	\label{fig:parallel}
+\end{figure}
+
+\begin{Proposition}{}{}
+	Задача о максимальном потоке допускает формулировку в виде задачи линейного программирования:
+	\[
+	\max \sum_{(s,v)\in E} f(s,v)
+	\]
+	при ограничениях
+	\[
+	0 \le f(u,v) \le c(u,v)
+	\qquad \forall (u,v)\in E,
+	\]
+	\[
+	\sum_{(v,u)\in E} f(v,u)-\sum_{(u,w)\in E} f(u,w)=0
+	\qquad \forall u\in V\setminus\{s,t\}.
+	\]
+\end{Proposition}
+
+\subsection{Дополняющие пути и остаточная сеть}
+
+Начинаем с нулевого потока $f\equiv 0$ и на каждом шаге пытаемся увеличить поток, пропуская дополнительную порцию из $s$ в $t$ по некоторому допустимому пути. Однако иногда для увеличения общего потока необходимо не только добавлять поток по прямым рёбрам, но и частично \emph{отменять} ранее проведённый поток по некоторым рёбрам. Для формализации этого вводится остаточная сеть.
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[arr]
+		% ---- Левая: исходная сеть ----
+		\begin{scope}
+			\node[lbl, above] at (2, 2.2) {Исходная сеть};
+			\node[nd source] (s1) at (0,  0)   {$s$};
+			\node[nd]        (u1) at (2,  1.3) {$u$};
+			\node[nd]        (v1) at (2, -1.3) {$v$};
+			\node[nd source] (t1) at (4,  0)   {$t$};
+			
+			\draw[arr] (s1) -- node[above left,  lbl] {$1\mid0$} (u1);
+			\draw[arr] (s1) -- node[below left,  lbl] {$1\mid0$} (v1);
+			\draw[arr] (u1) -- node[right,       lbl] {$1\mid0$} (v1);
+			\draw[arr] (u1) -- node[above right, lbl] {$1\mid0$} (t1);
+			\draw[arr] (v1) -- node[below right, lbl] {$1\mid0$} (t1);
+		\end{scope}
+		
+		\node at (5.5, 0) {$\longrightarrow$};
+		
+		% ---- Правая: после жадного выбора ----
+		\begin{scope}[xshift=7cm]
+			\node[lbl, above, align=center] at (2, 2.2) {После пути $s\to u\to v\to t$};
+			\node[nd source] (s2) at (0,  0)   {$s$};
+			\node[nd]        (u2) at (2,  1.3) {$u$};
+			\node[nd]        (v2) at (2, -1.3) {$v$};
+			\node[nd source] (t2) at (4,  0)   {$t$};
+			
+			\draw[arrG] (s2) -- node[above left,  lbl, black] {$\textcolor{green!55!black}{1\mid1}$} (u2);
+			\draw[arrG] (u2) -- node[right,       lbl, black] {$\textcolor{green!55!black}{1\mid1}$} (v2);
+			\draw[arrG] (v2) -- node[below right, lbl, black] {$\textcolor{green!55!black}{1\mid1}$} (t2);
+			
+			\draw[arr]  (s2) -- node[below left,  lbl] {$\textcolor{red!65!black}{1\mid0}$} (v2);
+			\draw[arr]  (u2) -- node[above right, lbl] {$1\mid0$} (t2);
+			
+			\node[lbl, red!70!black, align=center] at (2, -2.5)
+			{поток нельзя увеличить\\без отмены части $f$};
+		\end{scope}
+	\end{tikzpicture}
+	\caption{Жадный выбор пути $s\to u\to v\to t$ насыщает ребро $v\to t$
+		и блокирует путь $s\to v\to t$. Для получения оптимального потока
+		величины~$2$ необходимо <<отменить>> единицу потока через ребро
+		$u\to v$ с помощью обратного ребра остаточной сети.}
+	\label{fig:greedy}
+\end{figure}
+
+\begin{Definition}{}{}
+	Пусть $f$ --- поток в сети $G=(V,E,c)$. \emph{Остаточной сетью} называется ориентированный граф
+	\[
+	G_f=(V,E_f,c_f),
+	\]
+	который строится следующим образом. Для каждого ребра $(u,v)\in E$:
+	\begin{enumerate}[label=\arabic*)]
+		\item если $c(u,v)-f(u,v)>0$, то в $E_f$ добавляется \emph{прямое} ребро $(u,v)$ остаточной пропускной способности
+		\[
+		c_f(u,v)=c(u,v)-f(u,v);
+		\]
+		\item если $f(u,v)>0$, то в $E_f$ добавляется \emph{обратное} ребро $(v,u)$ остаточной пропускной способности
+		\[
+		c_f(v,u)=f(u,v).
+		\]
+	\end{enumerate}
+\end{Definition}
+
+\begin{figure}[htb]
+	\centering
+	\begin{tikzpicture}[arr]
+		% ===== Левая: сеть G с потоком =====
+		\begin{scope}
+			\node[lbl] at (2, 2.1) {$G$ (поток $|f|=1$)};
+			\node[nd source] (s1) at (0,  0)    {$s$};
+			\node[nd]        (u1) at (2,  1.3)  {$u$};
+			\node[nd]        (v1) at (2, -1.3)  {$v$};
+			\node[nd source] (t1) at (4,  0)    {$t$};
+			
+			\draw[arrG] (s1) -- node[above left,  lbl, black] {$1\mid1$} (u1);
+			\draw[arrG] (u1) -- node[right,       lbl, black] {$1\mid1$} (v1);
+			\draw[arrG] (v1) -- node[below right, lbl, black] {$1\mid1$} (t1);
+			\draw[arr]  (s1) -- node[below left,  lbl] {$1\mid0$} (v1);
+			\draw[arr]  (u1) -- node[above right, lbl] {$1\mid0$} (t1);
+		\end{scope}
+		
+		\node at (5.5, 0) {$\xrightarrow{\;G_f\;}$};
+		
+		% ===== Правая: остаточная сеть =====
+		\begin{scope}[xshift=7.2cm]
+			\node[lbl] at (2, 2.1) {$G_f$};
+			\node[nd source] (s2) at (0,  0)   {$s$};
+			\node[nd]        (u2) at (2,  1.3) {$u$};
+			\node[nd]        (v2) at (2, -1.3) {$v$};
+			\node[nd source] (t2) at (4,  0)   {$t$};
+			
+			\draw[arrB] (s2) -- node[below left,  lbl, blue!65!black] {$1$} (v2);
+			\draw[arrB] (u2) -- node[above right, lbl, blue!65!black] {$1$} (t2);
+			
+			\draw[arrR] (u2) -- node[above left,  lbl, red!65!black]  {$1$} (s2);
+			\draw[arrR] (v2) -- node[right,       lbl, red!65!black]  {$1$} (u2);
+			\draw[arrR] (t2) -- node[below right, lbl, red!65!black]  {$1$} (v2);
+			
+			\begin{scope}[on background layer]
+				\draw[green!45!black, line width=4pt, opacity=0.35, rounded corners=4pt]
+				(s2.center) -- (v2.center) -- (u2.center) -- (t2.center);
+			\end{scope}
+			
+			\node[lbl, align=left] at (6.1, 0) {%
+				\textcolor{blue!65!black}{$\dashrightarrow$} прямое\\[3pt]
+				\textcolor{red!65!black}{$\dashrightarrow$} обратное\\[3pt]
+				\textcolor{green!55!black}{\rule{14pt}{3pt}} дополн. путь};
+		\end{scope}
+	\end{tikzpicture}
+	\caption{Построение остаточной сети $G_f$.
+		Синие пунктирные рёбра --- прямые (можно добавить поток),
+		красные пунктирные --- обратные (можно отменить поток).
+		Зелёным выделен дополняющий путь $s\to v\to u\to t$ в $G_f$,
+		позволяющий увеличить поток до~$2$.}
+	\label{fig:residual}
+\end{figure}
+
+\begin{Remark}{}{}
+	В остаточной сети могут появляться кратные рёбра, если прямое и обратное направления возникают независимо. Это не влияет на корректность алгоритма.
+\end{Remark}
+
+\begin{Definition}{}{}
+	Путь
+	\[
+	P=(v_0=s,v_1,\dots,v_k=t)
+	\]
+	в графе $G_f$ называется \emph{дополняющим путём} для потока $f$.
+\end{Definition}
+
+\begin{Definition}{}{}
+	Пусть $P=(v_0=s,v_1,\dots,v_k=t)$ --- дополняющий путь в $G_f$. Его \emph{пропускной способностью} называется число
+	\[
+	\delta(P)=\min_{0\le i<k} c_f(v_i,v_{i+1}).
+	\]
+\end{Definition}
+
+\begin{Proposition}{}{}
+	Пусть $P=(v_0=s,v_1,\dots,v_k=t)$ --- дополняющий путь в $G_f$ и $\delta=\delta(P)$. Тогда можно построить новый поток $f'$ величины
+	\[
+	|f'|=|f|+\delta.
+	\]
+\end{Proposition}
+
+\begin{proof}
+	Для каждого ребра пути действуем следующим образом:
+	\begin{enumerate}[label=\arabic*)]
+		\item если ребро $(v_i,v_{i+1})$ является прямым ребром исходной сети, то полагаем
+		\[
+		f'(v_i,v_{i+1})=f(v_i,v_{i+1})+\delta;
+		\]
+		\item если ребро $(v_i,v_{i+1})$ является обратным, то есть в исходной сети имеется ребро $(v_{i+1},v_i)$, то полагаем
+		\[
+		f'(v_{i+1},v_i)=f(v_{i+1},v_i)-\delta.
+		\]
+	\end{enumerate}
+	На всех остальных рёбрах поток не меняется.
+	
+	Поскольку $\delta \le c_f(v_i,v_{i+1})$ для каждого ребра пути, ограничения пропускной способности сохраняются. Закон сохранения потока также сохраняется: в каждой промежуточной вершине изменение входящего потока компенсируется изменением исходящего потока на ту же величину~$\delta$.
+	
+	Остаётся проверить, что величина потока увеличилась на $\delta$. По определению $|f|=\sum_{(s,v)\in E} f(s,v)$. Первое ребро дополняющего пути, выходящее из $s$, является прямым ребром исходной сети, поэтому на этом ребре поток увеличивается на $\delta$. Другие изменения, связанные с вершиной $s$, отсутствуют. Следовательно,
+	\[
+	|f'|=\sum_{(s,v)\in E} f'(s,v)=\sum_{(s,v)\in E} f(s,v)+\delta=|f|+\delta.
+	\]
+\end{proof}
+
+\subsection{Алгоритм Форда--Фалкерсона}
+
+\begin{Statement}{}{}
+	Алгоритм Форда--Фалкерсона строит поток итеративно следующим образом:
+	\begin{enumerate}[label=\arabic*)]
+		\item положить $f\equiv 0$;
+		\item построить остаточную сеть $G_f$;
+		\item найти в $G_f$ путь $P$ из $s$ в $t$;
+		\item если такого пути нет, остановиться: текущий поток $f$ является максимальным;
+		\item если путь $P$ найден, увеличить поток вдоль него на величину $\delta(P)$, получив новый поток $f$;
+		\item перестроить остаточную сеть $G_f$ для нового потока и перейти к шагу~3.
+	\end{enumerate}
+\end{Statement}
+
+\begin{Remark}{}{}
+	На шаге поиска пути можно использовать как DFS, так и BFS. От выбора способа поиска существенно зависит итоговая оценка времени работы.
+\end{Remark}
+
+\subsection{\texorpdfstring{$s$--$t$}{s-t}-разрез}
+
+\begin{Definition}{}{}
+	\emph{$s$--$t$-разрезом} называется разбиение множества вершин $V=S \sqcup T$, $s\in S$, $t\in T$.
+\end{Definition}
+
+\begin{Definition}{}{}
+	\emph{Величиной разреза} $(S,T)$ называется сумма пропускных способностей всех рёбер, идущих из $S$ в $T$:
+	\[
+	c(S,T)=\sum_{\substack{(u,v)\in E\\ u\in S,\, v\in T}} c(u,v).
+	\]
+	Рёбра из $T$ в $S$ в эту сумму не входят.
+\end{Definition}
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[arr, scale=1, every node/.style={transform shape}]
+		\node[nd source] (s)  at (0,0)       {$s$};
+		\node[nd]        (u1) at (2.2,1.35)  {};
+		\node[nd]        (u2) at (2.2,-1.35) {};
+		\node[nd]        (v1) at (5.2,1.35)  {};
+		\node[nd]        (v2) at (5.2,-1.35) {};
+		\node[nd source] (t)  at (7.4,0)     {$t$};
+		
+		\begin{scope}[on background layer]
+			\fill[blue!8, draw=blue!55, thick, rounded corners=18pt]
+			(-0.55,-2.05) rectangle (2.85,2.05);
+			\fill[orange!8, draw=orange!65, thick, rounded corners=18pt]
+			(4.55,-2.05) rectangle (7.95,2.05);
+		\end{scope}
+		
+		\node[blue!70!black, font=\small\bfseries]   at (1.15, 1.85) {$S$};
+		\node[orange!70!black, font=\small\bfseries] at (6.25, 1.85) {$T$};
+		
+		\draw[arr, gray!65] (s)  -- (u1);
+		\draw[arr, gray!65] (s)  -- (u2);
+		\draw[arr, gray!65] (u1) to[bend right=18] (u2);
+		\draw[arr, gray!65] (v1) -- (t);
+		\draw[arr, gray!65] (v2) -- (t);
+		\draw[arr, gray!65] (v1) to[bend right=18] (v2);
+		
+		\draw[arrC] (u1) -- node[above, lbl, pos=0.52, yshift=2pt,  black] {$c_1$} (v1);
+		\draw[arrC] (u1) -- node[above, lbl, pos=0.32, xshift=3pt, yshift=-2pt, black] {$c_2$} (v2);
+		\draw[arrC] (u2) -- node[below, lbl, pos=0.50, yshift=-2pt, black] {$c_3$} (v2);
+		
+		\draw[arr, gray!50] (v1) to[bend right=36]
+		node[lbl, gray!70, pos=0.42, right=2pt] {$c'$} (u2);
+		
+		\draw[thick, densely dashed, gray!60] (3.7,2.55) -- (3.7,-2.75);
+		\node[font=\footnotesize, gray!70] at (3.7,-3.02) {разрез};
+		
+		\node[lbl, align=center] at (3.7,-4.15) {%
+			$c(S,T)=c_1+c_2+c_3$\\[2pt]
+			(ребро $c'\colon T\to S$ не учитывается)};
+	\end{tikzpicture}
+	\caption{$s$--$t$-разрез $(S,T)$ и его величина $c(S,T)$.
+		Рёбра из $S$ в $T$ с пропускными способностями $c_1, c_2, c_3$
+		входят в сумму; ребро из $T$ в $S$ с пропускной способностью
+		$c'$ не учитывается.}
+	\label{fig:cut}
+\end{figure}
+
+\begin{Proposition}{}{}
+	Для любого потока $f$ и любого $s$--$t$-разреза $(S,T)$ выполнено неравенство $|f|\le c(S,T)$.
+\end{Proposition}
+
+\begin{proof}
+	Рассмотрим сумму
+	\[
+	\sum_{u\in S}
+	\Bigl(
+	\sum_{(v,u)\in E} f(v,u)
+	-
+	\sum_{(u,w)\in E} f(u,w)
+	\Bigr).
+	\]
+	Для всех вершин из $S\setminus\{s\}$ эта величина равна нулю по закону сохранения потока, а для вершины $s$ она равна $-|f|$. После сокращения внутренних рёбер получаем
+	\[
+	|f|=
+	\sum_{\substack{(u,v)\in E\\ u\in S,\, v\in T}} f(u,v)
+	-
+	\sum_{\substack{(u,v)\in E\\ u\in T,\, v\in S}} f(u,v).
+	\]
+	Следовательно,
+	\[
+	|f|
+	\le
+	\sum_{\substack{(u,v)\in E\\ u\in S,\, v\in T}} f(u,v)
+	\le
+	\sum_{\substack{(u,v)\in E\\ u\in S,\, v\in T}} c(u,v)
+	=
+	c(S,T).
+	\]
+\end{proof}
+
+\subsection{Теорема о максимальном потоке и минимальном разрезе}
+
+\begin{Theorem}{}{}
+	Для потока $f$ в транспортной сети эквивалентны следующие условия:
+	\begin{enumerate}[label=\arabic*)]
+		\item $f$ является максимальным потоком;
+		\item в остаточной сети $G_f$ нет дополняющего пути из $s$ в $t$;
+		\item существует $s$--$t$-разрез $(S,T)$ такой, что
+		\[
+		|f|=c(S,T).
+		\]
+	\end{enumerate}
+\end{Theorem}
+
+\begin{proof}
+	Докажем циклически $1)\Rightarrow 2)\Rightarrow 3)\Rightarrow 1)$.
+	
+	\textbf{$1)\Rightarrow 2)$.}
+	Если бы в $G_f$ существовал дополняющий путь, то по предыдущему предложению поток можно было бы увеличить. Это противоречит максимальности $f$.
+	
+	\textbf{$2)\Rightarrow 3)$.}
+	Пусть $S$ --- множество вершин, достижимых из $s$ в остаточной сети $G_f$, а $T=V\setminus S$. Тогда $s\in S$, а $t\notin S$, поскольку по предположению пути из $s$ в $t$ в $G_f$ нет.
+	
+	Покажем, что $|f|=c(S,T)$. Из доказательства оценки для разреза:
+	\[
+	|f|=
+	\sum_{\substack{(u,v)\in E\\ u\in S,\, v\in T}} f(u,v)
+	-
+	\sum_{\substack{(u,v)\in E\\ u\in T,\, v\in S}} f(u,v).
+	\]
+	Используем определение множества $S$.
+	
+	Если $(u,v)\in E$, $u\in S$, $v\in T$: в $G_f$ нет прямого ребра $(u,v)$, иначе $v$ была бы достижима из $s$. Значит,
+	\[
+	c(u,v)-f(u,v)=0, \qquad\text{то есть}\qquad f(u,v)=c(u,v).
+	\]
+	
+	Если $(u,v)\in E$, $u\in T$, $v\in S$: в $G_f$ нет обратного ребра $(v,u)$, иначе $u$ была бы достижима из $s$. Значит, $f(u,v)=0$.
+	
+	Следовательно,
+	\[
+	|f|=
+	\sum_{\substack{(u,v)\in E\\ u\in S,\, v\in T}} c(u,v)
+	=c(S,T).
+	\]
+	
+	\textbf{$3)\Rightarrow 1)$.}
+	Для любого потока $f'$ и любого разреза $(S,T)$ верно $|f'|\le c(S,T)$. Если для некоторого потока $f$ выполнено $|f|=c(S,T)$, то никакой поток не может иметь величину больше $|f|$. Следовательно, $f$ максимален.
+\end{proof}
+
+\begin{Proposition}{}{}
+	Максимальная величина потока равна минимальной величине $s$--$t$-разреза.
+\end{Proposition}
+
+\begin{proof}
+	Теорема утверждает существование потока и разреза, для которых $|f|=c(S,T)$. С другой стороны, для любого потока и любого разреза выполнено $|f|\le c(S,T)$. Отсюда следует утверждение.
+\end{proof}
+
+\subsection{Оценки времени работы}
+
+\begin{Proposition}{}{}
+	Одна итерация алгоритма Форда--Фалкерсона работает за время $O(|E|)$, если поиск дополняющего пути выполняется обходом графа в глубину или в ширину.
+\end{Proposition}
+
+\begin{proof}
+	Построение остаточной сети и поиск пути в ней занимают линейное по числу рёбер время.
+\end{proof}
+
+\begin{Proposition}{}{}
+	Если все пропускные способности целочисленны, то алгоритм Форда--Фалкерсона завершится не более чем за $|f_{\max}|$ итераций, где $f_{\max}$ --- максимальный поток.
+\end{Proposition}
+
+\begin{proof}
+	При целочисленных пропускных способностях каждая остаточная пропускная способность также целочисленна. Следовательно, на каждой итерации $\delta(P)\ge 1$, и величина потока увеличивается хотя бы на единицу.
+\end{proof}
+
+\begin{Corollary}{}{}
+	В случае целочисленных пропускных способностей время работы алгоритма Форда--Фалкерсона оценивается как $O(|E|\cdot |f_{\max}|)$. Найденный поток при этом целочисленен.
+\end{Corollary}
+
+\begin{Remark}{}{}
+	Для произвольных вещественных пропускных способностей алгоритм Форда--Фалкерсона при неудачном выборе дополняющих путей может работать очень долго; в общем случае возможны патологические сценарии.
+\end{Remark}
+
+\begin{Statement}{}{}
+	Если на каждом шаге искать кратчайший по числу рёбер дополняющий путь с помощью BFS, получается алгоритм Эдмондса--Карпа со временем работы $O(|V|\cdot |E|^2)$.
+\end{Statement}
+
+\begin{Remark}{}{}
+	Существуют и более быстрые алгоритмы: алгоритм Диница --- $O(|V|^2|E|)$ и алгоритм Орлина (2013) --- $O(|V||E|)$.
+\end{Remark}

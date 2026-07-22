@@ -1,0 +1,60 @@
+% !TEX root = ../algebra_02.tex
+
+\section{Порядки элементов и циклические подгруппы}
+
+\begin{Definition}{Порядок элемента}{}
+	Если существует натуральное число $n \in \NN$ такое, что $g^n = e$, то говорят, что элемент $g$ имеет конечный порядок. Порядком элемента $g$ называется минимальное такое число:
+	\[
+	\operatorname{ord} g = \min\{n \in \NN \mid g^n = e\}
+	\].
+	Если такого $n$ не существует, то $\operatorname{ord} g = \infty$.
+\end{Definition}
+
+\begin{Proposition}{}{}
+	Пусть $\operatorname{ord} g = d < \infty$. Тогда $\{m \in \ZZ \mid g^m = e\} = d\ZZ.$
+	То есть $g^m = e \iff d \mid m.$
+\end{Proposition}
+
+\begin{proof}
+Разделим $m$ на $d$ с остатком: $m = dq + r, \qquad 0 \le r < d.$
+Тогда $g^m = e \implies g^{dq+r} = e \implies (g^d)^qg^r = e.$
+Так как $g^d = e$, получаем $g^r = e$. Поскольку $d$ — минимальная натуральная степень, дающая $e$, а $0 \le r < d$, единственный возможный вариант — $r = 0$. Следовательно, $m = dq$, то есть $d \mid m$.
+\end{proof}
+
+\begin{Definition}{Циклическая подгруппа}{}
+	Множество $\langle g \rangle = \{g^n \mid n \in \ZZ\}$ называется циклической подгруппой, порождённой элементом $g$.
+\end{Definition}
+
+\begin{Definition}{Циклическая группа}{}
+	Если существует такой элемент $g \in G$, что $\langle g \rangle = G,$
+	то группа $G$ называется циклической, а элемент $g$ — её образующим, или порождающим, элементом.
+\end{Definition}
+
+Размер (порядок) циклической подгруппы напрямую зависит от порядка порождающего элемента:
+\begin{Proposition}{}{}
+	Пусть $g \in G$.
+	\begin{enumerate}
+		\item Если $\operatorname{ord} g = \infty$, то $|\langle g \rangle| = \infty$ и все степени $g^i$ различны.
+		\item Если $\operatorname{ord} g = n < \infty$, то $|\langle g \rangle| = n$ и $\langle g \rangle = \{g^0,g^1,\dots,g^{n-1}\}$.
+	\end{enumerate}
+\end{Proposition}
+
+\begin{proof}
+	Если $\operatorname{ord} g = \infty$, предположим, что $g^i = g^j$ при $i > j$. Тогда $g^{i-j} = e$, и так как $i-j > 0$, это противоречит бесконечности порядка. Значит, все степени различны.
+
+	Если $\operatorname{ord} g = n < \infty$, для любого $m \in \ZZ$ разделим $m$ на $n$ с остатком: $m = nq + r$, где $0 \le r < n$. Тогда $g^m = (g^n)^q g^r = e^q g^r = g^r$, поэтому множество степеней ограничивается $\{g^0,\dots,g^{n-1}\}$. Все они различны, так как иначе существовала бы меньшая положительная степень $i-j < n$, дающая единицу, что противоречило бы минимальности порядка $n$.
+\end{proof}
+
+\begin{Proposition}{}{}
+	Пусть $|G| = n < \infty$. Тогда $G$ является циклической тогда и только тогда, когда в ней существует элемент порядка $n$.
+\end{Proposition}
+
+\subsubsection*{Доказательство}
+
+\begin{itemize}
+	\item[$\Rightarrow$)] Если $G$ циклическая, то по определению $G = \langle a \rangle$ для некоторого $a \in G$. Тогда $\operatorname{ord} a = |\langle a \rangle| = |G| = n.$
+	
+	\item[$\Leftarrow$)] Пусть существует $g \in G$ такой, что $\operatorname{ord} g = n$. Тогда $|\langle g \rangle| = n.$
+	Так как $\langle g \rangle \subseteq G$ и их порядки совпадают, то $\langle g \rangle = G.$
+	Следовательно, $G$ циклическая.
+\end{itemize}

@@ -1,0 +1,63 @@
+% !TEX root = ../algebra_02.tex
+\section{Билинейные формы. Замена базиса}
+
+\subsection*{Основные понятия}
+
+Пусть $K$ — поле, $V$ — линейное пространство над $K$.
+\begin{Definition}{Билинейная форма}{}
+	\textit{Билинейная форма} на $V$ — это отображение $\mathcal{B} \colon V \times V \to K$, удовлетворяющее условиям:
+	\begin{enumerate}
+		\item $\forall\, v_1, v_2, w \in V,\; \alpha_1, \alpha_2 \in K$:\quad
+		$\mathcal{B}(\alpha_1 v_1 + \alpha_2 v_2,\, w) = \alpha_1 \mathcal{B}(v_1, w) + \alpha_2 \mathcal{B}(v_2, w)$;
+		\item $\forall\, v, w_1, w_2 \in V,\; \alpha_1, \alpha_2 \in K$:\quad
+		$\mathcal{B}(v,\, \alpha_1 w_1 + \alpha_2 w_2) = \alpha_1 \mathcal{B}(v, w_1) + \alpha_2 \mathcal{B}(v, w_2)$.
+	\end{enumerate}
+\end{Definition}
+
+\begin{Example}{Билинейные формы}{}
+	\begin{enumerate}
+		\item $V = \{f \in \mathbb{R}[x] \mid \deg f \leq n\}$,\quad $\mathcal{B}(f,\, g) = (f \cdot g)(17)$.
+		\item $V = C[0,1]$,\quad $\mathcal{B}(f,\, g) = \displaystyle\int_0^1 f(x)\,g(x)\,dx$.
+		\item $B \in M_n(K)$,\ $V = K^n$,\quad $\mathcal{B}(b,\, c) = b^{\top} B\, c \in K$.
+	\end{enumerate}
+\end{Example}
+
+\subsection*{Матрица Грама}
+
+Пусть $E = (e_1, \ldots, e_n)$ — базис $V$.
+Для $b, c \in V$ с координатными столбцами $[b]_E,\, [c]_E$ по линейности:
+\[
+\mathcal{B}(b,\,c)
+= \mathcal{B}\!\Bigl(\sum_i \beta_i e_i,\; \sum_j \gamma_j e_j\Bigr)
+= \sum_{i,j=1}^{n} \beta_i\,\gamma_j\;\mathcal{B}(e_i, e_j)
+= [b]_E^{\top}\,[\mathcal{B}]_E\,[c]_E.
+\] 
+
+\begin{Definition}{Матрица Грама}{}
+	\textit{Матрица Грама} формы $\mathcal{B}$ в базисе $E$:
+	\[
+	[\mathcal{B}]_E = \bigl(\mathcal{B}(e_i,\, e_j)\bigr)_{i,j=1}^{n}.
+	\] 
+\end{Definition}
+
+\subsection*{Замена базиса}
+
+Пусть $E'$ — другой базис $V$, $C = M_{E \to E'}$ — матрица перехода (столбцы — координаты векторов $E'$ в базисе $E$), то есть
+\[
+[v]_E = C\,[v]_{E'} \quad \text{для всех } v \in V. \tag{$*$}
+\] 
+
+\begin{Statement}{}{}
+	$[\mathcal{B}]_{E'} = C^{\top}\,[\mathcal{B}]_E\,C$.
+\end{Statement}
+
+\begin{proof}
+	Из $(*)$:
+	\[
+	\mathcal{B}(v,w) = [v]_E^{\top}[\mathcal{B}]_E[w]_E
+	= (C[v]_{E'})^{\top}[\mathcal{B}]_E(C[w]_{E'})
+	= [v]_{E'}^{\top}\, C^{\top}[\mathcal{B}]_E C\,[w]_{E'}.
+	\] 
+	С другой стороны, $\mathcal{B}(v,w) = [v]_{E'}^{\top}[\mathcal{B}]_{E'}[w]_{E'}$.
+	Подставляя $v = e_i,\, w = e_j$ для всех $i,j$, получаем $[\mathcal{B}]_{E'} = C^{\top}[\mathcal{B}]_E C$.
+\end{proof}

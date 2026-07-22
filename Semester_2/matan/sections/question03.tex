@@ -1,0 +1,119 @@
+% !TEX root = ../matan.tex
+
+\section{Неравенство Юнга, неравенство Гельдера}
+
+\begin{Statement}{Неравенство Юнга}{}
+	Пусть $a,b>0$ и $p,q$ --- \textbf{сопряжённые показатели}: $\frac{1}{p}+\frac{1}{q}=1.$
+	Тогда при $p>1$ (и, значит, $q>1$)
+	\[
+	a^{\frac1p}\,b^{\frac1q}\le \frac{a}{p}+\frac{b}{q},
+	\]
+	а при $p<1$, $p\ne0$ (тогда $q<0$) --- противоположное неравенство
+	\[
+	a^{\frac1p}\,b^{\frac1q}\ge \frac{a}{p}+\frac{b}{q}.
+	\]
+	Эквивалентная (наиболее употребительная) запись при $p,q>1$: заменяя $a\mapsto a^p$,
+	$b\mapsto b^q$, получаем
+	\[
+	ab\le \frac{a^p}{p}+\frac{b^q}{q},\qquad a,b\ge0.
+	\]
+\end{Statement}
+
+\begin{proof}
+	\textbf{Вспомогательное неравенство.} Покажем, что при $x>0$
+	\[
+	x^{\alpha}-\alpha x+\alpha-1\le0\quad(0<\alpha<1),
+	\qquad
+	x^{\alpha}-\alpha x+\alpha-1\ge0\quad(\alpha<0\ \text{или}\ \alpha>1).
+	\]
+	Рассмотрим $h(x):=x^{\alpha}-\alpha x+\alpha-1$ на $(0,+\infty)$. Тогда
+	\[
+	h'(x)=\alpha x^{\alpha-1}-\alpha=\alpha\bigl(x^{\alpha-1}-1\bigr),
+	\qquad h'(x)=0\iff x=1,
+	\]
+	и $h(1)=1-\alpha+\alpha-1=0$. При $0<\alpha<1$ функция $x^{\alpha-1}$ убывает,
+	поэтому $h'$ меняет знак с $+$ на $-$: $x=1$ --- точка максимума, и
+	$h(x)\le h(1)=0$. При $\alpha>1$ или $\alpha<0$ знак $h'$ меняется с $-$ на
+	$+$: $x=1$ --- точка минимума, и $h(x)\ge h(1)=0$. Вспомогательное
+	неравенство доказано.
+
+	\textbf{Подстановка.} Положим $x:=\dfrac{a}{b}$ и $\alpha:=\dfrac1p$; тогда
+	$1-\alpha=1-\dfrac1p=\dfrac1q$. При $p>1$ имеем $0<\alpha<1$, поэтому
+	\[
+	\left(\frac{a}{b}\right)^{\frac1p}-\frac1p\cdot\frac{a}{b}+\frac1p-1\le0.
+	\]
+	Умножая на $b>0$ и используя $1-\frac1p=\frac1q$, получаем
+	\[
+	a^{\frac1p}b^{\frac1q}\le \frac{a}{p}+b\Bigl(1-\frac1p\Bigr)=\frac{a}{p}+\frac{b}{q}.
+	\]
+	При $p<1$ имеем $\alpha=\frac1p<0$ или $\frac1p>1$, и из второй части
+	вспомогательного неравенства аналогично получаем противоположное неравенство.
+\end{proof}
+
+\begin{Theorem}[required]{Неравенство Гельдера}{}
+	Пусть $f,g:\langle a,b\rangle\to\RR$ интегрируемы по Риману на каждом
+	$[c,d]\subset\langle a,b\rangle$, и пусть $p,q>1$ --- сопряжённые показатели,
+	$\dfrac1p+\dfrac1q=1$. Тогда
+	\[
+	\int_a^b |f(x)\,g(x)|\,dx
+	\le
+	\left(\int_a^b |f(x)|^{p}\,dx\right)^{\!\frac1p}
+	\left(\int_a^b |g(x)|^{q}\,dx\right)^{\!\frac1q}.
+	\]
+\end{Theorem}
+
+\begin{proof}
+	Обозначим
+	\[
+	A:=\left(\int_a^b |f|^p\,dx\right)^{\frac1p},
+	\qquad
+	B:=\left(\int_a^b |g|^q\,dx\right)^{\frac1q}.
+	\]
+
+	\textbf{Основной случай $0<A,B<+\infty$.} Зафиксируем $x$ и применим
+	неравенство Юнга в форме $ab\le\frac{a^p}{p}+\frac{b^q}{q}$ к числам
+	$\dfrac{|f(x)|}{A}$ и $\dfrac{|g(x)|}{B}$:
+	\[
+	\frac{|f(x)|\,|g(x)|}{A\,B}
+	\le
+	\frac{|f(x)|^p}{p\,A^p}+\frac{|g(x)|^q}{q\,B^q}
+	=\frac{|f(x)|^p}{p\int_a^b|f|^p}+\frac{|g(x)|^q}{q\int_a^b|g|^q}.
+	\]
+	Обе части интегрируемы; проинтегрируем по $[c,d]\subset\langle a,b\rangle$ и
+	устремим $c\to a$, $d\to b$:
+	\[
+	\frac{\int_a^b |f g|\,dx}{A\,B}
+	\le
+	\frac{\int_a^b|f|^p}{p\int_a^b|f|^p}+\frac{\int_a^b|g|^q}{q\int_a^b|g|^q}
+	=\frac1p+\frac1q=1.
+	\]
+	Умножая на $AB$, получаем требуемое неравенство.
+
+	\textbf{Вырожденный случай $A=0$.} Покажем, что тогда
+	$\int_a^b|fg|\,dx=0$ (и неравенство, у которого правая часть равна $0$,
+	выполнено как равенство). Из $\int_a^b|f|^p\,dx=0$ следует
+	$\int_a^b|f|\,dx=0$. На любом отрезке $[c,d]$ функция $g$ интегрируема, а
+	значит, ограничена: $|g(x)|\le M(c,d)<+\infty$. Поэтому
+	\[
+	0\le\int_c^d|fg|\,dx\le M(c,d)\int_c^d|f|\,dx\le M(c,d)\int_a^b|f|\,dx=0,
+	\]
+	и, переходя к пределу $c\to a$, $d\to b$, получаем $\int_a^b|fg|\,dx=0$.
+	Случай $B=0$ симметричен.
+
+	\textbf{Случай $A=+\infty$ или $B=+\infty$.} Правая часть равна $+\infty$, и
+	неравенство выполнено по соглашению. Все случаи разобраны.
+\end{proof}
+
+\begin{Corollary}{Неравенство Коши--Буняковского--Шварца}{}
+	При $p=q=2$ неравенство Гельдера даёт
+	\[
+	\int_a^b |f g|\,dx
+	\le
+	\left(\int_a^b |f|^{2}\,dx\right)^{\!\frac12}
+	\left(\int_a^b |g|^{2}\,dx\right)^{\!\frac12}.
+	\]
+	В частности, беря $g\equiv1$ на конечном $[a,b]$, получаем
+	\[
+	\left(\int_a^b |f|\,dx\right)^{2}\le (b-a)\int_a^b |f|^{2}\,dx.
+	\]
+\end{Corollary}

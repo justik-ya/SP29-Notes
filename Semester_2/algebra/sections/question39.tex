@@ -1,0 +1,65 @@
+% !TEX root = ../algebra_02.tex
+
+\section{Теорема о соответствии}
+
+\begin{Theorem}{Теорема соответствия}{thm:correspondence}
+	Пусть $H\triangleleft G$ и $\pi_H\colon G\to G/H$ --- каноническая проекция. Тогда отображения
+	\[
+	\alpha\colon \{P\le G\mid H\subseteq P\}\to \{Q\le G/H\}, \qquad \alpha(P)=\pi_H(P),
+	\]
+	\[
+	\beta\colon \{Q\le G/H\}\to \{P\le G\mid H\subseteq P\}, \qquad \beta(Q)=\pi_H^{-1}(Q)
+	\]
+	взаимно обратны. Следовательно, между подгруппами группы $G$, содержащими $H$, и подгруппами факторгруппы $G/H$ существует биекция.
+\end{Theorem}
+
+\begin{proof}
+	Покажем, что $\alpha$ и $\beta$ корректны и взаимно обратны.
+
+	Если $P\le G$ и $H\subseteq P$, то $\pi_H(P)$ является подгруппой группы $G/H$, поскольку это образ подгруппы $P$ при гомоморфизме $\pi_H|_P\colon P\to G/H$. Если $Q\le G/H$, то $\pi_H^{-1}(Q)\le G$; кроме того, $H=\pi_H^{-1}(\{eH\})\subseteq \pi_H^{-1}(Q)$.
+
+	Теперь вычислим композиции. Для $Q\le G/H$ имеем
+	\[
+	(\alpha\circ\beta)(Q)=\alpha\bigl(\pi_H^{-1}(Q)\bigr)=\pi_H\bigl(\pi_H^{-1}(Q)\bigr)=Q,
+	\]
+	поскольку $\pi_H$ сюръективна.
+
+	Для $P\le G$ при $H\subseteq P$ имеем
+	\[
+	(\beta\circ\alpha)(P)=\pi_H^{-1}(\pi_H(P))=\{g\in G\mid gH\in \pi_H(P)\}.
+	\]
+	Но условие $gH\in \pi_H(P)$ означает, что существует $p\in P$ такое, что $gH=pH$. Тогда $p^{-1}g\in H\subseteq P$, значит, $g\in P$. Итак,
+	\[
+	\pi_H^{-1}(\pi_H(P))=P.
+	\]
+	Следовательно, $\alpha$ и $\beta$ взаимно обратны.
+\end{proof}
+
+\begin{Statement}{Нормальность в факторгруппе}{normality-correspondence}
+	Пусть $H\triangleleft G$, $P\le G$ и $H\subseteq P$. Тогда
+	\[
+	\pi_H(P) \triangleleft G/H \Longleftrightarrow P \triangleleft G.
+	\]
+\end{Statement}
+
+\begin{proof}
+	Поскольку $\pi_H\colon G\to G/H$ --- сюръективный гомоморфизм и
+	\[
+	\pi_H^{-1}(\pi_H(P))=P,
+	\]
+	одна импликация сразу следует из свойства прообраза нормальной подгруппы:
+	если $\pi_H(P)\triangleleft G/H$, то
+	\[
+	P=\pi_H^{-1}(\pi_H(P))\triangleleft G.
+	\]
+
+	Обратно, пусть $P\triangleleft G$. Рассмотрим ограничение проекции на $P$. Тогда $\pi_H(P)$ --- подгруппа в $G/H$ по теореме соответствия. Для любого $gH\in G/H$ и любого $pH\in \pi_H(P)$ имеем
+	\[
+	(gH)(pH)(gH)^{-1}=(gpg^{-1})H.
+	\]
+	Так как $P\triangleleft G$, элемент $gpg^{-1}$ принадлежит $P$. Значит,
+	\[
+	(gpg^{-1})H\in \pi_H(P).
+	\]
+	Следовательно, $\pi_H(P)\triangleleft G/H$.
+\end{proof}

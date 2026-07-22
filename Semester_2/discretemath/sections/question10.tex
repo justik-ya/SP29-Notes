@@ -1,0 +1,136 @@
+% !TEX root = ../discretemath.tex
+
+\section{Неподвижные точки у случайной перестановки}
+
+\subsection{Постановка задачи}
+
+\begin{Definition}{Неподвижная точка и беспорядок}{}
+	Пусть $\sigma\in S_n$. Индекс $i\in\{1,\dots,n\}$ — \emph{неподвижная точка}, если $\sigma(i)=i$. Перестановка без неподвижных точек (то есть $\sigma(i)\ne i$ для всех $i$) называется \emph{беспорядком} (derangement).
+\end{Definition}
+
+Перестановку удобно изображать стрелками $i\to\sigma(i)$: неподвижная точка — это петля.
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[
+		>=Stealth, thick, font=\small,
+		v/.style={circle, draw, fill=black!80, inner sep=0pt, minimum size=6pt},
+		lbl/.style={font=\small}
+		]
+		\foreach \i in {1,...,5}{
+			\node[v,label={[lbl]below:$\i$}] (n\i) at (1.4*\i,0) {};
+		}
+		% sigma = (1)(2 4)(3 5): fixed point 1
+		\draw[red!75!black,->] (n1) to[out=120,in=60,looseness=10] (n1);
+		\node[red!75!black,lbl] at (1.4,0.95) {неподв.};
+		\draw[->] (n2) to[out=55,in=125] (n4);
+		\draw[->] (n4) to[out=235,in=305] (n2);
+		\draw[->] (n3) to[out=55,in=125] (n5);
+		\draw[->] (n5) to[out=235,in=305] (n3);
+	\end{tikzpicture}
+	\caption{Перестановка $\sigma=(1)(2\,4)(3\,5)$ как набор стрелок $i\to\sigma(i)$. Неподвижная точка $1$ изображается петлёй; остальные элементы входят в циклы длины~$\ge 2$ и неподвижными не являются.}
+\end{figure}
+
+\subsection{Вероятность отсутствия неподвижных точек}
+
+Все $n!$ перестановок равновероятны, $P_r(\sigma)=1/n!$. Для каждого $i$ введём событие
+\[
+B_i=\{\sigma\in S_n \mid \sigma(i)=i\}.
+\]
+Событие «нет неподвижных точек» — это $\overline{B_1}\cap\cdots\cap\overline{B_n}$, поэтому
+\[
+P_r(\text{нет неподвижных точек})=1-P_r(B_1\cup\cdots\cup B_n).
+\]
+
+\subsubsection*{Применение формулы включений--исключений}
+
+Напомним формулу включений--исключений:
+\[
+P_r\!\Bigl(\bigcup_{i=1}^n B_i\Bigr)
+=\sum_{\varnothing\neq I\subseteq\{1,\dots,n\}}(-1)^{|I|-1}\,P_r\!\Bigl(\bigcap_{i\in I}B_i\Bigr).
+\]
+Отсюда
+\[
+P_r(\text{нет неподвижных точек})
+=1+\sum_{\varnothing\neq I\subseteq\{1,\dots,n\}}(-1)^{|I|}\,P_r\!\Bigl(\bigcap_{i\in I}B_i\Bigr).
+\]
+
+Вычислим $P_r\bigl(\bigcap_{i\in I}B_i\bigr)$. Если все точки множества $I$ зафиксированы ($\sigma(i)=i$ для $i\in I$), то остальные $n-|I|$ элементов переставляются произвольно — таких перестановок $(n-|I|)!$. Значит,
+\[
+P_r\!\Bigl(\bigcap_{i\in I}B_i\Bigr)=\frac{(n-|I|)!}{n!}.
+\]
+
+Сгруппируем по $k=|I|$ (подмножеств мощности $k$ ровно $\binom{n}{k}$):
+\[
+P_r(\text{нет неподвижных точек})
+=1+\sum_{k=1}^n\binom{n}{k}(-1)^k\frac{(n-k)!}{n!}.
+\]
+Поскольку
+\[
+\binom{n}{k}\frac{(n-k)!}{n!}
+=\frac{n!}{k!(n-k)!}\cdot\frac{(n-k)!}{n!}
+=\frac1{k!},
+\]
+получаем итоговую формулу
+\[
+\boxed{\;P_r(\text{нет неподвижных точек})
+=\sum_{k=0}^n\frac{(-1)^k}{k!}
+=1-\frac1{1!}+\frac1{2!}-\frac1{3!}+\cdots+\frac{(-1)^n}{n!}.\;}
+\]
+
+\begin{Remark}{}{}
+	Это частичная сумма ряда для $e^{-1}$, поэтому
+	\[
+	P_r(\sigma\text{ не имеет неподвижных точек})\xrightarrow[n\to\infty]{}\frac1e\approx0{,}3679.
+	\]
+	Сходимость очень быстрая: уже при $n=6$ значение отличается от $1/e$ менее чем на $10^{-3}$.
+\end{Remark}
+
+\begin{center}
+	\begin{tabular}{c c c}
+		\toprule
+		$n$ & $D_n=\#\{\text{беспорядков}\}$ & $p_n=D_n/n!$ \\
+		\midrule
+		$1$ & $0$   & $0{,}0000$ \\
+		$2$ & $1$   & $0{,}5000$ \\
+		$3$ & $2$   & $0{,}3333$ \\
+		$4$ & $9$   & $0{,}3750$ \\
+		$5$ & $44$  & $0{,}3667$ \\
+		$6$ & $265$ & $0{,}3681$ \\
+		\midrule
+		$\infty$ & --- & $1/e\approx0{,}3679$ \\
+		\bottomrule
+	\end{tabular}
+\end{center}
+
+\subsection{Число беспорядков}
+
+\begin{Definition}{Число беспорядков}{}
+	$D_n$ — число перестановок из $S_n$ без неподвижных точек. Из формулы выше
+	\[
+	D_n=n!\sum_{k=0}^n\frac{(-1)^k}{k!}.
+	\]
+\end{Definition}
+
+\begin{Remark}{}{}
+	Так как $\bigl|D_n-n!/e\bigr|<\tfrac12$ при $n\ge1$, число $D_n$ есть \emph{ближайшее целое} к $n!/e$. Например, $D_4=9$ (а $4!/e\approx8{,}83$), $D_5=44$ (а $5!/e\approx44{,}15$).
+\end{Remark}
+
+\subsection{Математическое ожидание числа неподвижных точек}
+
+Пусть $X(\sigma)$ — число неподвижных точек перестановки $\sigma$. Представим $X$ суммой индикаторов:
+\[
+X=\sum_{i=1}^n X_i,\qquad X_i=\mathbf{1}[\sigma(i)=i].
+\]
+Для каждого $i$
+\[
+\mathbb{E}[X_i]=P_r(\sigma(i)=i)=\frac{(n-1)!}{n!}=\frac1n.
+\]
+По линейности математического ожидания
+\[
+\mathbb{E}[X]=\sum_{i=1}^n\mathbb{E}[X_i]=n\cdot\frac1n=1.
+\]
+
+\begin{Remark}{}{}
+	Замечательно, что среднее число неподвижных точек равно $1$ при \emph{любом} $n$. При этом вероятность \emph{полного} отсутствия неподвижных точек стремится к $1/e$: «в среднем одна», но довольно часто их нет вовсе. (Здесь используется линейность математического ожидания — она верна без всякой независимости индикаторов $X_i$.)
+\end{Remark}

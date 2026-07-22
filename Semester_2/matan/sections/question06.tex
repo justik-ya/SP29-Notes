@@ -1,0 +1,147 @@
+% !TEX root = ../matan.tex
+
+\section{Длина гладкого пути}
+
+Напомним, что кривая $\Gamma$ называется \textbf{спрямляемой}, если множество
+длин вписанных в неё ломаных ограничено сверху, и тогда
+\[
+l(\Gamma):=\sup\{\,l(\Gamma')\st \Gamma'\ \text{--- ломаная, вписанная в }\Gamma\,\}.
+\]
+Длина звена ломаной с вершинами $\vphi(t_j),\vphi(t_{j+1})$ равна
+\[\bigl|\vphi(t_{j+1})-\vphi(t_j)\bigr|
+=\sqrt{\sum_{n=1}^d\bigl(\vphi_n(t_{j+1})-\vphi_n(t_j)\bigr)^2}.\]
+
+\begin{Theorem}[required]{Длина гладкого пути}{}
+	Пусть $\Gamma$ --- \textbf{гладкая} кривая в $\RR^d$, то есть
+	\[
+	\Gamma=\vphi(I),\qquad I=[a,b],\qquad
+	\vphi=(\vphi_1,\ldots,\vphi_d),\qquad \vphi_n:I\to\RR,
+	\]
+	и все $\vphi_n'\in C([a,b])$ (на концах --- односторонние производные).
+	Тогда $\Gamma$ спрямляема, и
+	\[
+	l(\Gamma)=\int_a^b \sqrt{\sum_{n=1}^d \bigl(\vphi_n'(t)\bigr)^2}\,dt.
+	\]
+\end{Theorem}
+
+\begin{proof}
+	Положим
+	\[
+	L:=\int_a^b \sqrt{\sum_{n=1}^d (\vphi_n'(t))^2}\,dt.
+	\]
+	Докажем два неравенства: $l(\Gamma')\le L$ для любой вписанной ломаной
+	(откуда $l(\Gamma)=\sup l(\Gamma')\le L$) и существование ломаных
+	$\Gamma_k'$ с $l(\Gamma_k')\to L$ (откуда $l(\Gamma)\ge L$). Из них следует
+	$l(\Gamma)=L$.
+	
+	\medskip
+	\textbf{1. Оценка сверху:} $\forall\,\Gamma'\ \ l(\Gamma')\le L$.
+	
+	Пусть $\{t_j\}_{j=0}^N$ --- точки параметризации ломаной. Тогда
+	\[
+	l(\Gamma')=\sum_{j=0}^{N-1}
+	\sqrt{\sum_{n=1}^d \bigl(\vphi_n(t_{j+1})-\vphi_n(t_j)\bigr)^2}.
+	\]
+	Достаточно показать, что для каждого $j$
+	\[
+	\sqrt{\sum_{n=1}^d \bigl(\vphi_n(t_{j+1})-\vphi_n(t_j)\bigr)^2}
+	\le
+	\int_{t_j}^{t_{j+1}} \sqrt{\sum_{n=1}^d (\vphi_n'(t))^2}\,dt;
+	\]
+	суммируя по $j$, получим $l(\Gamma')\le\int_a^b\sqrt{\sum_n(\vphi_n')^2}\,dt=L$.
+	
+	По формуле Ньютона--Лейбница
+	$\vphi_n(t_{j+1})-\vphi_n(t_j)=\int_{t_j}^{t_{j+1}}\vphi_n'(t)\,dt$, поэтому
+	достаточно проверить
+	\[
+	\sum_{n=1}^d \left(\int_{t_j}^{t_{j+1}} \vphi_n'(t)\,dt\right)^2
+	\le
+	\left(\int_{t_j}^{t_{j+1}} \sqrt{\sum_{n=1}^d (\vphi_n'(t))^2}\,dt\right)^2.
+	\]
+	Положим $f_n(t):=\bigl(\vphi_n'(t)\bigr)^2\ge0$. Тогда правая часть есть
+	$\bigl(\int_{t_j}^{t_{j+1}}(\sum_n f_n)^{1/2}\,dt\bigr)^2$, а левая
+	оценивается так:
+	\[
+	\sum_{n=1}^d \left(\int_{t_j}^{t_{j+1}} \vphi_n'(t)\,dt\right)^2
+	\le
+	\sum_{n=1}^d \left(\int_{t_j}^{t_{j+1}} |\vphi_n'(t)|\,dt\right)^2
+	=
+	\sum_{n=1}^d \left(\int_{t_j}^{t_{j+1}} (f_n(t))^{1/2}\,dt\right)^2.
+	\]
+	Теперь применяем \textbf{обратное неравенство Минковского при $p=\frac12$}
+	и получаем
+	\[
+	\sum_{n=1}^d \left(\int_{t_j}^{t_{j+1}} (f_n(t))^{1/2}\,dt\right)^2
+	\le
+	\left(\int_{t_j}^{t_{j+1}} \Bigl(\sum_{n=1}^d f_n(t)\Bigr)^{1/2}\,dt\right)^2.
+	\]
+
+	Тем самым требуемая оценка доказана, и $l(\Gamma)=\sup l(\Gamma')\le L$.
+	
+	\medskip
+	\textbf{2. Построение ломаных с $l(\Gamma_k')\to L$.}
+	
+	Возьмём диадическое дробление $\{t_{k,j}\}_{j=0}^{N_k}$ отрезка $[a,b]$ ранга
+	$k$ и впишем в $\Gamma$ ломаную $\Gamma_k'=\{\vphi(t_{k,j})\}_{j=0}^{N_k}$,
+	соединяя соседние точки $\vphi(t_{k,j}),\vphi(t_{k,j+1})$. По построению
+	$l(\Gamma_k')\le l(\Gamma)$ для всех $k$. Покажем, что $l(\Gamma_k')\to L$.
+	
+	Функции $\vphi_n'$ непрерывны на компакте $[a,b]$, значит, равномерно
+	непрерывны: для любого $\eps>0$ найдётся $k_0$ такое, что при $k\ge k_0$ для
+	любого отрезка дробления $[t_{k,j},t_{k,j+1}]$ и любых $\tau_1,\tau_2$ из него
+	\[
+	|\vphi_n'(\tau_1)-\vphi_n'(\tau_2)|<\eps,\qquad n=1,\ldots,d.
+	\]
+	Записав $|t_{k,j+1}-t_{k,j}|=\int_{t_{k,j}}^{t_{k,j+1}}1\,dt$, представим
+	разность в виде
+	\[
+	L-l(\Gamma_k')
+	=\sum_{j=0}^{N_k-1}\int_{t_{k,j}}^{t_{k,j+1}}
+	\left(\sqrt{\sum_{n=1}^d (\vphi_n'(t))^2}
+	-\sqrt{\sum_{n=1}^d
+		\frac{\bigl(\vphi_n(t_{k,j+1})-\vphi_n(t_{k,j})\bigr)^2}{|t_{k,j+1}-t_{k,j}|^2}}
+	\right)dt.
+	\]
+	Для евклидовой нормы $\bigl|\sqrt{\sum_n\alpha_n^2}-\sqrt{\sum_n\beta_n^2}\bigr|
+	\le\sqrt{\sum_n(\alpha_n-\beta_n)^2}$, поэтому
+	\[
+	L-l(\Gamma_k')\le\sum_{j=0}^{N_k-1}\int_{t_{k,j}}^{t_{k,j+1}}
+	\sqrt{\sum_{n=1}^d\left(|\vphi_n'(t)|
+		-\frac{\vphi_n(t_{k,j+1})-\vphi_n(t_{k,j})}{|t_{k,j+1}-t_{k,j}|}\right)^2}\,dt.
+	\]
+	По теореме Лагранжа о конечных приращениях для каждого $n$ найдётся точка
+	$\tau_{k,j}^n\in[t_{k,j},t_{k,j+1}]$ такая, что
+	$\dfrac{\vphi_n(t_{k,j+1})-\vphi_n(t_{k,j})}{|t_{k,j+1}-t_{k,j}|}
+	=\vphi_n'(\tau_{k,j}^n)$. Поэтому
+	\[
+	L-l(\Gamma_k')\le\sum_{j=0}^{N_k-1}\int_{t_{k,j}}^{t_{k,j+1}}
+	\sqrt{\sum_{n=1}^d\bigl(\vphi_n'(t)-\vphi_n'(\tau_{k,j}^n)\bigr)^2}\,dt.
+	\]
+	При $k\ge k_0$ имеем $|\vphi_n'(t)-\vphi_n'(\tau_{k,j}^n)|<\eps$, откуда
+	\[
+	L-l(\Gamma_k')\le\sum_{j=0}^{N_k-1}\int_{t_{k,j}}^{t_{k,j+1}}
+	\sqrt{\sum_{n=1}^d\eps^2}\,dt
+	=\eps\sqrt{d}\sum_{j=0}^{N_k-1}|t_{k,j+1}-t_{k,j}|
+	=\eps\sqrt{d}\,(b-a).
+	\]
+	Итак, $0\le L-l(\Gamma_k')\le\eps\sqrt{d}\,(b-a)$ при $k\ge k_0$. В силу
+	произвольности $\eps$ получаем $l(\Gamma_k')\to L$, а значит, $l(\Gamma)\ge L$.
+	
+	\medskip
+	Из пунктов 1 и 2: $L\le l(\Gamma)\le L$, то есть $\Gamma$ спрямляема и
+	\[
+	l(\Gamma)=\int_a^b \sqrt{\sum_{n=1}^d (\vphi_n'(t))^2}\,dt. \qedhere
+	\]
+\end{proof}
+
+\begin{Example}{Параметризация окружности}{}
+	Для окружности радиуса $r>0$:
+	\[
+	\vphi_1(t)=r\cos(2\pi t),\qquad \vphi_2(t)=r\sin(2\pi t),\qquad t\in[0,1].
+	\]
+	Тогда $\vphi_1'=-2\pi r\sin(2\pi t)$, $\vphi_2'=2\pi r\cos(2\pi t)$, и
+	\[
+	l(\Gamma)=\int_0^1\sqrt{r^2(2\pi)^2\bigl(\sin^2(2\pi t)+\cos^2(2\pi t)\bigr)}\,dt
+	=\int_0^1 2\pi r\,dt=2\pi r.
+	\]
+\end{Example}

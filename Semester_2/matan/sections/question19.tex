@@ -1,0 +1,78 @@
+% !TEX root = ../matan.tex
+
+\section{Ряд Фурье элемента гильбертова пространства, коэффициенты Фурье, минимальное расстояние до линейной оболочки конечного набора базисных векторов, неравенство Бесселя.}
+
+\begin{Definition}{Коэффициенты и ряд Фурье}{}
+	Пусть $\{e_k\}_{k \in \NN}$~--- ортонормированная система в гильбертовом пространстве $\mathcal{H}$ и $x \in \mathcal{H}$. Числа
+	\[
+	c_k := \langle x, e_k\rangle, \qquad k \in \NN,
+	\]
+	называются \textbf{коэффициентами Фурье} элемента $x$ по системе $\{e_k\}$, а формальный ряд $\sum_{k=1}^{\infty} c_k e_k$~--- \textbf{рядом Фурье} элемента $x$.
+\end{Definition}
+
+\begin{Remark}{}{}
+	Если бы выполнялось разложение $x = \sum_{k=1}^{\infty} \mu_k e_k$, то, скалярно умножая на $e_j$ и пользуясь ортонормированностью, получили бы $\langle x, e_j\rangle = \mu_j$. То есть коэффициенты разложения по ортонормированной системе обязаны совпадать с коэффициентами Фурье.
+\end{Remark}
+
+\begin{Theorem}{Наилучшее приближение конечной линейной оболочкой}{}
+	Пусть $\{e_k\}_{k \in \NN}$~--- ортонормированная система, $x \in \mathcal{H}$, $c_k = \langle x, e_k\rangle$. Тогда для любых $\lambda_1, \ldots, \lambda_N \in \RR$
+	\[
+	\Bigl\| x - \sum_{k=1}^{N} \lambda_k e_k \Bigr\|^2
+	= \|x\|^2 - \sum_{k=1}^{N} c_k^2 + \sum_{k=1}^{N} (\lambda_k - c_k)^2,
+	\]
+	и минимум левой части достигается при $\lambda_k = c_k$; при этом
+	\[
+	\dist^2\bigl(x, \operatorname{span}\{e_k\}_{k=1}^{N}\bigr)
+	= \Bigl\| x - \sum_{k=1}^{N} c_k e_k \Bigr\|^2
+	= \|x\|^2 - \sum_{k=1}^{N} c_k^2.
+	\]
+\end{Theorem}
+
+\begin{proof}
+	Раскроем квадрат нормы, используя билинейность и ортонормированность $\langle e_k, e_j\rangle = \delta_{kj}$:
+	\[
+	\Bigl\| x - \sum_{k=1}^{N} \lambda_k e_k \Bigr\|^2
+	= \langle x, x\rangle - 2\sum_{k=1}^{N}\lambda_k\langle x, e_k\rangle + \sum_{k,j=1}^{N}\lambda_k\lambda_j\langle e_k, e_j\rangle
+	= \|x\|^2 - 2\sum_{k=1}^{N}\lambda_k c_k + \sum_{k=1}^{N}\lambda_k^2.
+	\]
+	Выделим полный квадрат по каждому $\lambda_k$:
+	\[
+	-2\lambda_k c_k + \lambda_k^2 = (\lambda_k - c_k)^2 - c_k^2,
+	\]
+	откуда
+	\[
+	\Bigl\| x - \sum_{k=1}^{N}\lambda_k e_k \Bigr\|^2 = \|x\|^2 - \sum_{k=1}^{N} c_k^2 + \sum_{k=1}^{N}(\lambda_k - c_k)^2.
+	\]
+	Первые два слагаемых от $\lambda$ не зависят, а третье неотрицательно и обращается в нуль тогда и только тогда, когда $\lambda_k = c_k$ для всех $k$. Следовательно, минимум достигается на коэффициентах Фурье и равен $\|x\|^2 - \sum_{k=1}^{N} c_k^2$.
+\end{proof}
+
+\begin{center}
+\begin{tikzpicture}[>=Stealth, scale=1.2]
+	\draw[->] (-1,0) -- (4.4,0) node[right] {$\operatorname{span}\{e_k\}_{k=1}^{N}$};
+	\coordinate (O) at (0,0);
+	\coordinate (P) at (3,0);
+	\coordinate (X) at (3,2);
+	\draw[->, very thick] (O) -- (X) node[above left] {$x$};
+	\draw[->, very thick] (O) -- (P) node[below=5pt] {$\sum_{k=1}^{N} c_k e_k$};
+	\draw[->, dashed] (P) -- (X) node[midway, right] {$x - \sum c_k e_k$};
+	\draw (P)++(-0.28,0) -- ++(0,0.28) -- ++(0.28,0);
+	\fill (O) circle (1.3pt);
+\end{tikzpicture}
+\end{center}
+
+Ортогональная проекция $\sum_{k=1}^{N} c_k e_k$~--- ближайшая к $x$ точка подпространства, а вектор ошибки $x - \sum_{k=1}^{N} c_k e_k$ ортогонален этому подпространству.
+
+\begin{Corollary}{Неравенство Бесселя}{}
+	Для любой ортонормированной системы $\{e_k\}_{k \in \NN}$ и любого $x \in \mathcal{H}$ ряд $\sum_{k=1}^{\infty} c_k^2$ из квадратов коэффициентов Фурье сходится, причём
+	\[
+	\sum_{k=1}^{\infty} c_k^2 \le \|x\|^2.
+	\]
+\end{Corollary}
+
+\begin{proof}
+	Из равенства предыдущей теоремы при $\lambda_k = c_k$ имеем
+	\[
+	0 \le \dist^2\bigl(x, \operatorname{span}\{e_k\}_{k=1}^{N}\bigr) = \|x\|^2 - \sum_{k=1}^{N} c_k^2,
+	\]
+	то есть $\sum_{k=1}^{N} c_k^2 \le \|x\|^2$ при каждом $N$. Частичные суммы ряда $\sum c_k^2$ неотрицательны, монотонно не убывают и ограничены сверху числом $\|x\|^2$, поэтому ряд сходится, а переходя к пределу при $N \to \infty$, получаем $\sum_{k=1}^{\infty} c_k^2 \le \|x\|^2$.
+\end{proof}

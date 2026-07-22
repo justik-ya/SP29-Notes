@@ -1,0 +1,859 @@
+% !TEX root = ../algorithms.tex
+
+
+\section{Вычисления схемами как модель параллельных вычислений. Компараторы, сортирующие сети. Принцип нулей-единиц. Битонная сортировка и сортировка чётно-нечётным слиянием.}
+
+\subsection{Вычислительные схемы}
+
+\begin{Definition}{}{def:circuit}
+	Вычислительная схема --- это ациклический ориентированный граф, состоящий из:
+	\begin{enumerate}
+		\item $n$ входных вершин, для которых $\operatorname{indeg}(v)=0$;
+		\item $m$ выходных вершин, для которых $\operatorname{outdeg}(v)=0$;
+		\item внутренних вершин, каждая из которых помечена элементарной операцией.
+	\end{enumerate}
+	В качестве элементарных операций могут выступать арифметические, булевы, а также любые другие операции, считающиеся простыми в данной модели.
+	
+	\medskip\noindent
+	\textbf{Размер схемы} --- число её внутренних вершин.
+	
+	\medskip\noindent
+	\textbf{Глубина схемы} --- длина максимального ориентированного пути от входа к выходу.
+\end{Definition}
+
+\begin{Remark}{}{rem:circuit-time}
+	Глубина схемы интерпретируется как параллельное время вычисления: все вершины одного \emph{слоя} (то есть вершины, у которых все входящие данные уже готовы) могут вычисляться одновременно.
+\end{Remark}
+
+Алгоритм в модели вычислительных схем --- это семейство схем $\{C_n\}_{n\ge 1}$, где схема $C_n$ решает задачу на входах размера $n$.
+
+\begin{Example}{}{ex:circuit-simple}
+	Простейший пример: схема вычисления $(x_1+x_2)\cdot(x_3 - x_4)$ имеет четыре входа, два слоя и размер~$3$.
+\end{Example}
+
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[
+		scale=0.86,
+		transform shape,
+		>=Stealth, font=\small,
+		iv/.style={circle,draw,minimum size=7mm,inner sep=1pt},
+		op/.style={circle,draw,minimum size=9mm,inner sep=1pt},
+		ov/.style={circle,draw,fill=gray!20,minimum size=7mm,inner sep=1pt},
+		]
+		% входные вершины
+		\node[iv] (x1) at (0,0)   {$x_1$};
+		\node[iv] (x2) at (1.8,0) {$x_2$};
+		\node[iv] (x3) at (3.6,0) {$x_3$};
+		\node[iv] (x4) at (5.4,0) {$x_4$};
+		
+		% внутренние вершины
+		\node[op] (plus) at (0.9,-1.8)  {$+$};
+		\node[op] (sub)  at (4.5,-1.8)  {$-$};
+		\node[op] (mul)  at (2.7,-3.6)  {$\times$};
+		
+		% выходная вершина
+		\node[ov] (y) at (2.7,-5.2) {$y$};
+		
+		% рёбра
+		\draw[->] (x1)--(plus);
+		\draw[->] (x2)--(plus);
+		\draw[->] (x3)--(sub);
+		\draw[->] (x4)--(sub);
+		\draw[->] (plus)--(mul);
+		\draw[->] (sub)--(mul);
+		\draw[->] (mul)--(y);
+		
+		% аннотации
+		\node[font=\scriptsize,gray,above left=1pt] at (x1.north) {$\operatorname{indeg}=0$};
+		\node[font=\scriptsize,gray,below=4pt] at (y.south) {$\operatorname{outdeg}=0$};
+	\end{tikzpicture}
+	\caption{
+		Не заштрихованные вершины без входящих рёбер~--- \emph{входы};
+		заштрихованная вершина без исходящих рёбер~--- \emph{выход}.
+		\textbf{Размер} схемы~--- 3.
+		\textbf{Глубина}~--- 2.}
+	\label{fig:circuit}
+\end{figure}
+
+\subsection{Сортирующие сети}
+
+\begin{Definition}{}{def:sorting-network}
+	\emph{Сортирующая сеть} --- это схема, которая по входу из $n$ чисел $x_1,\dots,x_n$ выдаёт числа $y_1,\dots,y_n$, упорядоченные по неубыванию, и использует в качестве внутренних элементов только \emph{компараторы}.
+\end{Definition}
+
+\begin{Definition}{}{def:comparator}
+	\emph{Компаратор} с входами $u,v$ и выходами $u',v'$ вычисляет
+	\[
+	u' = \min\{u,v\},
+	\qquad
+	v' = \max\{u,v\}.
+	\]
+\end{Definition}
+
+% ===========================================================
+% Рис. 4. Компаратор — три способа изображения
+% ===========================================================
+\begin{figure}[H]\centering
+	\begin{tikzpicture}[>=Stealth, font=\small]
+		\begin{scope}[xshift=0cm]
+			\node[circle,draw,inner sep=1.5pt,minimum size=7mm] (c) at (0,-1.2) {};
+			\draw[->] (-0.8,0.1) node[above,font=\small]{$x_1$} -- (c);
+			\draw[->] ( 0.8,0.1) node[above,font=\small]{$x_2$} -- (c);
+			\draw[->] (c) -- (-1.1,-2.5) node[below,font=\scriptsize] {$\min\{x_1,x_2\}$};
+			\draw[->] (c) -- ( 1.1,-2.5) node[below,font=\scriptsize] {$\max\{x_1,x_2\}$};
+			\node[above,font=\small] at (0,0.8) {(а) граф};
+		\end{scope}
+		\begin{scope}[xshift=5.0cm]
+			\node[above,font=\small] at (-0.6,0.4) {$x_1$};
+			\node[above,font=\small] at ( 0.6,0.4) {$x_2$};
+			\draw[thin] (-0.6, 0.2) -- (-0.6,-2.5);
+			\draw[thin] ( 0.6, 0.2) -- ( 0.6,-2.5);
+			\draw[->,thick] (0.6,-1.0) -- (-0.6,-1.0);
+			\node[below,font=\scriptsize] at (-0.6,-2.6) {$\min$};
+			\node[below,font=\scriptsize] at ( 0.6,-2.6) {$\max$};
+			\node[above,font=\small] at (0,0.8) {(б) стрелка};
+		\end{scope}
+		\begin{scope}[xshift=8.5cm]
+			\node[above,font=\small] at (-0.6,0.4) {$x_1$};
+			\node[above,font=\small] at ( 0.6,0.4) {$x_2$};
+			\draw[thin] (-0.6, 0.2) -- (-0.6,-2.5);
+			\draw[thin] ( 0.6, 0.2) -- ( 0.6,-2.5);
+			\draw[thick] (-0.6,-1.0) -- (0.6,-1.0);
+			\filldraw (-0.6,-1.0) circle (2.5pt);
+			\filldraw ( 0.6,-1.0) circle (2.5pt);
+			\node[below,font=\scriptsize] at (-0.6,-2.6) {$\min$};
+			\node[below,font=\scriptsize] at ( 0.6,-2.6) {$\max$};
+			\node[above,font=\small] at (0,0.8) {(в) перемычка};
+		\end{scope}
+	\end{tikzpicture}
+	\caption{Три способа изображения компаратора.
+		В обозначениях~(б) и~(в) сигнал течёт сверху вниз по вертикальным проводам;
+		горизонтальная перемычка сравнивает два соседних элемента
+		и кладёт меньший на левый (верхний) провод.}
+	\label{fig:comparator}
+\end{figure}
+
+\subsubsection*{Нижние оценки}
+\begin{itemize}
+	\item \textbf{Размер} любой сортирующей сети не менее $\Omega(n\log n)$.
+	Поскольку каждый компаратор порождает не более $2$ различных исходов, а число различных упорядочений $n$ элементов равно $n!$, то для различения всех входов нужно не менее $\log_2(n!)=\Omega(n\log n)$ компараторов.
+	\item \textbf{Глубина} любой сортирующей сети не менее $\Omega(\log n)$.
+	В схеме глубины $d$ значение одного выходного провода может зависеть не более чем от $2^d$ входных проводов.
+	Так как максимальный элемент на выходе должен зависеть от всех $n$ входов, получаем $2^d \ge n$, откуда $d \ge \log_2 n$.
+\end{itemize}
+
+
+
+% ===========================================================
+% Рис. 5. Нижние оценки для сортирующих сетей
+% ===========================================================
+\begin{figure}[H]\centering
+	\begin{tikzpicture}[>=Stealth, font=\small]
+		
+		%% --- (а) Нижняя оценка глубины: Ω(log n) ---
+		\begin{scope}[xshift=0cm]
+			\node[above,align=center,font=\small] at (2.7,3.8)
+			{(а) глубина $\ge \log_2 n$};
+			
+			% Рисуем "обратный конус": из одного выхода трассируем назад 3 уровня
+			% Уровень 0 (выход): x = 5.2
+			% Уровень 1: x = 3.4
+			% Уровень 2: x = 1.8
+			% Уровень 3 (входы): x = 0
+			
+			% Выходной провод (максимум)
+			\draw[very thick,red!70!black,->] (5.2,1.75) -- (5.9,1.75)
+			node[right,font=\small] {$y_{\max}$};
+			\filldraw[red!70!black] (5.2,1.75) circle (3pt);
+			
+			% Уровень d=3 -> d=2: один компаратор
+			\draw[very thick,red!70!black] (5.2,1.75) -- (3.6,1.75);
+			\draw[very thick,red!70!black] (5.2,0.35) -- (3.6,0.35);
+			\draw[very thick,red!70!black] (3.6,0.35) -- (3.6,1.75);
+			\filldraw[red!70!black] (3.6,1.75) circle (2.5pt);
+			\filldraw[red!70!black] (3.6,0.35) circle (2.5pt);
+			
+			% Уровень d=2 -> d=1: два компаратора
+			\foreach \ya/\yb in {1.75/2.45, 0.35/1.05}{
+				\draw[very thick,red!30!orange] (3.6,\ya) -- (2.0,\ya);
+				\draw[very thick,red!30!orange] (3.6,\yb) -- (2.0,\yb);
+				\draw[very thick,red!30!orange] (2.0,\ya) -- (2.0,\yb);
+				\filldraw[red!30!orange] (2.0,\ya) circle (2.5pt);
+				\filldraw[red!30!orange] (2.0,\yb) circle (2.5pt);
+			}
+			
+			% Уровень d=1 -> d=0: четыре компаратора
+			\foreach \ya/\yb in {2.45/2.8, 1.75/2.1, 1.05/1.4, 0.35/0.7}{
+				\draw[very thick,orange!80!yellow] (2.0,\ya) -- (0.6,\ya);
+				\draw[very thick,orange!80!yellow] (2.0,\yb) -- (0.6,\yb);
+				\draw[very thick,orange!80!yellow] (0.6,\ya) -- (0.6,\yb);
+				\filldraw[orange!80!yellow] (0.6,\ya) circle (2.5pt);
+				\filldraw[orange!80!yellow] (0.6,\yb) circle (2.5pt);
+			}
+			
+			% Входные провода (8 штук)
+			\foreach \y in {2.8, 2.45, 2.1, 1.75, 1.4, 1.05, 0.7, 0.35}{
+				\draw[thin,<-] (0.0,\y) -- (0.6,\y);
+			}
+			\node[left,font=\scriptsize] at (0.0,2.8)  {$x_1$};
+			\node[left,font=\scriptsize] at (0.0,2.45) {$x_2$};
+			\node[left,font=\scriptsize] at (0.0,2.1)  {$x_3$};
+			\node[left,font=\scriptsize] at (0.0,1.75) {$x_4$};
+			\node[left,font=\scriptsize] at (0.0,1.4)  {$x_5$};
+			\node[left,font=\scriptsize] at (0.0,1.05) {$x_6$};
+			\node[left,font=\scriptsize] at (0.0,0.7)  {$x_7$};
+			\node[left,font=\scriptsize] at (0.0,0.35) {$x_8$};
+			
+			% Скобка над слоями
+			\draw[decorate,decoration={brace,amplitude=4pt}]
+			(0.5,3.05) -- (5.3,3.05)
+			node[midway,above=4pt,font=\scriptsize] {$d$ слоёв};
+			
+			% Текст-пояснение
+			\node[align=left,font=\scriptsize,text width=5.5cm] at (2.7,-0.5)
+			{$y_{\max}$ зависит от всех $n$ входов.\\
+				За $d$ слоёв провод «видит» $\le 2^d$ входов.\\
+				$\Rightarrow\; 2^d\ge n \;\Rightarrow\; d\ge\log_2 n$.};
+		\end{scope}
+		
+		%% --- (б) Нижняя оценка размера: Ω(n log n) ---
+		\begin{scope}[xshift=9cm]
+			\node[above,align=center,font=\small] at (1.8,3.8)
+			{(б) размер $\ge \log_2(n!) = \Omega(n\log n)$};
+			
+			% Дерево решений (глубина 3, 8 листьев = 3! листьев при n=3)
+			% Корень
+			\node[draw,circle,inner sep=1.5pt,minimum size=5mm,font=\scriptsize]
+			(r) at (1.8,3.2) {};
+			% Уровень 1
+			\node[draw,circle,inner sep=1.5pt,minimum size=5mm] (l1) at (0.6,2.2) {};
+			\node[draw,circle,inner sep=1.5pt,minimum size=5mm] (r1) at (3.0,2.2) {};
+			\draw (r)--(l1) node[midway,left,font=\scriptsize] {$\le$};
+			\draw (r)--(r1) node[midway,right,font=\scriptsize] {$>$};
+			% Уровень 2
+			\node[draw,circle,inner sep=1.5pt,minimum size=5mm] (ll2) at (0.0,1.2) {};
+			\node[draw,circle,inner sep=1.5pt,minimum size=5mm] (lr2) at (1.2,1.2) {};
+			\node[draw,circle,inner sep=1.5pt,minimum size=5mm] (rl2) at (2.4,1.2) {};
+			\node[draw,circle,inner sep=1.5pt,minimum size=5mm] (rr2) at (3.6,1.2) {};
+			\draw (l1)--(ll2); \draw (l1)--(lr2);
+			\draw (r1)--(rl2); \draw (r1)--(rr2);
+			% Уровень 3 (листья)
+			\foreach \xleaf/\parent in {-0.3/ll2, 0.3/ll2, 0.9/lr2, 1.5/lr2,
+				2.1/rl2, 2.7/rl2, 3.3/rr2, 3.9/rr2}{
+				\draw (\parent)--(\xleaf,0.2);
+				\node[font=\scriptsize,rotate=60,anchor=west] at (\xleaf,0.2) {};
+				\filldraw (\xleaf,0.15) circle (1.5pt);
+			}
+			\draw[decorate,decoration={brace,amplitude=4pt,mirror}]
+			(-0.5,0.0) -- (4.1,0.0)
+			node[midway,below=5pt,font=\scriptsize] {не менее $n!$ листьев};
+			\draw[decorate,decoration={brace,amplitude=4pt}]
+			(-0.7,0.1) -- (-0.7,3.3)
+			node[midway,left=5pt,font=\scriptsize,align=right] {глубина\\$= k$};
+			
+			\node[align=left,font=\scriptsize,text width=5cm] at (1.8,-1.5)
+			{Каждый компаратор~--- бинарное\\
+				решение: $2^k$ вариантов за $k$ шагов.\\
+				$2^k \ge n!\;\Rightarrow\; k\ge\log_2(n!)=\Omega(n\log n)$.};
+		\end{scope}
+		
+	\end{tikzpicture}
+	\caption{
+		(а)~Нижняя оценка глубины $\Omega(\log n)$:
+		за $d$ слоёв провод максимума может «видеть» не более $2^d$ входов,
+		а он должен видеть все $n$.
+		(б)~Нижняя оценка размера $\Omega(n\log n)$:
+		нужно различить $n!$ порядков.}
+	\label{fig:lower-bounds}
+\end{figure}
+
+\begin{Remark}{}{rem:aks}
+	Существуют сортирующие сети глубины $O(\log n)$ и размера $O(n\log n)$ (сеть AKS).
+	Конструкция весьма сложна, поэтому далее рассматривается более простая \emph{битонная сортировка}.
+\end{Remark}
+
+\subsection{Принцип нулей и единиц}
+
+\begin{Theorem}{}{thm:zero-one}
+	Сортирующая сеть корректна на всех вещественных входах тогда и только тогда, когда она корректна на всех входах из нулей и единиц.
+\end{Theorem}
+
+\begin{proof}
+	Необходимость очевидна: $\{0,1\}$-входы являются частным случаем вещественных.
+	
+	Докажем достаточность.
+	Предположим, что сеть корректно сортирует все $\{0,1\}$-входы, но не сортирует некоторый вещественный вход $x=(x_1,\dots,x_n)$.
+	Тогда на выходе получается последовательность $y=(y_1,\dots,y_n)$, для которой существуют индексы $i<j$ такие, что $y_i>y_j$.
+	
+	Выберем число $t$ так, что $y_j < t \le y_i$, и определим булевый вход
+	\[
+	\widetilde x_k =
+	\begin{cases}
+		0, & x_k < t,\\
+		1, & x_k \ge t.
+	\end{cases}
+	\]
+	
+	% ===========================================================
+	% Рис. 6. Принцип нулей и единиц
+	% ===========================================================
+	\begin{figure}[H]\centering
+		\begin{tikzpicture}[>=Stealth, font=\small]
+			% Левый блок: вещественные входы
+			\begin{scope}[xshift=0cm]
+				\node[above,font=\small] at (-0.7,0.3) {$x_k$};
+				\node[above,font=\small] at ( 0.7,0.3) {$x_h$};
+				\draw[thin] (-0.7, 0.15) -- (-0.7,-1.9);
+				\draw[thin] ( 0.7, 0.15) -- ( 0.7,-1.9);
+				\draw[thick] (-0.7,-0.9) -- (0.7,-0.9);
+				\filldraw (-0.7,-0.9) circle (2.5pt);
+				\filldraw ( 0.7,-0.9) circle (2.5pt);
+				\node[below,font=\scriptsize] at (-0.9,-2.05) {$\min\{x_k,x_h\}$};
+				\node[below,font=\scriptsize] at ( 0.9,-2.05) {$\max\{x_k,x_h\}$};
+			\end{scope}
+			
+			% Стрелка с пороговой функцией
+			\node[font=\small] at (2.6,-0.9)
+			{$\xrightarrow{\quad [\,\cdot\ge t\,]\quad}$};
+			
+			% Правый блок: пороговые (0/1) входы
+			\begin{scope}[xshift=5.2cm]
+				\node[above,font=\small] at (-0.7,0.3) {$\widetilde{x}_k$};
+				\node[above,font=\small] at ( 0.7,0.3) {$\widetilde{x}_h$};
+				\draw[thin] (-0.7, 0.15) -- (-0.7,-1.9);
+				\draw[thin] ( 0.7, 0.15) -- ( 0.7,-1.9);
+				\draw[thick] (-0.7,-0.9) -- (0.7,-0.9);
+				\filldraw (-0.7,-0.9) circle (2.5pt);
+				\filldraw ( 0.7,-0.9) circle (2.5pt);
+				\node[below,font=\scriptsize] at (-0.9,-2.05)
+				{$\min\{\widetilde{x}_k,\widetilde{x}_h\}$};
+				\node[below,font=\scriptsize] at ( 0.9,-2.05)
+				{$\max\{\widetilde{x}_k,\widetilde{x}_h\}$};
+			\end{scope}
+			
+		\end{tikzpicture}
+		\caption{
+			Применение пороговой функции $[\,\cdot\ge t\,]$ до компаратора
+			даёт тот же результат, что применение после:
+			$[\min\{x_k,x_h\}\ge t] = \min\{[\,x_k\ge t\,],\,[\,x_h\ge t\,]\}$
+			и аналогично для $\max$.}
+		\label{fig:zero-one}
+	\end{figure}
+	
+	\textbf{Ключевое наблюдение.} Пороговая функция $[\cdot \ge t]$ коммутирует с каждым компаратором.
+	Действительно, рассмотрим компаратор на входах $u,v$, вычисляющий $(\min\{u,v\},\max\{u,v\})$:
+	\begin{itemize}
+		\item Если $u,v < t$, то $\min$ и $\max$ тоже $<t$; после порогования: $(0,0)$.
+		Пороговые значения $(\widetilde u,\widetilde v)=(0,0)$; компаратор на них даёт $(0,0)$. Совпадает.
+		\item Если $u,v \ge t$, то $\min$ и $\max$ тоже $\ge t$; после порогования: $(1,1)$.
+		$(\widetilde u,\widetilde v)=(1,1)$; компаратор на них даёт $(1,1)$. Совпадает.
+		\item Если $u < t \le v$ (или наоборот), то $\min\{u,v\}<t$ и $\max\{u,v\}\ge t$; после порогования: $(0,1)$.
+		$(\widetilde u,\widetilde v)=(0,1)$ (или $(1,0)$); компаратор на них даёт $(0,1)$. Совпадает.
+	\end{itemize}
+	Таким образом, если сеть переводит $x$ в $y$, то она переводит $\widetilde x$ в $\widetilde y$, где
+	\[
+	\widetilde y_k =
+	\begin{cases}
+		0, & y_k < t,\\
+		1, & y_k \ge t.
+	\end{cases}
+	\]
+	Из выбора $t$ следует, что $\widetilde y_i=1$ и $\widetilde y_j=0$, то есть выход $\widetilde y$ не отсортирован.
+	Получено противоречие с корректностью сети на $\{0,1\}$-входах.
+\end{proof}
+
+\subsection{Битонные последовательности}
+
+\begin{Definition}{}{def:bitonic}
+	Последовательность $z_1,\dots,z_m$ называется \emph{битонной}, если она является циклическим сдвигом последовательности, которая сначала неубывает, а затем невозрастает.
+\end{Definition}
+
+\begin{Example}{}{ex:bitonic-01}
+	В случае $\{0,1\}$-последовательностей битонная последовательность имеет вид
+	\[
+	\underbrace{0\cdots 0}_{i}\,\underbrace{1\cdots 1}_{j}\,\underbrace{0\cdots 0}_{k}
+	\qquad\text{или}\qquad
+	\underbrace{1\cdots 1}_{i}\,\underbrace{0\cdots 0}_{j}\,\underbrace{1\cdots 1}_{k},
+	\]
+	где $i,j,k\ge 0$, то есть состоит не более чем из трёх чередующихся блоков.
+\end{Example}
+
+% ===========================================================
+% Рис. 7. Примеры битонных 0/1-последовательностей
+% ===========================================================
+\begin{figure}[H]\centering
+	\begin{tikzpicture}[font=\small]
+		\def\bw{0.4}
+		\def\bh{0.9}
+		
+		% (а) вид 0...0 1...1 0...0
+		\begin{scope}[xshift=0cm]
+			\foreach \i/\v in {1/0,2/0,3/0,4/0,5/1,6/1,7/1,8/0,9/0,10/0}{
+				\pgfmathsetmacro{\x}{(\i-1)*\bw}
+				\draw (\x,0) rectangle (\x+\bw,\v*\bh);
+				\ifnum\v=1 \fill[gray!50] (\x,0) rectangle (\x+\bw,\bh); \fi
+			}
+			\draw[thin] (-0.1,0) -- (10*\bw+0.1,0);
+			\node[below=20pt,align=center] at (5*\bw,-0.05)
+			{(а)\;
+				$\underbrace{0\cdots 0}_{i}\;\underbrace{1\cdots 1}_{j}\;\underbrace{0\cdots 0}_{k}$};
+		\end{scope}
+		
+		% (б) вид 1...1 0...0 1...1
+		\begin{scope}[xshift=6.0cm]
+			\foreach \i/\v in {1/1,2/1,3/1,4/0,5/0,6/0,7/0,8/1,9/1,10/1}{
+				\pgfmathsetmacro{\x}{(\i-1)*\bw}
+				\draw (\x,0) rectangle (\x+\bw,\v*\bh);
+				\ifnum\v=1 \fill[gray!50] (\x,0) rectangle (\x+\bw,\bh); \fi
+			}
+			\draw[thin] (-0.1,0) -- (10*\bw+0.1,0);
+			\node[below=20pt,align=center] at (5*\bw,-0.05)
+			{(б)\;
+				$\underbrace{1\cdots 1}_{i}\;\underbrace{0\cdots 0}_{j}\;\underbrace{1\cdots 1}_{k}$};
+		\end{scope}
+	\end{tikzpicture}
+	\label{fig:bitonic-01}
+\end{figure}
+
+\subsection{Битонное слияние}
+
+Пусть $m=2^t$. Для битонной последовательности $z_1,\dots,z_m$ определим первый слой компараторов:
+\[
+z_k^{\min} = \min\{z_k,\, z_{k+m/2}\},
+\qquad
+z_k^{\max} = \max\{z_k,\, z_{k+m/2}\},
+\qquad k=1,\dots,\tfrac{m}{2}.
+\]
+
+\begin{Lemma}{}{bitonic-split}
+	Пусть $z_1,\dots,z_m$ --- битонная последовательность.
+	Тогда после одного слоя компараторов:
+	\begin{enumerate}
+		\item последовательность $(z_1^{\min},\dots,z_{m/2}^{\min})$ битонна;
+		\item последовательность $(z_1^{\max},\dots,z_{m/2}^{\max})$ битонна;
+		\item каждый элемент первой последовательности не превосходит каждого элемента второй.
+	\end{enumerate}
+	Более точно, в случае $\{0,1\}$-последовательностей: либо $z^{\min}=(0,\dots,0)$ и $z^{\max}$ битонна, либо $z^{\min}$ битонна и $z^{\max}=(1,\dots,1)$.
+\end{Lemma}
+
+% ===========================================================
+% Рис. 8. Один шаг bi_merge (m = 8)
+% ===========================================================
+\begin{figure}[H]\centering
+	\begin{tikzpicture}[>=Stealth, font=\small]
+		\def\dy{0.65}
+		\def\lx{2.2}
+		% провода и метки
+		\foreach \i in {1,...,8}{
+			\pgfmathsetmacro{\y}{(9-\i)*\dy}
+			\draw[thin] (0,\y) -- (4.6,\y);
+			\node[left,font=\small] at (0,\y) {$z_{\i}$};
+		}
+		\foreach[count=\k from 0] \a/\b in {1/5, 2/6, 3/7, 4/8}{
+			\pgfmathsetmacro{\x}{1.5 + 0.65*\k}
+			\pgfmathsetmacro{\ya}{(9-\a)*\dy}
+			\pgfmathsetmacro{\yb}{(9-\b)*\dy}
+			\draw[very thick] (\x,\ya) -- (\x,\yb);
+			\filldraw (\x,\ya) circle (2.5pt);
+			\filldraw (\x,\yb) circle (2.5pt);
+		}
+		% фигурные скобки
+		\draw[decorate,decoration={brace,amplitude=5pt,mirror}]
+		(4.7,{(9-4)*\dy-0.15}) -- (4.7,{(9-1)*\dy+0.15})
+		node[midway,right=7pt,font=\small] {$z^{\min}$ (битонна)};
+		\draw[decorate,decoration={brace,amplitude=5pt,mirror}]
+		(4.7,{(9-8)*\dy-0.15}) -- (4.7,{(9-5)*\dy+0.15})
+		node[midway,right=7pt,font=\small] {$z^{\max}$ (битонна)};
+		% заголовок слоя
+		\node[above,font=\scriptsize,gray] at (\lx,{8.6*\dy})
+		{слой из $m/2=4$ компараторов};
+	\end{tikzpicture}
+	\caption{Первый шаг \texttt{bi\_merge} при $m=8$:
+		компаратор $k$ сравнивает $z_k$ и $z_{k+m/2}$.
+		После слоя верхняя половина проводов несёт минимумы, нижняя~--- максимумы;
+		обе половины являются битонными.}
+	\label{fig:bi-merge-step}
+\end{figure}
+
+Это позволяет рекурсивно продолжить сортировку: отсортировать обе половины независимо и объединить результаты.
+
+\begin{algorithm}[H]
+	\caption{\textsc{bi\_merge}$(z_1,\dots,z_m)$}
+	\begin{algorithmic}[1]
+		\Require Битонная последовательность $z_1,\dots,z_m$, где $m=2^t$ для некоторого $t \ge 0$
+		\Ensure Последовательность $z_1,\dots,z_m$, отсортированная по неубыванию
+		
+		\If{$m = 1$}
+		\State \Return $(z_1)$
+		\EndIf
+		
+		\For{$k = 1,\dots,\frac{m}{2}$}
+		\State $z_k^{\min} = \min(z_k, z_{k+m/2})$
+		\State $z_k^{\max} = \max(z_k, z_{k+m/2})$
+		\EndFor
+		\Comment{один слой компараторов}
+		
+		\State $L = \textsc{bi\_merge}(z_1^{\min},\dots,z_{m/2}^{\min})$
+		\Comment{рекурсивно обрабатываем меньшие элементы}
+		
+		\State $R = \textsc{bi\_merge}(z_1^{\max},\dots,z_{m/2}^{\max})$
+		\Comment{рекурсивно обрабатываем большие элементы}
+		
+		\State \Return $L \mathbin\Vert R$
+		\Comment{конкатенация двух половин}
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{Lemma}{}{lem:bi-merge-depth}
+	Глубина сети \texttt{bi\_merge} на входе длины $m$ равна $O(\log m)$.
+\end{Lemma}
+
+\begin{proof}
+	На каждом рекурсивном уровне добавляется один слой компараторов, после чего задача распадается на две независимые подзадачи длины $m/2$.
+	Поэтому для глубины $T(m)$ выполнено $T(m)=T\!\left(\tfrac{m}{2}\right)+O(1)$, откуда $T(m)=O(\log m)$.
+\end{proof}
+
+\begin{Lemma}{}{lem:bi-merge-size}
+	Размер сети \texttt{bi\_merge} на входе длины $m$ равен $O(m\log m)$.
+\end{Lemma}
+
+\begin{proof}
+	На верхнем уровне используется $m/2$ компараторов, после чего возникают две подзадачи длины $m/2$, поэтому $S(m)=2S\!\left(\tfrac{m}{2}\right)+O(m)$, откуда $S(m)=O(m\log m)$.
+\end{proof}
+\begin{figure}[H]\centering
+	\begin{tikzpicture}[>=Stealth, font=\small]
+		\def\dy{0.65}
+		\def\dx{1.35}
+		
+		\definecolor{layerone}{RGB}{52,101,164}
+		\definecolor{layertwo}{RGB}{78,154,6}
+		\definecolor{layerthree}{RGB}{204,0,0}
+		
+		% провода
+		\foreach \i in {1,...,8}{
+			\pgfmathsetmacro{\y}{(9-\i)*\dy}
+			\draw[thin] (0,\y) -- (4.4*\dx,\y);
+			\node[left,font=\small] at (0,\y) {$z_{\i}$};
+			\node[right,font=\small] at (4.4*\dx,\y) {$y_{\i}$};
+		}
+		
+		% Слой 1: расстояние 4
+		\foreach[count=\k from 0] \a/\b in {1/5, 2/6, 3/7, 4/8}{
+			\pgfmathsetmacro{\x}{0.5*\dx + 0.42*\k}
+			\pgfmathsetmacro{\ya}{(9-\a)*\dy}
+			\pgfmathsetmacro{\yb}{(9-\b)*\dy}
+			\draw[very thick, blue] (\x,\ya)--(\x,\yb);
+			\filldraw[blue] (\x,\ya) circle (2.5pt);
+			\filldraw[blue] (\x,\yb) circle (2.5pt);
+		}
+		
+		% Слой 2: расстояние 2
+		\foreach \a/\b/\s in {1/3/0, 2/4/1, 5/7/0, 6/8/1}{
+			\pgfmathsetmacro{\x}{2*\dx + 0.30*\s}
+			\pgfmathsetmacro{\ya}{(9-\a)*\dy}
+			\pgfmathsetmacro{\yb}{(9-\b)*\dy}
+			\draw[very thick, teal] (\x,\ya)--(\x,\yb);
+			\filldraw[teal] (\x,\ya) circle (2.5pt);
+			\filldraw[teal] (\x,\yb) circle (2.5pt);
+		}
+		
+		% Слой 3: расстояние 1
+		\foreach \a/\b in {1/2, 3/4, 5/6, 7/8}{
+			\pgfmathsetmacro{\ya}{(9-\a)*\dy}
+			\pgfmathsetmacro{\yb}{(9-\b)*\dy}
+			\draw[very thick, red!80!black] (3*\dx,\ya)--(3*\dx,\yb);
+			\filldraw[red!80!black] (3*\dx,\ya) circle (2.5pt);
+			\filldraw[red!80!black] (3*\dx,\yb) circle (2.5pt);
+		}
+		
+		% подписи слоёв
+		\node[above,font=\scriptsize,align=center,text=blue] at (\dx,{8.6*\dy})
+		{слой 1\\расст.~$4$};
+		\node[above,font=\scriptsize,align=center,text=teal] at (2*\dx,{8.6*\dy})
+		{слой 2\\расст.~$2$};
+		\node[above,font=\scriptsize,align=center,text=red!80!black] at (3*\dx,{8.6*\dy})
+		{слой 3\\расст.~$1$};
+	\end{tikzpicture}
+	\caption{Полная сеть \texttt{bi\_merge} для $m=8$: $\log_2 8=3$ слоя.
+		Слой~$i$ сравнивает пары на расстоянии $m/2^i$.
+		Глубина $O(\log m)$, размер $O(m\log m)$.}
+	\label{fig:bi-merge-full}
+\end{figure}
+
+\subsection{Битонная сортировка}
+
+Предполагается, что $n=2^t$; если это не так, вход дополняется значением $+\infty$ до ближайшей степени двойки.
+
+\begin{algorithm}[H]
+	\caption{\textsc{bitonic\_sort}$(x_1,\dots,x_n)$}
+	\begin{algorithmic}[1]
+		\Require Последовательность $x_1,\dots,x_n$, где $n = 2^t$ для некоторого $t \ge 0$
+		\Ensure Последовательность из тех же элементов, отсортированная по неубыванию
+		
+		\If{$n = 1$}
+		\State \Return $(x_1)$
+		\EndIf
+		
+		\State $(a_1,\dots,a_{n/2}) = \textsc{bitonic\_sort}(x_1,\dots,x_{n/2})$
+		\Comment{левая половина сортируется по неубыванию}
+		
+		\State $(b_1,\dots,b_{n/2}) = \textsc{bitonic\_sort}(x_{n/2+1},\dots,x_n)$
+		\Comment{правая половина сортируется по неубыванию}
+		
+		\State \Return \textsc{bi\_merge}$(a_1,\dots,a_{n/2},\, b_{n/2},\dots,b_1)$
+		\Comment{получаем битонную последовательность и сливаем её}
+	\end{algorithmic}
+\end{algorithm}
+
+\noindent
+Конкатенация $(a_1,\dots,a_{n/2},b_{n/2},\dots,b_1)$ является битонной: первая половина возрастает, вторая убывает.
+
+% ===========================================================
+% Рис. 10. Рекурсивная структура битонной сортировки
+% ===========================================================
+\begin{figure}[H]\centering
+	\begin{tikzpicture}[>=Stealth, font=\small]
+		% Левый блок sort
+		\draw[thick,rounded corners=4pt] (0,2.0) rectangle (3.0,3.2);
+		\node[font=\small] at (1.5,2.9) {\texttt{sort} $\uparrow$};
+		\node[font=\scriptsize] at (1.5,2.45) {$x_1,\dots,x_{n/2}$};
+		% Правый блок sort
+		\draw[thick,rounded corners=4pt] (5.0,2.0) rectangle (8.0,3.2);
+		\node[font=\small] at (6.5,2.9) {\texttt{sort} $\uparrow$};
+		\node[font=\scriptsize] at (6.5,2.45) {$x_{n/2+1},\dots,x_n$};
+		
+		% Стрелки вниз из блоков к bi_merge
+		\draw[->,thick] (1.5,2.0) -- (1.5,1.0);
+		\draw[->,thick] (6.5,2.0) -- (6.5,1.0);
+		
+		% Метки на стрелках
+		\node[left,font=\scriptsize] at (1.4,1.5)
+		{$a_1\le\cdots\le a_{n/2}$};
+		\node[right,font=\scriptsize] at (6.6,1.5)
+		{$b_1\le\cdots\le b_{n/2}$};
+		
+		% Стрелки сходятся к bi_merge
+		\draw[->,thick] (1.5,1.0) -- (3.3,0.2);
+		\draw[->,thick] (6.5,1.0) -- (4.7,0.2);
+		
+		% Метка «реверс»
+		\node[font=\scriptsize,gray] at (7.2,0.62)
+		{(переворачиваем)};
+		
+		% Блок bi_merge
+		\draw[thick,rounded corners=4pt] (2.0,-0.8) rectangle (6.0,0.2);
+		\node[font=\small] at (4.0,-0.15) {\texttt{bi\_merge}};
+		\node[font=\scriptsize] at (4.0,-0.55)
+		{$(a_1,\dots,a_{n/2},\;b_{n/2},\dots,b_1)$};
+		
+		% Пометка «битонная последовательность»
+		\draw[thin,gray] (2.0,-0.3) -- (1.1,-0.3)
+		node[left,font=\scriptsize,gray,align=right] {битонная\\последовательность};
+		
+		% Выход
+		\draw[->,thick] (4.0,-0.8) -- (4.0,-1.8)
+		node[below,font=\small] {$y_1 \le y_2 \le \cdots \le y_n$};
+	\end{tikzpicture}
+	\label{fig:bitonic-sort-structure}
+\end{figure}
+
+\begin{Remark}{}{}
+	Корректность битонной сортировки на всех вещественных входах вытекает из теоремы о принципе нулей и единиц.
+	Для $\{0,1\}$-входа достаточно убедиться, что все $n$ одинаковых элементов и блоки $0\cdots0\,1\cdots1$ обрабатываются правильно, что проверяется по лемме~\ref{lem:bitonic-split}.
+\end{Remark}
+
+\begin{Theorem}{}{thm:bitonic-sort-complexity}
+	Битонная сортировка имеет глубину $O(\log^2 n)$ и размер $O(n\log^2 n)$.
+\end{Theorem}
+
+\begin{proof}
+	Обозначим через $D(n)$ глубину схемы, а через $S(n)$ --- её размер.
+	
+	\textbf{Глубина.}
+	После рекурсивной сортировки половин (глубина $D(n/2)$) выполняется $\texttt{bi\_merge}$ глубины $O(\log n)$, поэтому $D(n)=D\!\left(\tfrac{n}{2}\right)+O(\log n)$. Раскрывая рекуррентность:
+	\[
+	D(n)=\sum_{k=0}^{\log n - 1} O\!\left(\log\tfrac{n}{2^k}\right)
+	= O\!\left(\sum_{k=0}^{\log n - 1}(\log n - k)\right)
+	= O(\log^2 n).
+	\]
+	
+	\textbf{Размер.}
+	Шаг \texttt{bi\_merge} имеет размер $O(n\log n)$, поэтому $S(n)=2S\!\left(\tfrac{n}{2}\right)+O(n\log n)$, откуда $S(n)=O(n\log^2 n)$.
+\end{proof}
+
+% ===========================================================
+% Рис. 11. Полная сеть bitonic_sort для n = 8
+% ===========================================================
+\begin{figure}[H]\centering
+	\begin{tikzpicture}[>=Stealth, font=\small]
+		\def\dy{0.65}
+		\def\dx{1.1}
+		\def\totalx{7.2}
+		\def\dsmall{0.18}
+		
+		% провода
+		\foreach \i in {1,...,8}{
+			\pgfmathsetmacro{\y}{(9-\i)*\dy}
+			\draw[thin] (0,\y) -- (\totalx,\y);
+			\node[left,font=\small] at (0,\y) {$x_{\i}$};
+			\node[right,font=\small] at (\totalx,\y) {$y_{\i}$};
+		}
+		
+		% --- Слой 1: сортировка пар ---
+		\foreach \a/\b in {1/2, 3/4, 5/6, 7/8}{
+			\pgfmathsetmacro{\ya}{(9-\a)*\dy}
+			\pgfmathsetmacro{\yb}{(9-\b)*\dy}
+			\draw[very thick,blue] (0.5*\dx,\ya)--(0.5*\dx,\yb);
+			\filldraw[blue] (0.5*\dx,\ya) circle (2.5pt);
+			\filldraw[blue] (0.5*\dx,\yb) circle (2.5pt);
+		}
+		
+		% --- Слои 2–3: bi_merge(m=4) ---
+		\foreach \a/\b/\s in {1/3/0, 2/4/1, 5/7/0, 6/8/1}{
+			\pgfmathsetmacro{\x}{1.5*\dx + 0.3*\s}
+			\pgfmathsetmacro{\ya}{(9-\a)*\dy}
+			\pgfmathsetmacro{\yb}{(9-\b)*\dy}
+			\draw[very thick,teal] (\x,\ya)--(\x,\yb);
+			\filldraw[teal] (\x,\ya) circle (2.5pt);
+			\filldraw[teal] (\x,\yb) circle (2.5pt);
+		}
+		\foreach \a/\b in {1/2, 3/4, 5/6, 7/8}{
+			\pgfmathsetmacro{\ya}{(9-\a)*\dy}
+			\pgfmathsetmacro{\yb}{(9-\b)*\dy}
+			\draw[very thick,teal] (2.5*\dx,\ya)--(2.5*\dx,\yb);
+			\filldraw[teal] (2.5*\dx,\ya) circle (2.5pt);
+			\filldraw[teal] (2.5*\dx,\yb) circle (2.5pt);
+		}
+		
+		% --- Слои 4–6: bi_merge(m=8) ---
+		\foreach[count=\k from 0] \a/\b in {1/5, 2/6, 3/7, 4/8}{
+			\pgfmathsetmacro{\x}{3.8*\dx + 0.3*\k}
+			\pgfmathsetmacro{\ya}{(9-\a)*\dy}
+			\pgfmathsetmacro{\yb}{(9-\b)*\dy}
+			\draw[very thick,red!80!black] (\x,\ya)--(\x,\yb);
+			\filldraw[red!80!black] (\x,\ya) circle (2.5pt);
+			\filldraw[red!80!black] (\x,\yb) circle (2.5pt);
+		}
+		\foreach \a/\b/\s in {1/3/0, 2/4/1, 5/7/0, 6/8/1}{
+			\pgfmathsetmacro{\x}{5.1*\dx + 0.3*\s}
+			\pgfmathsetmacro{\ya}{(9-\a)*\dy}
+			\pgfmathsetmacro{\yb}{(9-\b)*\dy}
+			\draw[very thick,red!80!black] (\x,\ya)--(\x,\yb);
+			\filldraw[red!80!black] (\x,\ya) circle (2.5pt);
+			\filldraw[red!80!black] (\x,\yb) circle (2.5pt);
+		}
+		\foreach \a/\b in {1/2, 3/4, 5/6, 7/8}{
+			\pgfmathsetmacro{\ya}{(9-\a)*\dy}
+			\pgfmathsetmacro{\yb}{(9-\b)*\dy}
+			\draw[very thick,red!80!black] (6*\dx,\ya)--(6*\dx,\yb);
+			\filldraw[red!80!black] (6*\dx,\ya) circle (2.5pt);
+			\filldraw[red!80!black] (6*\dx,\yb) circle (2.5pt);
+		}
+		
+		\draw[blue,decorate,decoration={brace,amplitude=4pt}]
+		(0.3*\dx,{8.6*\dy}) -- (0.7*\dx,{8.6*\dy})
+		node[midway,above=4pt,blue,font=\scriptsize] {пары};
+		
+		\draw[teal,decorate,decoration={brace,amplitude=4pt}]
+		(1.2*\dx,{8.6*\dy}) -- (2.8*\dx,{8.6*\dy})
+		node[midway,above=4pt,teal,font=\scriptsize]
+		{\texttt{bi\_merge}($m=4$)};
+		
+		\draw[red!80!black,decorate,decoration={brace,amplitude=4pt}]
+		(3.5*\dx,{8.6*\dy}) -- (6.1*\dx,{8.6*\dy})
+		node[midway,above=4pt,red!80!black,font=\scriptsize]
+		{\texttt{bi\_merge}($m=8$)};
+	\end{tikzpicture}
+	\caption{Полная сортирующая сеть \texttt{bitonic\_sort} для $n=8$
+		($6=1+2+3=\tfrac{\log_2 n\,(\log_2 n+1)}{2}$ слоёв).
+		{\color{blue}Синие} компараторы сортируют пары;
+		{\color{teal}зелёные} объединяют их в упорядоченные четвёрки;
+		{\color{red!80!black}красные} выполняют финальное битонное слияние.}
+	\label{fig:bitonic-sort-full}
+\end{figure}
+
+\begin{Remark}{}{rem:bitonic-vs-aks}
+	По сравнению с сетью AKS (глубина $O(\log n)$, размер $O(n\log n)$) битонная сортировка асимптотически хуже, но её конструкция существенно проще и потому она широко используется как базовый пример параллельной сортировки, в частности для реализации на \texttt{FPGA} и в \texttt{GPU}.
+\end{Remark}
+
+\subsection{Нечётно-чётная сортировка (Batcher)}
+
+Альтернативный способ построения сортирующей сети с той же асимптотикой --- нечётно-чётная сортировка Батчера.
+Ключевая операция --- \emph{нечётно-чётное слияние} двух уже отсортированных последовательностей.
+
+\begin{algorithm}[H]
+	\caption{\textsc{odd\_even\_merge}$(a_1,\dots,a_m;\, b_1,\dots,b_m)$}
+	\begin{algorithmic}[1]
+		\Require Две отсортированные по неубыванию последовательности длины $m$, где $m=2^t$
+		\Ensure Последовательность длины $2m$, полученная слиянием входов и отсортированная по неубыванию
+		
+		\If{$m = 1$}
+		\State $u = \min(a_1,b_1)$
+		\State $v = \max(a_1,b_1)$
+		\State \Return $(u,v)$
+		\EndIf
+		
+		\State $(c_1,\dots,c_m) = \textsc{odd\_even\_merge}(a_1,a_3,\dots,a_{m-1};\, b_1,b_3,\dots,b_{m-1})$
+		\Comment{нечётные позиции}
+		
+		\State $(d_1,\dots,d_m) = \textsc{odd\_even\_merge}(a_2,a_4,\dots,a_m;\, b_2,b_4,\dots,b_m)$
+		\Comment{чётные позиции}
+		
+		\State $r_1 = c_1$
+		\For{$i = 1,\dots,m-1$}
+		\State $r_{2i} = \min(c_{i+1}, d_i)$
+		\State $r_{2i+1} = \max(c_{i+1}, d_i)$
+		\EndFor
+		\State $r_{2m} = d_m$
+		\Comment{финальный слой из $m-1$ компараторов}
+		
+		\State \Return $(r_1,\dots,r_{2m})$
+	\end{algorithmic}
+\end{algorithm}
+
+
+\begin{Lemma}{}{lem:odd-even-merge-correct}
+	Процедура \textsc{odd\_even\_merge} корректно сливает две отсортированные последовательности длины $m$.
+\end{Lemma}
+
+\begin{proof}
+	По принципу нулей и единиц рассмотрим вход из $\{0,1\}$. Докажем корректность индукцией по $m$.
+	
+	\textbf{База:} $m=1$ очевидна.
+	
+	\textbf{Шаг:} Пусть $m > 1$. По предположению индукции $c$ и $d$ отсортированы. Пусть $z_a, z_b$ — количество нулей во входах. Тогда в $c$ и $d$ их количество равно:
+	\[ z_c = \lceil z_a/2 \rceil + \lceil z_b/2 \rceil, \quad z_d = \lfloor z_a/2 \rfloor + \lfloor z_b/2 \rfloor \]
+	Так как $0 \le \lceil x/2 \rceil - \lfloor x/2 \rfloor \le 1$, разность $z_c - z_d$ может принимать значения $\{0, 1, 2\}$.
+	
+	Рассмотрим последовательность $c_1, d_1, c_2, d_2, \dots, c_m, d_m$. 
+	Если $z_c - z_d \in \{0, 1\}$, она уже отсортирована. Если $z_c - z_d = 2$, то $c$ содержит на два нуля больше, чем $d$. Это создает единственную инверсию $(d_i=1, c_{i+1}=0)$ на границе раздела нулей и единиц. 
+	
+	Финальный слой компараторов $(d_i, c_{i+1})$ для всех $i$ устраняет эту возможную инверсию, делая последовательность полностью отсортированной.
+\end{proof}
+
+\begin{algorithm}[H]
+	\caption{\textsc{odd\_even\_sort}$(x_1,\dots,x_n)$}
+	\begin{algorithmic}[1]
+		\Require Последовательность $x_1,\dots,x_n$, где $n=2^t$ для некоторого $t \ge 0$
+		\Ensure Последовательность из тех же элементов, отсортированная по неубыванию
+		
+		\If{$n = 1$}
+		\State \Return $(x_1)$
+		\EndIf
+		
+		\State $(a_1,\dots,a_{n/2}) = \textsc{odd\_even\_sort}(x_1,\dots,x_{n/2})$
+		\Comment{сортировка левой половины}
+		
+		\State $(b_1,\dots,b_{n/2}) = \textsc{odd\_even\_sort}(x_{n/2+1},\dots,x_n)$
+		\Comment{сортировка правой половины}
+		
+		\State \Return \textsc{odd\_even\_merge}$(a_1,\dots,a_{n/2};\, b_1,\dots,b_{n/2})$
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{Remark}{}{}
+	Корректность \textsc{odd\_even\_sort} доказывается индукцией по $n$:
+	сначала рекурсивно сортируются левая и правая половины, после чего они корректно сливаются процедурой \textsc{odd\_even\_merge}.
+\end{Remark}

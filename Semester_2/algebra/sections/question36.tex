@@ -1,0 +1,114 @@
+% !TEX root = ../algebra_02.tex
+
+\section{Канонические гомоморфизмы. Индуцированный гомоморфизм, разложение гомоморфизма}
+
+\begin{Definition}{Канонические гомоморфизмы}{def:canonical-homs}
+	Пусть $H\le G$.
+	\begin{enumerate}
+		\item \textbf{Гомоморфизм включения:}
+		\[
+		i_H\colon H\to G, \qquad h\mapsto h.
+		\]
+		Он инъективен, причём
+		\[
+		\Im i_H = H, \qquad \Ker i_H = \{e\}.
+		\]
+		\item Если дополнительно $H\triangleleft G$, то \textbf{канонический эпиморфизм} (проекция) задаётся формулой
+		\[
+		\pi_H\colon G\to G/H, \qquad g\mapsto gH.
+		\]
+		Это сюръективный гомоморфизм, причём
+		\[
+		\Im \pi_H = G/H, \qquad \Ker \pi_H = H.
+		\]
+	\end{enumerate}
+\end{Definition}
+
+\begin{proof}
+	Гомоморфность проекции следует из равенства
+	\[
+	\pi_H(g_1g_2)=g_1g_2H=(g_1H)(g_2H)=\pi_H(g_1)\pi_H(g_2).
+	\]
+	Кроме того,
+	\[
+	\pi_H(g)=eH \Longleftrightarrow gH=H \Longleftrightarrow g\in H.
+	\]
+	Значит, $\Ker \pi_H=H$.
+\end{proof}
+
+\begin{Theorem}{Индуцированный гомоморфизм}{induced-hom}
+	Пусть дан гомоморфизм
+	\[
+	\varphi\colon G\to G'.
+	\]
+	Пусть $H\triangleleft G$ и $H\subseteq \Ker\varphi$. Пусть также $H'\le G'$ и
+	$\Im\varphi\subseteq H'$. Тогда отображение
+	\[
+	\widetilde\varphi\colon G/H\to H', \qquad \widetilde\varphi(gH):=\varphi(g),
+	\]
+	корректно определено и является гомоморфизмом. Более того, это единственный гомоморфизм для которого коммутирует диаграмма
+\[
+\begin{CD}
+	G @>{\varphi}>> G' \\
+	@V{\pi_H}VV @AA{i_{H'}}A \\
+	G/H @>{\widetilde{\varphi}}>> H'
+\end{CD}
+\]
+	то есть
+	\[
+	\varphi = i_{H'}\circ \widetilde\varphi\circ \pi_H.
+	\]
+\end{Theorem}
+
+\begin{proof}
+	Сначала докажем корректность.
+	Если $g_1H=g_2H$, то $g_2=g_1h$ для некоторого $h\in H$. Так как
+	$H\subseteq \Ker\varphi$, имеем $\varphi(h)=e$, и потому
+	\[
+	\varphi(g_2)=\varphi(g_1h)=\varphi(g_1)\varphi(h)=\varphi(g_1).
+	\]
+	Значит, значение $\widetilde\varphi(gH)$ не зависит от выбора представителя класса.
+
+	Так как $\Im\varphi\subseteq H'$, действительно $\widetilde\varphi(gH)=\varphi(g)\in H',$ то есть отображение $\widetilde\varphi$ принимает значения в $H'$. Проверим, что $\widetilde\varphi$ является гомоморфизмом:
+	\[
+	\widetilde\varphi\bigl((g_1H)(g_2H)\bigr)
+	=
+	\widetilde\varphi(g_1g_2H)
+	=
+	\varphi(g_1g_2)
+	=
+	\varphi(g_1)\varphi(g_2)
+	=
+	\widetilde\varphi(g_1H)\widetilde\varphi(g_2H).
+	\]
+
+	Теперь проверим коммутативность диаграммы. Для любого $g\in G$ имеем
+	\[
+	(i_{H'}\circ \widetilde\varphi\circ \pi_H)(g)
+	=
+	i_{H'}\bigl(\widetilde\varphi(gH)\bigr)
+	=
+	i_{H'}(\varphi(g))
+	=
+	\varphi(g).
+	\]
+	Следовательно, 	$\varphi = i_{H'}\circ \widetilde\varphi\circ \pi_H.$
+
+	Докажем единственность. Пусть $\psi\colon G/H\to H'$ --- гомоморфизм такой, что $\varphi = i_{H'}\circ \psi\circ \pi_H.$
+
+	Тогда для любого $g\in G$
+	\[
+	i_{H'}\bigl(\psi(gH)\bigr)
+	=
+	(i_{H'}\circ \psi\circ \pi_H)(g)
+	=
+	\varphi(g)
+	=
+	i_{H'}\bigl(\widetilde\varphi(gH)\bigr).
+	\]
+	Так как $i_{H'}\colon H'\hookrightarrow G'$ --- вложение, оно инъективно. Значит,
+	\[
+	\psi(gH)=\widetilde\varphi(gH)
+	\]
+	для всех $g\in G$, откуда $\psi=\widetilde\varphi$.
+\end{proof}

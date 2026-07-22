@@ -1,0 +1,100 @@
+% !TEX root = ../discretemath.tex
+
+\section{Арифметические функции}
+
+\subsection{Арифметические функции}
+
+\begin{Definition}{Арифметическая (мультипликативная) функция}{}
+	Функция $f\colon\mathbb N\to\mathbb Z$ называется \emph{арифметической}, если для любых $m_1,m_2$ с $\gcd(m_1,m_2)=1$:
+	\[
+	f(m_1 m_2)=f(m_1)\cdot f(m_2).
+	\]
+\end{Definition}
+
+\begin{Example}{Примеры}{}
+	\begin{enumerate}
+		\item $f(n)=n^d$ при фиксированном $d\ge 0$ (в частности, $\mathbf 1(n)\equiv 1$ при $d=0$ и $\mathrm{id}(n)=n$ при $d=1$);
+		\item $\mu(n)$ — классическая функция Мёбиуса;
+		\item $d(n)=\#\{\text{делители }n\}$ — число делителей;
+		\item $\varphi(n)$ — функция Эйлера;
+		\item $\sigma(n)=\sum_{d\mid n}d$ — сумма делителей.
+	\end{enumerate}
+\end{Example}
+
+\subsection{Свёртка Дирихле}
+
+\begin{Definition}{Свёртка Дирихле}{}
+	Для $f,g\colon\mathbb N\to\mathbb Z$:
+	\[
+	(f*g)(m)=\sum_{n\mid m}f(n)\,g\!\left(\frac{m}{n}\right).
+	\]
+\end{Definition}
+
+\begin{Remark}{}{}
+	Свёртка Дирихле коммутативна и ассоциативна. Единица по свёртке — функция $\varepsilon$ с $\varepsilon(1)=1$ и $\varepsilon(n)=0$ при $n>1$. Таким образом, арифметические функции образуют коммутативное кольцо относительно поточечного сложения и свёртки.
+\end{Remark}
+
+\begin{Theorem}{Замкнутость относительно свёртки}{}
+	Если $f,g$ — арифметические, то $f*g$ тоже арифметическая.
+\end{Theorem}
+
+\begin{proof}
+	Пусть $\gcd(m_1,m_2)=1$. Каждый делитель $n\mid m_1m_2$ единственным образом записывается как $n=n_1n_2$, где $n_1\mid m_1$, $n_2\mid m_2$ (и $\gcd(n_1,n_2)=1$). Поэтому
+	\begin{align*}
+		(f*g)(m_1 m_2)
+		&=\sum_{n\mid m_1 m_2}f(n)\,g\!\left(\tfrac{m_1 m_2}{n}\right)
+		=\sum_{\substack{n_1\mid m_1\\n_2\mid m_2}}f(n_1 n_2)\,g\!\left(\tfrac{m_1}{n_1}\cdot\tfrac{m_2}{n_2}\right)\\
+		&=\sum_{\substack{n_1\mid m_1\\n_2\mid m_2}}f(n_1)f(n_2)\,g\!\left(\tfrac{m_1}{n_1}\right)g\!\left(\tfrac{m_2}{n_2}\right)\\
+		&=\Bigl(\sum_{n_1\mid m_1}f(n_1)g\!\left(\tfrac{m_1}{n_1}\right)\Bigr)\Bigl(\sum_{n_2\mid m_2}f(n_2)g\!\left(\tfrac{m_2}{n_2}\right)\Bigr)\\
+		&=(f*g)(m_1)\cdot(f*g)(m_2),
+	\end{align*}
+	где использована мультипликативность $f$ и $g$ на взаимно простых аргументах.
+\end{proof}
+
+\subsection{Функция Эйлера через свёртку Дирихле}
+
+Введём $\mathbf 1(n):=1$ и $\mathrm{id}(n):=n$.
+
+\begin{Statement}{}{}
+	\[
+	(\varphi*\mathbf 1)(m)=\sum_{n\mid m}\varphi(n)=m.
+	\]
+\end{Statement}
+
+\begin{proof}
+	Сгруппируем числа $1,\dots,m$ по значению $\gcd(a,m)=d$. Для каждого делителя $d\mid m$ количество $a$ с $\gcd(a,m)=d$ равно $\varphi(m/d)$, и суммирование по всем $d$ даёт все $m$ чисел:
+	\[
+	\sum_{n\mid m}\varphi(n)=\sum_{d\mid m}\#\{a:1\le a\le m,\ \gcd(a,m)=d\}=m.
+	\]
+\end{proof}
+
+\begin{Statement}{}{}
+	\[
+	(\mu*\mathbf 1)(m)=\sum_{n\mid m}\mu(n)=
+	\begin{cases}1,&m=1,\\0,&m>1.\end{cases}
+	\]
+\end{Statement}
+
+Это стандартное следствие свойства обнуления суммы функции Мёбиуса, то есть $\mu*\mathbf 1=\varepsilon$.
+
+\begin{Theorem}{Формула для функции Эйлера}{}
+	\[
+	\varphi=\mathrm{id}*\mu,\qquad\text{то есть}\qquad
+	\varphi(n)=\sum_{d\mid n}d\cdot\mu\!\left(\frac{n}{d}\right).
+	\]
+\end{Theorem}
+
+\begin{proof}
+	Из первого утверждения $\varphi*\mathbf 1=\mathrm{id}$. Свернём обе части с $\mu$ и используем ассоциативность и $\mathbf 1*\mu=\varepsilon$:
+	\[
+	\varphi*\mathbf 1*\mu=\mathrm{id}*\mu
+	\quad\Longrightarrow\quad
+	\varphi*\varepsilon=\mathrm{id}*\mu
+	\quad\Longrightarrow\quad
+	\varphi=\mathrm{id}*\mu.
+	\]
+\end{proof}
+
+\begin{Remark}{}{}
+	Это частный случай обращения Мёбиуса: из $\mathrm{id}=\varphi*\mathbf 1$ (то есть $\sum_{d\mid n}\varphi(d)=n$) обращением получается $\varphi=\mathrm{id}*\mu$. Свёрточная формулировка делает обращение просто умножением на $\mu$ — обратный к $\mathbf 1$ элемент кольца.
+\end{Remark}

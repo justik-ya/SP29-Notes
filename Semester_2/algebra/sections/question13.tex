@@ -1,0 +1,43 @@
+% !TEX root = ../algebra_02.tex
+
+\section{Связь между размерностями ядра и образа. Размерность пространства решений однородной СЛУ}
+
+\begin{Proposition}{Теорема о ранге и дефекте}{}
+	Пусть $\mathcal{A} \colon V \to W$ --- линейное отображение, и $\dim V = n < \infty$.
+	Тогда пространства $\Ker\mathcal{A}$ и $\Im\mathcal{A}$~--- конечномерные, причём
+	\[
+	\dim\Ker\mathcal{A} + \dim\Im\mathcal{A} = n.
+	\]
+	Размерность образа называют \textbf{рангом} $\mathcal{A}$ (обозначают $\mathrm{rk}\,\mathcal{A}$), а размерность ядра --- \textbf{дефектом} $\mathcal{A}$ (обозначают $\delta\mathcal{A}$).
+\end{Proposition}
+
+\begin{proof}
+	Пусть $d = \dim\Ker\mathcal{A}$. Выберем базис ядра: $e_1, \ldots, e_d$.
+	Дополним его до базиса всего пространства $V$:
+	\[
+	e_1, \ldots, e_d,\; e_{d+1}, \ldots, e_n.
+	\]
+	Покажем, что векторы $\mathcal{A}e_{d+1}, \ldots, \mathcal{A}e_n$ образуют базис $\Im\mathcal{A}$.
+	
+	\textit{Порождающая система:} Любой $w \in \Im\mathcal{A}$ имеет вид $w = \mathcal{A}(v)$. Раскладывая $v = \alpha_1e_1 + \dots + \alpha_ne_n$ и пользуясь линейностью, имеем:
+	\[
+	w = \underbrace{\mathcal{A}(\alpha_1 e_1 + \ldots + \alpha_d e_d)}_{=0 \text{ (т.к. из ядра)}} + \alpha_{d+1}\,\mathcal{A}e_{d+1} + \ldots + \alpha_n\,\mathcal{A}e_n = \sum_{i=d+1}^n \alpha_i \mathcal{A}e_i.
+	\]
+	\textit{Линейная независимость:} Если $\sum_{i=d+1}^n \beta_i \mathcal{A}e_i = 0$, то $\mathcal{A}\left(\sum_{i=d+1}^n \beta_i e_i\right) = 0$. Значит, вектор $u = \sum_{i=d+1}^n \beta_i e_i$ лежит в ядре и может быть выражен через базис ядра $e_1, \dots, e_d$. Но система $e_1, \dots, e_n$ линейно независима, что возможно лишь если все $\beta_i = 0$.
+	
+	Итак, векторы образуют базис образа. Их количество равно $n-d$. Отсюда $\dim\Im\mathcal{A} = n - \dim\Ker\mathcal{A}$.
+\end{proof}
+
+\begin{Theorem}{Множество решений ОСЛУ}{}
+	Множество решений однородной системы линейных уравнений $Ax = 0$ (где $A \in K^{m \times n}$) является линейным подпространством в $K^n$ размерности $n - \mathrm{rk}\,A$.
+\end{Theorem}
+
+\begin{proof}
+	Рассмотрим линейное отображение $\mathcal{A} \colon K^n \to K^m$, заданное как $x \mapsto Ax$. Множество решений системы $Ax = 0$ — это в точности ядро $\Ker\mathcal{A}$.
+	
+	Из формулы умножения матрицы на столбец следует, что образ $\Im\mathcal{A}$ совпадает с линейной оболочкой столбцов матрицы $A$. Значит, $\dim\Im\mathcal{A} = \mathrm{rk}_{\mathrm{col}}(A) = \mathrm{rk}\,A$.
+	Применяя теорему о ранге и дефекте, получаем:
+	\[
+	\dim(\Ker\mathcal{A}) = n - \dim\Im\mathcal{A} = n - \mathrm{rk}\,A.
+	\]
+\end{proof}

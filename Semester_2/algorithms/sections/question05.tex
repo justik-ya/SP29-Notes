@@ -1,0 +1,159 @@
+% !TEX root = ../algorithms.tex
+
+\section{Параллельное вычисление обобщённых линейных рекуррентных соотношений и параллельное сложение двоичных чисел при помощи задачи префиксного накопления.}
+
+\subsection{Обобщение: операция \texttt{scan}}
+
+\begin{Definition}{}{}
+	Операция \textbf{\texttt{scan}} (префиксное накопление) для ассоциативной бинарной операции $\odot$ на множестве $S$ (то есть для \textbf{полугруппы} $(S, \odot)$) определяется как вычисление массива
+	\[
+	y_i = x_0 \odot x_1 \odot \cdots \odot x_i, \qquad i = 0, \dots, n-1.
+	\]
+\end{Definition}
+
+Схема Ладнера–Фишера работает для любой ассоциативной операции. Примеры допустимых операций $\odot$:
+\[
+(\mathbb{R},\, +), \quad
+(\mathbb{R},\, \min), \quad
+(\mathbb{R},\, \max), \quad
+(\mathbb{R}^{k \times k},\, \cdot) \text{ (умножение матриц)}.
+\]
+
+\begin{Statement}{Оценки глубины и размера схемы Ладнера–Фишера}{}
+	Обозначим через $T(n)$ глубину схемы (длину критического пути), а через $S(n)$ — её размер (число операций). Тогда при $n = 2^m$:
+	\begin{align*}
+		T(n) &= 2 + T\!\left(\tfrac{n}{2}\right), \quad T(1) = 0
+		\quad \Longrightarrow \quad T(n) = 2\log n, \\
+		S(n) &= (n-1) + S\!\left(\tfrac{n}{2}\right)
+		\quad \Longrightarrow \quad S(n) = 2n - \log n - 2.
+	\end{align*}
+\end{Statement}
+
+\subsection{Сведение к \texttt{scan}: линейная рекуррента}
+
+\begin{Example}{Рекуррента вида $c_{k+1} = a_k + b_k c_k$}{}
+	Даны числа $a_0, \dots, a_{n-1}$ и $b_0, \dots, b_{n-1}$. Требуется найти $c_0, \dots, c_n$ такие, что
+	\[
+	c_0 = 0, \qquad c_{k+1} = a_k + b_k\, c_k.
+	\]
+	
+	Определим строчный вектор $C_k = (1,\ c_k)$. Тогда
+	\[
+	C_{k+1} = C_k X_k, \qquad
+	X_k = \begin{pmatrix} 1 & a_k \\ 0 & b_k \end{pmatrix}.
+	\]
+	Отсюда
+	\[
+	C_1 = C_0 X_0, \quad
+	C_2 = C_0 X_0 X_1, \quad
+	C_3 = C_0 X_0 X_1 X_2, \quad \dots
+	\]
+	Таким образом, задача сводится к вычислению \textbf{префиксных произведений} матриц $X_0, X_1, \dots, X_{n-1}$. Поскольку умножение матриц ассоциативно, это делается через \texttt{scan} за $O(\log n)$ времени в параллельной модели.
+\end{Example}
+
+\begin{Remark}{}{}
+	В примере с матрицами при перемножении используются \emph{две} операции над элементами:
+	\[
+	(A \cdot B)_{ij} = \bigoplus_k (A_{ik} \odot B_{kj}).
+	\]
+	Поэтому обобщение работает не для одной операции, а для \textbf{полукольца} $(S, \oplus, \odot)$, в котором:
+	\begin{itemize}
+		\item $\oplus$ ассоциативна (обычно коммутативна) и имеет нейтральный элемент $0$;
+		\item $\odot$ ассоциативна и имеет нейтральный элемент $1$;
+		\item $\odot$ дистрибутивна относительно $\oplus$:
+		\[
+		a \odot (b \oplus c) = (a \odot b) \oplus (a \odot c), \qquad
+		(a \oplus b) \odot c = (a \odot c) \oplus (b \odot c);
+		\]
+		\item $0$ поглощает умножение: $0 \odot a = a \odot 0 = 0$.
+	\end{itemize}
+	Примеры полуколец $(S, \oplus, \odot)$:
+	\[
+	\bigl(\{0,1\},\ \vee,\ \wedge\bigr), \qquad
+	\bigl(\{0,1\},\ \oplus,\ \wedge\bigr), \qquad
+	\bigl(\mathbb{R} \cup \{+\infty\},\ \min,\ +\bigr).
+	\]
+\end{Remark}
+
+\begin{Statement}{Сложность вычисления}{}
+	Задача вычисления $c_0, c_1, \dots, c_n$ из рекуррентности $c_{k+1} = a_k + b_k c_k$
+	сводится к \texttt{scan} над ассоциативным умножением $2{\times}2$-матриц.
+	Схема Ладнера--Фишера решает эту задачу с глубиной $O(\log n)$ и размером $O(n)$.
+	То же верно для любой ассоциативной рекуррентности
+	$C_{k+1} = C_k \cdot X_k$ над произвольным ассоциативным полукольцом $(S,\oplus,\odot)$.
+\end{Statement}
+
+\subsection{Сумматор Ладнера–Фишера}
+
+\begin{Definition}{}{}
+	\textbf{Сумматор} — это вычислительная схема над булевыми операциями $(\vee, \wedge, \oplus, \neg, \dots)$, которая принимает на вход биты $x_0, \dots, x_{n-1}$ и $y_0, \dots, y_{n-1}$ и выдаёт биты $z_0, \dots, z_n$ такие, что $z = x + y$, где
+	\[
+	x = \sum_{k=0}^{n-1} x_k 2^k, \qquad
+	y = \sum_{k=0}^{n-1} y_k 2^k, \qquad
+	z = \sum_{k=0}^{n} z_k 2^k.
+	\]
+\end{Definition}
+
+\subsubsection*{Биты переноса и сведение к \texttt{scan}}
+
+Обозначим через $c_k$ перенос \emph{в} разряд $k$ (по определению $c_0 = 0$). Тогда для $k = 0, \dots, n-1$ выполняется \textbf{формула переноса}:
+\[
+c_{k+1} = (x_k \wedge y_k) \vee (x_k \wedge c_k) \vee (y_k \wedge c_k).
+\]
+Введём обозначения $a_k := x_k \wedge y_k$ и $b_k := x_k \vee y_k$. Тогда формула переноса принимает компактный вид $c_{k+1} = a_k \vee (b_k \wedge c_k)$. Если все переносы $c_0, \dots, c_n$ известны, ответ восстанавливается по формулам $z_k = x_k \oplus y_k \oplus c_k$ (для $k = 0, \dots, n-1$) и $z_n = c_n$.
+
+\textbf{Ключевая идея: сведение к \texttt{scan}.}
+Рекуррента $c_{k+1} = a_k \vee (b_k \wedge c_k)$ является аффинным преобразованием. Положим
+\[
+C_k = (1,\ c_k), \qquad
+X_k = \begin{pmatrix} 1 & a_k \\ 0 & b_k \end{pmatrix},
+\]
+где операции понимаются над булевым полукольцом $(\{0,1\},\ \vee,\ \wedge)$. Тогда $C_{k+1} = C_k X_k$, и задача нахождения всех переносов сводится к вычислению префиксных произведений
+\[
+C_k = C_0 X_0 X_1 \cdots X_{k-1},
+\]
+что выполняется через \texttt{scan} за $O(\log n)$ времени в параллельной модели.
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[
+		>=Stealth, font=\small,
+		inb/.style={align=center},
+		gen/.style={draw=black, thick, rounded corners=2pt, fill=gray!8,
+			minimum width=1.4cm, minimum height=0.8cm},
+		scan/.style={draw=black, thick, rounded corners=3pt, fill=gray!16,
+			minimum height=1cm, align=center},
+		outb/.style={align=center},
+		ar/.style={->, line width=0.8pt},
+		]
+		%% columns
+		\def\xa{0} \def\xb{2.4} \def\xc{4.8} \def\xd{7.2}
+		%% input pairs
+		\node[inb] (i0) at (\xa,3.4) {$(x_0,y_0)$};
+		\node[inb] (i1) at (\xb,3.4) {$(x_1,y_1)$};
+		\node[inb] (i2) at (\xc,3.4) {$(x_2,y_2)$};
+		\node[inb] (i3) at (\xd,3.4) {$(x_3,y_3)$};
+		%% generators X_k
+		\node[gen] (g0) at (\xa,2.1) {$X_0$};
+		\node[gen] (g1) at (\xb,2.1) {$X_1$};
+		\node[gen] (g2) at (\xc,2.1) {$X_2$};
+		\node[gen] (g3) at (\xd,2.1) {$X_3$};
+		\foreach \k in {0,1,2,3} { \draw[ar] (i\k) -- (g\k); }
+		%% scan box
+		\node[scan, minimum width=8.6cm] (sc) at (3.6,0.6)
+		{\texttt{scan} над полукольцом $(\{0,1\},\vee,\wedge)$:\\
+			префиксные произведения $C_k=C_0X_0X_1\cdots X_{k-1}$,\quad $C_k=(1,\,c_k)$};
+		\foreach \k in {0,1,2,3} { \draw[ar] (g\k) -- (g\k|-sc.north); }
+		%% output
+		\node[outb] (out) at (3.6,-1.2)
+		{переносы $c_1,\dots,c_n$ \ $\Rightarrow$ \ $z_k = x_k \oplus y_k \oplus c_k$,\quad $z_n=c_n$};
+		\draw[ar] (sc) -- (out);
+	\end{tikzpicture}
+	\caption{Сведение сложения двоичных чисел к \texttt{scan}. Из пары битов $(x_k,y_k)$ строится образующая $X_k=\left(\begin{smallmatrix}1&a_k\\0&b_k\end{smallmatrix}\right)$, где $a_k=x_k\wedge y_k$ и $b_k=x_k\vee y_k$. Префиксные произведения этих матриц над булевым полукольцом дают все переносы $c_k$, после чего разряды суммы получаются как $z_k=x_k\oplus y_k\oplus c_k$. Префиксные произведения вычисляет схема Ладнера--Фишера за глубину $O(\log n)$.}
+\end{figure}
+
+\begin{Statement}{Сложность сумматора Ладнера--Фишера}{}
+	Задача нахождения всех битов переноса $c_1,\dots,c_n$ сводится к \texttt{scan}
+	над булевым полукольцом $(\{0,1\},\vee,\wedge)$.
+	Применяя схему Ладнера--Фишера, получаем сумматор с глубиной $O(\log n)$ и размером $O(n)$.
+\end{Statement}

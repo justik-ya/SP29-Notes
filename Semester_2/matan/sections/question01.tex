@@ -1,0 +1,220 @@
+% !TEX root = ../matan.tex
+
+\section{Формула Стирлинга}
+
+\begin{Theorem}{Формула Стирлинга}{}
+	\[
+	n!=\sqrt{2\pi n}\left(\frac{n}{e}\right)^n\left(1+O\!\left(\frac1n\right)\right),
+	\qquad n\to\infty.
+	\]
+	В частности, $n!\sim \sqrt{2\pi n}\,\bigl(n/e\bigr)^n$ при $n\to\infty$.
+\end{Theorem}
+
+\begin{proof}
+	Всюду $\ln\equiv\log$. Так как $n!=1\cdot2\cdots n$, то
+	\[
+	\ln(n!)=\sum_{k=1}^n \ln k.
+	\]
+
+	\begin{center}
+		\begin{tikzpicture}[x=1.1cm,y=3.2cm,>=Stealth]
+
+			\pgfmathsetmacro{\n}{6}
+			\pgfmathsetmacro{\nminus}{\n-1}
+			\pgfmathsetmacro{\nplus}{\n+1}
+			\pgfmathsetmacro{\yn}{ln(\n)/ln(10)}
+			\pgfmathsetmacro{\yplus}{ln(\nplus)/ln(10)}
+
+			\draw[step=0.5,gray!25,very thin] (-0.6,-1.05) grid (8.6,1.15);
+
+			\draw[thick,-{Stealth[length=3mm]}] (-0.6,0) -- (8.6,0);
+			\draw[thick,-{Stealth[length=3mm]}] (0,-1.05) -- (0,1.15);
+
+			\foreach \x/\lab in {1/1,2/2,3/3,\nminus/{$n-1$},\n/{$n$},\nplus/{$n+1$}}{
+				\draw[thick] (\x,0.03) -- (\x,-0.03);
+				\node[below] at (\x,0) {\lab};
+			}
+			\node[below] at (4.1,0) {$\dots$};
+
+			\draw[thick,domain=0.15:8.2,samples=240,smooth]
+			plot (\x,{ln(\x)/ln(10)});
+
+			\fill (1,0) circle (1.6pt);
+
+			\fill[pattern=north east lines,pattern color=violet,opacity=0.35]
+			(\nminus,0) rectangle (\n,\yn);
+			\draw[very thick,violet]
+			(\nminus,0) rectangle (\n,\yn);
+
+			\node[violet] at ({(\nminus+\n)/2},{\yn/2}) {$\ln n\cdot1$};
+
+			\fill[pattern=north east lines,pattern color=blue,opacity=0.25]
+			(\n,0) rectangle (\nplus,\yplus);
+			\draw[thick,dashed]
+			(\n,0) rectangle (\nplus,\yplus);
+
+			\draw[very thick,violet]
+			(\nminus,\yn) -- (\n,\yn) -- (\n,\yplus) -- (\nplus,\yplus);
+
+			\draw[very thick,violet,domain=\nminus:\nplus,samples=120,smooth]
+			plot (\x,{ln(\x)/ln(10)});
+
+			\draw[-{Stealth[length=2mm]}] (8.1,0.98) -- (7.2,{ln(7.2)/ln(10)});
+			\node[right] at (8.1,0.98) {$\ln x$};
+
+		\end{tikzpicture}
+	\end{center}
+
+	\textbf{Грубая оценка через интеграл.}
+	Так как $\ln x$ строго возрастает, то на отрезке $[n,n+1]$ выполнено
+	$\ln n\le \ln x\le \ln(n+1)$, а на $[n-1,n]$ выполнено $\ln x\le \ln n$.
+	Поэтому для каждого $n\ge1$
+	\[
+	\int_{n-1}^{n}\ln x\,dx \;<\; \ln n \;<\; \int_{n}^{n+1}\ln x\,dx .
+	\]
+	Суммируя левые неравенства по $n=1,\dots,N$ и правые тоже, получаем
+	\[
+	\int_{0}^{N}\ln x\,dx \;<\; \ln(N!) \;<\; \int_{1}^{N+1}\ln x\,dx .
+	\]
+	Поскольку $\int \ln x\,dx = x\ln x - x + \mathrm{C}$ (проверяется
+	дифференцированием: $(x\ln x-x)'=\ln x$) и $x\ln x\to0$ при $x\to0+$, то
+	\[
+	\int_{0}^{N}\ln x\,dx = N\ln N-N,
+	\qquad
+	\int_{1}^{N+1}\ln x\,dx = (N+1)\ln(N+1)-N.
+	\]
+	Следовательно,
+	\[
+	N\ln N - N \;<\; \ln(N!) \;<\; (N+1)\ln(N+1) - N .
+	\]
+	Это уже даёт правильный главный порядок $\ln(N!)\approx N\ln N-N$, но
+	недостаточно точно. Уточним.
+
+	\medskip
+	\textbf{Выделение поправочного члена.}
+	Определим последовательность
+	\[
+	d_n := \ln(n!) - \Bigl(\bigl(n+\tfrac12\bigr)\ln n - n\Bigr).
+	\]
+	Если мы покажем, что $d_n\to C$ для некоторой константы $C$, причём
+	$d_n=C+O\!\left(\tfrac1n\right)$, то
+	\[
+	n! = e^{d_n}\, n^{n+\frac12}e^{-n}
+	= e^{C}\sqrt{n}\left(\frac{n}{e}\right)^n\Bigl(1+O\!\left(\tfrac1n\right)\Bigr),
+	\]
+	и останется лишь вычислить $e^{C}$.
+
+	Вычислим разность соседних членов:
+	\begin{align*}
+		d_n-d_{n+1}
+		&= \ln(n!) - \Bigl(n+\tfrac12\Bigr)\ln n + n
+		- \ln\bigl((n+1)!\bigr) + \Bigl(n+\tfrac32\Bigr)\ln(n+1) - (n+1) \\
+		&= -\ln(n+1)
+		- \Bigl(n+\tfrac12\Bigr)\ln n
+		+ \Bigl(n+\tfrac32\Bigr)\ln(n+1) - 1 \\
+		&= \Bigl(n+\tfrac12\Bigr)\bigl(\ln(n+1)-\ln n\bigr)-1
+		= \Bigl(n+\tfrac12\Bigr)\ln\!\Bigl(\frac{n+1}{n}\Bigr)-1.
+	\end{align*}
+
+	Сделаем замену, удобную для разложения логарифма в ряд:
+	\[
+	\frac{n+1}{n}=1+\frac1n
+	= \frac{1+\frac1{2n+1}}{1-\frac1{2n+1}}
+	= \frac{1+t}{1-t},
+	\qquad t:=\frac{1}{2n+1}\in(0,1).
+	\]
+	(Действительно, $\dfrac{1+t}{1-t}=\dfrac{(2n+1)+1}{(2n+1)-1}=\dfrac{2n+2}{2n}=\dfrac{n+1}{n}$.)
+	Заметим также, что $n+\tfrac12=\dfrac{1}{2t}$.
+
+	Для $|t|<1$ справедливо разложение
+	\[
+	\ln\!\Bigl(\frac{1+t}{1-t}\Bigr)
+	= \ln(1+t)-\ln(1-t)
+	= 2\left(t+\frac{t^3}{3}+\frac{t^5}{5}+\cdots\right).
+	\]
+	Подставляя его и $n+\tfrac12=\frac1{2t}$, получаем
+	\begin{align*}
+		d_n-d_{n+1}
+		&=\frac{1}{2t}\cdot 2\left(t+\frac{t^3}{3}+\frac{t^5}{5}+\cdots\right)-1
+		=\left(1+\frac{t^2}{3}+\frac{t^4}{5}+\cdots\right)-1 \\
+		&=\frac{t^2}{3}+\frac{t^4}{5}+\frac{t^6}{7}+\cdots\;>0.
+	\end{align*}
+	Значит, последовательность $(d_n)$ строго убывает.
+
+	Оценим эту разность сверху. Так как $\dfrac{1}{2j+1}\le\dfrac13$ при $j\ge1$,
+	\[
+	0<d_n-d_{n+1}
+	=\sum_{j=1}^{\infty}\frac{t^{2j}}{2j+1}
+	\le \frac13\sum_{j=1}^{\infty} t^{2j}
+	=\frac13\cdot \frac{t^2}{1-t^2}.
+	\]
+	Подставляя $t=\frac{1}{2n+1}$ и упрощая
+	$\;\dfrac{t^2}{1-t^2}=\dfrac{1}{(2n+1)^2-1}=\dfrac{1}{4n(n+1)}$, получаем
+	\[
+	0<d_n-d_{n+1}
+	\le \frac{1}{12\,n(n+1)}
+	=\frac{1}{12}\left(\frac1n-\frac1{n+1}\right).
+	\]
+	Суммируя это по $j=n,\dots,n+m-1$ (телескопически), для любого $m\ge1$ имеем
+	\[
+	0<d_n-d_{n+m}
+	<\frac{1}{12}\left(\frac1n-\frac1{n+m}\right).
+	\]
+	Итак, $(d_n)$ убывает и ограничена снизу (например, числом $d_1-\tfrac1{12}$),
+	значит, существует конечный предел $C:=\lim_{n\to\infty} d_n$. Переходя к
+	пределу при $m\to\infty$ в последнем неравенстве, получаем
+	\[
+	0<d_n-C\le \frac{1}{12n},
+	\qquad\text{то есть}\qquad
+	d_n=C+O\!\left(\frac1n\right).
+	\]
+	Следовательно,
+	\[
+	n!=e^{C}\sqrt{n}\left(\frac{n}{e}\right)^n\left(1+O\!\left(\frac1n\right)\right).
+	\]
+
+	\medskip
+	\textbf{Вычисление константы через формулу Валлиса.}
+	Напомним формулу Валлиса:
+	\[
+	\left(\frac{(2n)!!}{(2n-1)!!}\right)^2\cdot\frac{1}{2n+1}
+	\xrightarrow[n\to\infty]{}\frac{\pi}{2}.
+	\]
+	Используя тождества $(2n)!!=2^n n!$ и $(2n)!=(2n)!!\,(2n-1)!!$, получаем
+	\[
+	\frac{(2n)!!}{(2n-1)!!}=\frac{\bigl((2n)!!\bigr)^2}{(2n)!}
+	=\frac{2^{2n}(n!)^2}{(2n)!},
+	\]
+	поэтому формулу Валлиса можно переписать как
+	\[
+	\ln\!\left(\left(\frac{2^{2n}(n!)^2}{(2n)!}\right)^2\frac{1}{2n+1}\right)
+	\xrightarrow[n\to\infty]{}\ln\frac{\pi}{2}.
+	\]
+	Подставим сюда разложения $\ln(n!)=(n+\tfrac12)\ln n-n+d_n$ и
+	$\ln((2n)!)=(2n+\tfrac12)\ln(2n)-2n+d_{2n}$:
+	\begin{align*}
+		\ln\!\left(\left(\frac{2^{2n}(n!)^2}{(2n)!}\right)^2\frac{1}{2n+1}\right)
+		&=4n\ln2+4\ln(n!)-2\ln((2n)!)-\ln(2n+1)\\
+		&=4d_n-2d_{2n}+\ln n-\ln2-\ln(2n+1).
+	\end{align*}
+	(Все члены порядка $n\ln n$ и $n$ сократились.) Переходя к пределу при
+	$n\to\infty$ и учитывая $d_n,d_{2n}\to C$, а также
+	$\ln n-\ln(2n+1)\to-\ln2$, получаем
+	\[
+	\ln\frac{\pi}{2}=4C-2C-\ln2-\ln2=2C-2\ln2.
+	\]
+	Отсюда
+	\[
+	2C=\ln\frac{\pi}{2}+2\ln2=\ln(2\pi),
+	\qquad
+	C=\tfrac12\ln(2\pi),
+	\qquad
+	e^{C}=\sqrt{2\pi}.
+	\]
+
+	Окончательно,
+	\[
+	n!=\sqrt{2\pi n}\left(\frac{n}{e}\right)^n\left(1+O\!\left(\frac1n\right)\right),
+	\qquad n\to\infty. \qedhere
+	\]
+\end{proof}

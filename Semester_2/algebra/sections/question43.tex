@@ -1,0 +1,53 @@
+% !TEX root = ../algebra_02.tex
+\section{Действие группы на множестве. Определение и примеры}
+
+\subsection*{Определение}
+
+\begin{Definition}{Действие группы на множество}{}
+	Пусть $G$ — группа, $M$ — множество.
+	\textbf{Левым действием} группы $G$ на множество $M$ (обозначается $G \curvearrowright M$) называется отображение $G \times M \to M$, заданное правилом $(g, m) \mapsto g \cdot m$ (или просто $gm$), удовлетворяющее двум свойствам:
+	\begin{enumerate}
+		\item $\forall g_1, g_2 \in G, \forall m \in M \colon (g_1 g_2)m = g_1(g_2 m)$.
+		\item $\forall m \in M \colon em = m$, где $e$ — нейтральный элемент группы $G$.
+	\end{enumerate}
+\end{Definition}
+
+\begin{Remark}{Правое действие}{}
+	Аналогично определяется \textbf{правое действие} $M \times G \to M$, где $m \cdot g = mg$, со свойствами: $m(g_1 g_2) = (mg_1)g_2$ и $me = m$.
+	Любое правое действие можно превратить в левое, определив $g \cdot m := m g^{-1}$.
+\end{Remark}
+
+\subsection*{Примеры действий групп}
+
+\begin{Example}{Примеры}{}
+	\begin{enumerate}
+		\item Пусть $G = \mathbb{R}$, $M = \mathbb{C}$.
+		Действие задается поворотом на угол:
+		\[ x \cdot z = z(\cos x + i \sin x) \]
+		Проверим свойства:
+		\begin{itemize}
+			\item $x_1 \cdot (x_2 \cdot z) = z(\cos x_2 + i \sin x_2)(\cos x_1 + i \sin x_1) = z(\cos(x_1+x_2) + i \sin(x_1+x_2)) = (x_1+x_2) \cdot z$.
+			\item $0 \cdot z = z(\cos 0 + i \sin 0) = z$.
+		\end{itemize}
+
+		\item $G = GL_n(K)$, $M = K^n$.
+		Действие — умножение матрицы на вектор.
+
+		\item $G \le S(M)$ (подгруппа симметрической группы).
+		Действие задается естественным образом: $g \cdot m = g(m)$.
+
+		\item $G = S_n$, $M = \{1, \dots, n\}^2$.
+		Действие: $g \cdot (i, j) = (g(i), g(j))$.
+
+		\item Действие $G$ на себя левыми сдвигами: $M = G$.
+		Действие $g \cdot m = gm$.
+
+		\item Действие $G$ на себя сопряжениями: $M = G$.
+		Действие $g \cdot m = gmg^{-1}$.
+		Проверка свойств:
+		\begin{itemize}
+			\item $(g_1 g_2) \cdot m = (g_1 g_2)m(g_1 g_2)^{-1} = g_1(g_2 m g_2^{-1})g_1^{-1} = g_1 \cdot (g_2 \cdot m)$.
+			\item $e \cdot m = e m e^{-1} = m$.
+		\end{itemize}
+	\end{enumerate}
+\end{Example}

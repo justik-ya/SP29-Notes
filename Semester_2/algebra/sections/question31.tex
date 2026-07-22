@@ -1,0 +1,46 @@
+% !TEX root = ../algebra_02.tex
+
+\section{Левые и правые смежные классы. Индекс подгруппы}
+
+Пусть $H < G$. Введем на группе $G$ отношение $\sim$: $g' \sim g \Leftrightarrow g' = gh$ для некоторого $h \in H$. Это отношение является отношением эквивалентности.
+
+\begin{Statement}{$\sim$~--- отношение эквивалентности}{}
+	
+	Проверим:
+	
+	\begin{enumerate}
+		\item $g \sim g \st g = g\cdot e, \qquad e \in H$ (т.к. $H < G$)
+		\item $g' \sim g \Rightarrow g \sim g' \st g' = gh \Rightarrow g = g'h^{-1}$ (т.к. $h\in H \Rightarrow h^{-1} \in H$)
+		\item $g_1 \sim g_2, \ \ g_2 \sim g_3 \Rightarrow g_1 \sim g_3 \st$
+		\[ g_1 = g_2h, \ \ g_2 = g_3h', \qquad h, h' \in H\]
+		\[ g_1 = g_3\cdot h\cdot h', \qquad h\cdot h' = \tilde{h} \in H\]
+		\[ g_1 = g_3 \tilde{h} \Leftrightarrow g_1 \sim g_3 \]
+	\end{enumerate}
+\end{Statement}
+
+\begin{Definition}{Левый смежный класс}{}
+	Класс эквивалентности элемента $g$ по этому отношению:
+	\[
+	gH := \{ gh \mid h \in H \}
+	\]
+	называется левым смежным классом элемента $g$ по подгруппе $H$.
+\end{Definition}
+
+Множество всех левых смежных классов обозначается $G/H := \{ gH \mid g \in G \}$.
+
+\begin{Definition}{Индекс подгруппы}{}
+	Количество левых классов смежности в группе называется индексом подгруппы $H$ в $G$ и обозначается $(G:H)$ или $|G/H|$.
+\end{Definition}
+
+\begin{Definition}{Правый смежный класс}{}
+	Аналогично, правый класс смежности элемента $g$ по $H$ определяется как $Hg$. Множество правых смежных классов обозначается $H \backslash G$.
+\end{Definition}
+
+Количество левых и правых смежных классов всегда совпадает:
+\begin{Proposition}{}{}
+	$|H \backslash G| = (G:H) = |G \slash H|$.
+\end{Proposition}
+\begin{proof}
+	Рассмотрим отображение $\alpha\colon G \slash H \to H \backslash G$, заданное правилом $gH \mapsto Hg^{-1}$. Оно корректно, так как класс $p^{-1} = H^{-1}g^{-1} = Hg^{-1}$ действительно является правым смежным классом.
+	Существует обратное отображение $\beta \colon Hg \mapsto g^{-1}H$, откуда следует, что $\alpha$ --- биекция, а значит множества равномощны.
+\end{proof}

@@ -1,0 +1,218 @@
+% !TEX root = ../discretemath.tex
+
+\section{Многочлен Татта (корректность рекуррентного определения)}
+
+\subsection{Определение}
+
+\begin{Statement}{Удаление--стягивание для хроматического многочлена}{}
+  Пусть $G$ --- граф, $e\in E(G)$ --- ребро, не являющееся петлёй. Тогда:
+  \[
+    \chi_G(x) = \chi_{G-e}(x) - \chi_{G \cdot e}(x),
+  \]
+  где $G-e$ --- граф с удалённым ребром $e$, а $G \cdot e$ --- граф,
+  полученный стягиванием $e$ (отождествлением его концов).
+\end{Statement}
+
+\begin{Definition}{Мост}{}
+  Ребро $e \in E(G)$ называется \emph{мостом}, если $c(G-e) > c(G)$,
+  то есть его удаление увеличивает число компонент связности.
+\end{Definition}
+
+\begin{Proposition}{Удаление--стягивание для деревьев и лесов}{}
+  Пусть $e$ --- не петля. Тогда:
+  \[
+    \#\{\text{ост.\ деревьев в }G\}
+    = \#\{\text{ост.\ деревьев в }G-e\}
+    + \#\{\text{ост.\ деревьев в }G \cdot e\},
+  \]
+  \[
+    \#\{\text{ост.\ лесов в }G\}
+    = \#\{\text{ост.\ лесов в }G-e\}
+    + \#\{\text{ост.\ лесов в }G \cdot e\}.
+  \]
+\end{Proposition}
+
+\begin{Definition}{Многочлен Татта}{}
+  \emph{Многочлен Татта} $T_G(x,y)$ графа $G$ определяется рекурсией
+  по выбранному ребру $e \in E(G)$:
+  \begin{enumerate}
+    \item[(i)]   если $e$ --- не петля и не мост:
+                 $T_G(x,y) = T_{G-e}(x,y) + T_{G \cdot e}(x,y)$;
+    \item[(ii)]  если $e$ --- петля:
+                 $T_G(x,y) = y\, T_{G-e}(x,y)$;
+    \item[(iii)] если $e$ --- мост:
+                 $T_G(x,y) = x\, T_{G-e}(x,y)$;
+    \item[(iv)]  если $G$ не имеет рёбер: $T_G(x,y) = 1$.
+  \end{enumerate}
+\end{Definition}
+
+\begin{Example}{Вычисление $T(K_3)$}{}
+  $K_3$ на вершинах $\{1,2,3\}$, рёбра $e_1=\{12\}$, $e_2=\{23\}$, $e_3=\{13\}$.
+  Ребро $e_1$ --- не мост, не петля:
+  \[
+    T(K_3) = T(K_3 - e_1) + T(K_3 \cdot e_1).
+  \]
+  \begin{itemize}
+    \item $K_3-e_1$: путь $1\text{-}3\text{-}2$, оба ребра --- мосты.
+          $T = x \cdot x \cdot 1 = x^2$.
+    \item $K_3 \cdot e_1$: вершины $\{12\},\{3\}$, два параллельных ребра.
+          Одно из них не мост, не петля.
+          $T = T(\text{мост}) + T(\text{петля}) = x + y$.
+  \end{itemize}
+  \[
+    \boxed{T(K_3) = x^2 + x + y.}
+  \]
+\end{Example}
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[
+		>=Stealth, font=\small,
+		v/.style={circle, draw=black, fill=black!75, minimum size=5pt, inner sep=0pt}]
+		\begin{scope}[xshift=0cm]
+			\node[v, label=above:{$1$}]       (A1) at ( 0,   0.9) {};
+			\node[v, label=below left:{$2$}]  (A2) at (-0.8,-0.5) {};
+			\node[v, label=below right:{$3$}] (A3) at ( 0.8,-0.5) {};
+			\draw (A1)--(A2) (A2)--(A3);
+			\draw[red, very thick] (A1) -- node[right, red, font=\scriptsize]{$e_1$} (A3);
+			\node at (0,-1.4) {$K_3$};
+		\end{scope}
+		\draw[->, thick] (1.2,  0.3) -- (2.1,  0.9)
+		node[midway, above left, font=\scriptsize] {$-e_1$};
+		\draw[->, thick] (1.2, -0.2) -- (2.1, -0.9)
+		node[midway, below left, font=\scriptsize] {$\cdot e_1$};
+		\begin{scope}[xshift=3.5cm, yshift=1.5cm]
+			\node[v, label=above:{$1$}] (B1) at (-0.7, 0.3) {};
+			\node[v, label=above:{$3$}] (B2) at ( 0,  -0.4) {};
+			\node[v, label=above:{$2$}] (B3) at ( 0.7, 0.3) {};
+			\draw (B1)--(B2)--(B3);
+			\node at (0,-1.0) {$K_3-e_1$};
+			\node[blue!70!black] at (0,-1.5) {$T=x^2$};
+		\end{scope}
+		\begin{scope}[xshift=3.5cm, yshift=-2.0cm]
+			\node[v, label=above:{$\{12\}$}] (C1) at (0, 0.5) {};
+			\node[v, label=below:{$3$}]      (C2) at (0,-0.5) {};
+			\draw[bend left=40]  (C1) to (C2);
+			\draw[bend right=40] (C1) to (C2);
+			\node at (0,-1.35) {$K_3\cdot e_1$};
+			\node[blue!70!black] at (0,-1.9) {$T=x+y$};
+		\end{scope}
+		\node[blue!70!black, font=\bfseries] at (0,-2.4) {$T(K_3)=x^2+x+y$};
+	\end{tikzpicture}
+	\caption{Удаление--стягивание по $e_1$: путь даёт $x^2$ (два моста),
+		параллельные рёбра дают $x+y$ (мост плюс петля после стягивания).}
+\end{figure}
+
+\subsection{Вспомогательные леммы}
+
+\begin{Lemma}{Мультипликативность по компонентам}{}
+  Если $G_1,\dots,G_k$ --- компоненты связности $G$, то
+  $T_G = T_{G_1} \cdots T_{G_k}$.
+\end{Lemma}
+
+\begin{proof}
+  Индукция по $|E(G)|$. База ($E=\varnothing$): $T_G=1$ и каждый $T_{G_i}=1$.
+
+  Шаг: ребро $e\in E(G_1)$ имеет тот же тип (петля/мост/обычное) в $G$,
+  что и в $G_1$. При любом правиле:
+  \[
+    G - e = (G_1-e)\sqcup G_2\sqcup\cdots,\quad
+    G \cdot e = (G_1\cdot e)\sqcup G_2\sqcup\cdots.
+  \]
+  По ИП $T_{G-e} = T_{G_1-e}\prod_{j\ge 2}T_{G_j}$
+  и $T_{G\cdot e} = T_{G_1\cdot e}\prod_{j\ge 2}T_{G_j}$.
+  Выносим $\prod_{j\ge 2}T_{G_j}$ и получаем требуемое.
+\end{proof}
+
+\begin{Lemma}{Склейка по вершине}{}
+  Пусть $G = G_1 \cup G_2$,\ $V(G_1)\cap V(G_2)=\{v\}$,
+  $E(G_1)\cap E(G_2)=\varnothing$. Тогда $T_G = T_{G_1}\,T_{G_2}$.
+\end{Lemma}
+
+\begin{proof}
+  Индукция по $|E(G_1)|+|E(G_2)|$. Если $E(G_1)=\varnothing$, то $G=G_2$.
+
+  Возьмём $e\in E(G_1)$. Тип $e$ в $G$ совпадает с типом в $G_1$:
+  приклейка $G_2$ в вершину $v$ не создаёт обходных путей внутри $G_1$.
+  При любом правиле $G-e=(G_1-e)\cup G_2$ и $G\cdot e=(G_1\cdot e)\cup G_2$.
+  По ИП $T_{G\pm e}=T_{G_1\pm e}\,T_{G_2}$, откуда при подстановке в рекурсию:
+  \[
+    T_G = (T_{G_1-e}+T_{G_1\cdot e})\,T_{G_2} = T_{G_1}\,T_{G_2}.
+  \]
+\end{proof}
+
+\subsection{Корректность определения}
+
+\begin{Proposition}{Корректность}{}
+  $T_G(x,y)$ не зависит от порядка применения правил удаления--стягивания.
+\end{Proposition}
+
+\begin{proof}
+  Достаточно показать, что результат не меняется при перестановке
+  двух соседних рёбер $e_i$ и $e_{i+1}$ в некотором фиксированном порядке
+  (любая перестановка --- произведение соседних транспозиций).
+
+  Пусть $G'$ --- граф после обработки $e_1,\dots,e_{i-1}$.
+  Рассматриваем все возможные случаи для пары $(e_i,e_{i+1})$ в $G'$.
+
+  \subsubsection*{Случаи 0 и 1: кратные рёбра или петля/мост}
+
+  Если $e_i,e_{i+1}$ кратны --- одинаковые графы в обоих порядках.
+  Если одно из них --- петля или мост --- множитель $y$ или $x$ коммутирует
+  со всеми операциями над другим ребром. Во всех этих случаях порядок не важен.
+
+  \subsubsection*{Случай 2: оба не мосты, не петли}
+
+  \noindent\textbf{Подслучай 3.1.} $c(G'-e_i-e_{i+1})=c(G')$.
+
+  Каждое из рёбер остаётся не мостом после удаления другого.
+  Раскрывая рекурсию в обоих порядках и используя коммутативность
+  операций удаления и стягивания для различных рёбер:
+  \[
+    (G'\cdot e_j)-e_k \cong (G'-e_k)\cdot e_j,\quad
+    (G'\cdot e_j)\cdot e_k \cong (G'\cdot e_k)\cdot e_j,
+  \]
+  получаем одну и ту же сумму из четырёх слагаемых.
+
+  \medskip
+  \noindent\textbf{Подслучай 3.2.} $c(G'-e_i-e_{i+1})=c(G')+1$.
+
+  Оба ребра вместе образуют разрез; по отдельности --- нет.
+  По лемме о мультипликативности сводим к компоненте $H$,
+  содержащей оба ребра. Граф $G'-e_i-e_{i+1}$ имеет ровно
+  две компоненты $A$ и $B$; ребро $e_i$ ведёт из $A$ в $B$,
+  аналогично $e_{i+1}$.
+
+  \begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[>=Stealth, font=\small]
+    \draw[fill=blue!10, draw=blue!50, thick, rounded corners=8pt]
+      (-2.4,-1.1) rectangle (-0.3, 1.1);
+    \node at (-1.35, 0) {$A$};
+    \draw[fill=red!10, draw=red!50, thick, rounded corners=8pt]
+      ( 0.3,-1.1) rectangle ( 2.4, 1.1);
+    \node at ( 1.35, 0) {$B$};
+    \node[circle, fill=blue!60, minimum size=5pt, inner sep=0pt] (a1) at (-0.3, 0.4){};
+    \node[circle, fill=red!60,  minimum size=5pt, inner sep=0pt] (b1) at ( 0.3, 0.4){};
+    \draw[blue!70!black, very thick] (a1)--node[above,font=\scriptsize]{$e_i$}(b1);
+    \node[circle, fill=blue!60, minimum size=5pt, inner sep=0pt] (a2) at (-0.3,-0.4){};
+    \node[circle, fill=red!60,  minimum size=5pt, inner sep=0pt] (b2) at ( 0.3,-0.4){};
+    \draw[red!70!black,  very thick] (a2)--node[below,font=\scriptsize]{$e_{i+1}$}(b2);
+  \end{tikzpicture}
+  \caption{Случай 3.2: компоненты $A$ и $B$ связаны только рёбрами $e_i$
+    и $e_{i+1}$. По отдельности каждое --- не мост; оба вместе --- разрез.}
+  \end{figure}
+
+  После стягивания $e_{i+1}$ граф $(G'\cdot e_{i+1})-e_i$ является
+  $1$-суммой $A$ и $B$, поэтому по лемме о склейке
+  $T_{(G'\cdot e_{i+1})-e_i}=T_A\cdot T_B$.
+  Симметрично $T_{(G'\cdot e_i)-e_{i+1}}=T_A\cdot T_B$.
+  Стягивания коммутируют:
+  $T_{(G'\cdot e_{i+1})\cdot e_i}=T_{(G'\cdot e_i)\cdot e_{i+1}}$.
+
+  Итого раскрытие сначала по $e_{i+1}$:
+  \[
+    T_{G'}=x\,T_A T_B + T_A T_B + T_{(G'\cdot e_i)\cdot e_{i+1}},
+  \]
+  и по $e_i$ даёт то же выражение (симметрично) --- результат совпадает.
+\end{proof}

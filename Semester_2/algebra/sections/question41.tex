@@ -1,0 +1,53 @@
+% !TEX root = ../algebra_02.tex
+
+\section{Теорема о произведении подгрупп (формулировка)}
+
+\begin{Remark}{Произведение подгрупп}{}
+	Если $H_1, H_2 \subset G$ --- подгруппы, то их произведение $H_1H_2$ не обязательно является подгруппой.
+\end{Remark}
+
+\begin{Example}{Произведение подгрупп не всегда подгруппа}{}
+	Рассмотрим группу $G = S_3$ и её подгруппы $H_1 = \langle(1\,2)\rangle$, $H_2 = \langle(1\,3)\rangle$. Тогда их произведение состоит из элементов:
+	\[
+	H_1H_2 = \{ e, (1\,2), (1\,3), (1\,2)(1\,3) \}.
+	\]
+	Порядок $|H_1H_2| = 4$. По теореме Лагранжа, так как 4 не делит $|S_3| = 6$, множество $H_1H_2$ не является подгруппой.
+\end{Example}
+
+\begin{Theorem}{О произведении подгрупп}{}
+	Пусть $H \triangleleft G$ и $K < G$. Тогда:
+	\begin{enumerate}
+		\item $HK = KH < G$;
+		\item $H \triangleleft HK$;
+		\item $H \cap K \triangleleft K$;
+		\item $HK/H \cong K/(H \cap K)$.
+	\end{enumerate}
+\end{Theorem}
+
+\begin{proof}
+	1. Очевидно, что $e \in HK$. Так как $H \triangleleft G$, левые и правые смежные классы совпадают:
+	\[
+	HK = \bigcup_{k \in K} Hk = \bigcup_{k \in K} kH = KH.
+	\]
+	Проверим замкнутость относительно умножения и взятия обратного:
+	\begin{align*}
+		(HK)(HK) &= H(KH)K = HHKK = HK, \\
+		(HK)^{-1} &= K^{-1}H^{-1} = KH = HK.
+	\end{align*}
+	Следовательно, $HK$ --- подгруппа в $G$.
+
+	2. Условие $H \triangleleft G$ влечет $H \triangleleft HK$, так как $HK \subset G$.
+
+	3--4. Рассмотрим отображение $\alpha \colon K \to HK/H$, заданное правилом $k \mapsto kH$. Это гомоморфизм. Найдем его образ:
+	\[
+	\Im \alpha = HK/H.
+	\]
+	Отображение сюръективно, так как любой элемент смежного класса можно представить как $(kh)H = k(hH) = kH = \alpha(k)$, где $k \in K, h \in H$. Найдем ядро гомоморфизма $\alpha$:
+	\[
+	\ker \alpha = \{ k \in K \mid kH = eH \} = \{ k \in K \mid k \in H \} = K \cap H.
+	\]
+	Отсюда $K \cap H \triangleleft K$. По теореме о гомоморфизме получаем требуемый изоморфизм:
+	\[
+	K/(K \cap H) \cong HK/H.
+	\]
+\end{proof}

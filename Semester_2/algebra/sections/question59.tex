@@ -1,0 +1,74 @@
+% !TEX root = ../algebra_02.tex
+\section{Классификация симметрических билинейных форм над $\mathbb{C}$ и $\mathbb{R}$}
+
+\subsection*{Ранг билинейной формы}
+
+\begin{Definition}{Ранг}{}
+	\textit{Ранг} симметрической билинейной формы $\mathcal{B}$ (при $\dim V < \infty$) — это $\mathrm{rk}\,\mathcal{B} := \mathrm{rk}\,[\mathcal{B}]_E$ для произвольного базиса $E$.
+	Это значение не зависит от выбора $E$.
+\end{Definition}
+
+\subsection*{Классификация над $\mathbb{C}$}
+
+\begin{Corollary}{}{}
+	Пусть $V/\mathbb{C}$, $\dim V = n$, $\mathcal{B}$ — симметрическая форма, $r = \mathrm{rk}\,\mathcal{B}$.
+	Тогда $\exists$ базис $E\colon$
+	\[
+	[\mathcal{B}]_E = \begin{pmatrix} E_r & 0 \\ 0 & 0 \end{pmatrix},
+	\]
+	где $E_r$ — единичная матрица $r \times r$.
+	Стандартная форма: $\mathcal{B}_0\!\left(\begin{pmatrix}\alpha_1\\\vdots\\\alpha_n\end{pmatrix},\begin{pmatrix}\beta_1\\\vdots\\\beta_n\end{pmatrix}\right) = \alpha_1\beta_1 + \cdots + \alpha_r\beta_r$.
+\end{Corollary}
+
+\subsection*{Закон инерции (теорема Сильвестра) - классификация над $\mathbb{R}$}
+
+\begin{Theorem}{Закон инерции}{sylvester}
+	Пусть $V/\mathbb{R}$, $\dim V = n < \infty$, $\mathcal{B}$ — симметрическая билинейная форма на $V$.
+	Тогда существует базис $E$ такой, что
+	\[
+	[\mathcal{B}]_E = \mathrm{diag}(\underbrace{1,\ldots,1}_{k},\;
+	\underbrace{-1,\ldots,-1}_{l},\;
+	\underbrace{0,\ldots,0}_{n-k-l}). \tag{$*$}
+	\] 
+	При этом числа $k$ и $l$ (индексы инерции) являются инвариантами $\mathcal{B}$.
+\end{Theorem}
+
+\begin{proof}
+	\textit{Существование.}
+	По теореме Лагранжа $\exists\, E_0 = (e^0_1,\ldots,e^0_n)$ с $[\mathcal{B}]_{E_0} = \mathrm{diag}(d_1,\ldots,d_n)$.
+	Перенумеруем: $d_1,\ldots,d_k > 0$;\; $d_{k+1},\ldots,d_{k+l} < 0$;\; $d_{k+l+1} = \cdots = d_n = 0$.
+	Положим
+	\[
+	e_i = \begin{cases}
+		\dfrac{1}{\sqrt{d_i}}\,e^0_i, & 1 \leq i \leq k, \\[5pt]
+		\dfrac{1}{\sqrt{-d_i}}\,e^0_i, & k < i \leq k+l, \\[5pt]
+		e^0_i, & i > k+l.
+	\end{cases}
+	\] 
+	Тогда $E = (e_1,\ldots,e_n)$ удовлетворяет $(*)$.
+
+	\textit{Единственность.}
+	Пусть при другом базисе $E'$ получается пара $(k', l')$.
+	Предположим $k \neq k'$; без ограничения общности $k > k'$.
+	Рассмотрим подпространства:
+	\begin{align*}
+		W  &= \mathrm{Lin}(e_1,\ldots,e_k), &\dim W  &= k, \\
+		W' &= \mathrm{Lin}(e'_{k'+1},\ldots,e'_n), &\dim W' &= n-k'.
+	\end{align*} 
+	Так как $k + (n-k') > n$, имеем $\dim(W \cap W') > 0$.
+	Возьмём $w \neq 0$,\; $w = \lambda_1 e_1 + \cdots + \lambda_k e_k = \mu_{k'+1}e'_{k'+1} + \cdots + \mu_n e'_n$.
+	С одной стороны:
+	\[
+	\mathcal{B}(w,w) = \lambda_1^2 + \cdots + \lambda_k^2 > 0 \quad (\text{т.к.\ } w \neq 0).
+	\] 
+	С другой стороны:
+	\[
+	\mathcal{B}(w,w) = -\mu_{k'+1}^2 - \cdots - \mu_{k'+l'}^2 \leq 0.
+	\] 
+	Противоречие.
+	Значит $k = k'$, и тогда $l = l'$ из равенства $k + l = \mathrm{rk}\,\mathcal{B}$.
+\end{proof}
+
+\begin{Definition}{Сигнатура}{}
+	Пара $(k,l)$ называется \textit{сигнатурой} симметрической билинейной формы $\mathcal{B}$.
+\end{Definition}

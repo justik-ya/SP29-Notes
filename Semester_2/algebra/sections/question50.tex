@@ -1,0 +1,19 @@
+% !TEX root = ../algebra_02.tex
+\section{Теоремы Силова (формулировки)}
+
+\begin{Definition}{Силовская $p$-подгруппа}{}
+	Пусть $G$ — конечная группа, $p^k \mid |G|$, но $p^{k+1} \nmid |G|$, $k \geq 1$.
+	\textit{Силовская $p$-подгруппа} — это подгруппа $H < G$ с $|H| = p^k$.
+\end{Definition}
+
+\begin{Theorem}{Силова}{sylow}
+	Пусть $G$ — конечная группа, $p$ — простое, $p \mid |G|$.
+	\begin{enumerate}
+		\item \textit{(Существование.)} Для любой подгруппы $H < G$ с $|H| = p^l$ существует силовская $p$-подгруппа, содержащая $H$.
+		\item \textit{(Сопряжённость.)} Все силовские $p$-подгруппы сопряжены: если $H, H'$ — силовские $p$-подгруппы, то $\exists\, g \in G\colon H' = gHg^{-1}$.
+		\quad $(\mathrm{Syl}_g)$ 
+		\item \textit{(Количество.)} Число силовских $p$-подгрупп делит $|G|$ и $\equiv 1 \pmod{p}$.
+	\end{enumerate}
+\end{Theorem}
+
+\textbf{Без доказательства}.

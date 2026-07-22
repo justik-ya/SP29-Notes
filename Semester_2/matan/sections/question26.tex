@@ -1,0 +1,75 @@
+% !TEX root = ../matan.tex
+
+\section{Признаки Абеля и Дирихле.}
+
+\begin{Lemma}{Преобразование Абеля}{}
+	Пусть $f_k, g_k$~--- функции на $\Omega$, и для фиксированных $n < m$ положим $F_j(x) = \sum_{k=n+1}^{j} f_k(x)$ (так что $F_n = 0$). Тогда
+	\[
+	\sum_{k=n+1}^{m} f_k(x) g_k(x) = F_m(x) g_m(x) + \sum_{k=n+1}^{m-1} F_k(x)\bigl(g_k(x) - g_{k+1}(x)\bigr).
+	\]
+\end{Lemma}
+
+\begin{proof}
+	Так как $f_k = F_k - F_{k-1}$,
+	\[
+	\sum_{k=n+1}^{m} f_k g_k = \sum_{k=n+1}^{m} (F_k - F_{k-1}) g_k = \sum_{k=n+1}^{m} F_k g_k - \sum_{k=n}^{m-1} F_k g_{k+1}.
+	\]
+	Выделяя крайние члены и пользуясь $F_n = 0$, получаем
+	\[
+	= F_m g_m + \sum_{k=n+1}^{m-1} F_k g_k - \sum_{k=n+1}^{m-1} F_k g_{k+1}
+	= F_m g_m + \sum_{k=n+1}^{m-1} F_k (g_k - g_{k+1}). \qedhere
+	\]
+\end{proof}
+
+В обоих признаках $\{g_k(x)\}$ предполагается \textbf{вещественнозначной и монотонной по $k$} при каждом фиксированном $x$; тогда разности $g_k - g_{k+1}$ знакопостоянны, и
+\[
+\sum_{k=n+1}^{m-1} |g_k(x) - g_{k+1}(x)| = |g_{n+1}(x) - g_m(x)|. 
+\]
+
+\begin{Theorem}{Признак Абеля}{}
+	Пусть $f_k, g_k \colon \Omega \to \C$ и
+	\begin{enumerate}
+		\item ряд $\sum_{k=1}^{\infty} f_k$ сходится равномерно на $\Omega$;
+		\item $\{g_k\}$ равномерно ограничена: $|g_k(x)| \le M$ для всех $k$ и $x$;
+		\item при каждом $x$ последовательность $\{g_k(x)\}$ монотонна.
+	\end{enumerate}
+	Тогда ряд $\sum_{k=1}^{\infty} f_k g_k$ сходится равномерно на $\Omega$.
+\end{Theorem}
+
+\begin{proof}
+	Применим критерий Коши. Пусть $\eps > 0$. Из равномерной сходимости $\sum f_k$ найдётся $N$ такое, что при всех $m > n > N$ и всех $j \in (n, m]$
+	\[
+	|F_j(x)| = \Bigl| \sum_{k=n+1}^{j} f_k(x) \Bigr| < \eps \qquad \forall x \in \Omega.
+	\]
+	По преобразованию Абеля и оценке $|F_k(x)| < \eps$
+	\[
+	\Bigl| \sum_{k=n+1}^{m} f_k(x) g_k(x) \Bigr| \le \eps\,|g_m(x)| + \eps \sum_{k=n+1}^{m-1} |g_k(x) - g_{k+1}(x)|.
+	\]
+	По монотонности и ограниченности $\sum_{k=n+1}^{m-1}|g_k(x) - g_{k+1}(x)| = |g_{n+1}(x) - g_m(x)| \le 2M$, а $|g_m(x)| \le M$. Значит,
+	\[
+	\Bigl| \sum_{k=n+1}^{m} f_k(x) g_k(x) \Bigr| \le \eps M + 2M\eps = 3M\eps \qquad \forall x \in \Omega.
+	\]
+	Правая часть не зависит от $x$ и сколь угодно мала, поэтому ряд $\sum f_k g_k$ равномерно фундаментален и по критерию Коши сходится равномерно.
+\end{proof}
+
+\begin{Theorem}{Признак Дирихле}{}
+	Пусть $f_k, g_k \colon \Omega \to \C$ и
+	\begin{enumerate}
+		\item частичные суммы $\sum f_k$ равномерно ограничены: $\bigl|\sum_{k=1}^{n} f_k(x)\bigr| \le M$ для всех $n$ и $x$;
+		\item $g_k \to 0$ равномерно на $\Omega$;
+		\item при каждом $x$ последовательность $\{g_k(x)\}$ монотонна.
+	\end{enumerate}
+	Тогда ряд $\sum_{k=1}^{\infty} f_k g_k$ сходится равномерно на $\Omega$.
+\end{Theorem}
+
+\begin{proof}
+	Здесь $F_j(x) = \sum_{k=n+1}^{j} f_k(x) = \sum_{k=1}^{j} f_k(x) - \sum_{k=1}^{n} f_k(x)$, поэтому $|F_j(x)| \le 2M$ при всех $j$ и $x$. По преобразованию Абеля
+	\[
+	\Bigl| \sum_{k=n+1}^{m} f_k(x) g_k(x) \Bigr| \le 2M\,|g_m(x)| + 2M \sum_{k=n+1}^{m-1} |g_k(x) - g_{k+1}(x)|.
+	\]
+	По монотонности $\sum_{k=n+1}^{m-1}|g_k(x) - g_{k+1}(x)| = |g_{n+1}(x) - g_m(x)| \le |g_{n+1}(x)| + |g_m(x)|$, откуда
+	\[
+	\Bigl| \sum_{k=n+1}^{m} f_k(x) g_k(x) \Bigr| \le 2M\,|g_{n+1}(x)| + 4M\,|g_m(x)|.
+	\]
+	Так как $g_k \to 0$ равномерно, $\sup_x |g_{n+1}(x)|$ и $\sup_x |g_m(x)|$ стремятся к нулю при $n, m \to \infty$. Значит, ряд $\sum f_k g_k$ равномерно фундаментален и по критерию Коши сходится равномерно.
+\end{proof}

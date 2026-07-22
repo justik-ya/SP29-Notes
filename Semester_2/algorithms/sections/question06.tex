@@ -1,0 +1,343 @@
+% !TEX root = ../algorithms.tex
+
+\section{Алгоритмы во внешней памяти. Сортировка слиянием. Сортировка связного списка}
+
+\subsection{Модель внешней памяти}
+
+Модель внешней памяти задаётся двумя параметрами: $B$ и $M$. Обычно предполагается, что
+\[
+B \ll M,
+\]
+а часто дополнительно $B^2 \le M$.
+
+\begin{itemize}
+	\item Алгоритм располагает неограниченной внешней памятью. За единицу времени он может прочитать или записать один блок, состоящий из $B$ подряд идущих машинных слов внешней памяти.
+	\item Алгоритм обладает внутренней памятью объёмом $M$ машинных слов, то есть $M/B$ блоков.
+	\item Все вычисления над данными, уже находящимися во внутренней памяти, считаются бесплатными. Входные данные изначально расположены во внешней памяти.
+\end{itemize}
+
+Временем работы алгоритма считается число операций ввода-вывода, то есть число прочитанных и записанных блоков.
+
+\paragraph{Основные примеры.}
+\begin{itemize}
+	\item Сумма $N$ чисел вычисляется за $O(N/B)$ операций ввода-вывода (обозначается $\operatorname{scan}(N)$).
+	\item Поиск и вставка в $B$-дереве выполняются за $O(\log_B N)$ операций.
+\end{itemize}
+
+\subsection{Сортировка слиянием во внешней памяти}
+
+Алгоритм является $(M/B)$-путевой сортировкой слиянием.
+
+\begin{enumerate}
+	\item Разбить массив длины $N$ на $\Theta(M/B)$ подмассивов и рекурсивно отсортировать каждый из них.
+	\item Из каждого подмассива читать по одному блоку. Так как число подмассивов равно $\Theta(M/B)$, все блоки помещаются во внутреннюю память.
+	\item Выполнять слияние блоков во внутренней памяти. Когда блок какого-либо подмассива заканчивается, дочитывать следующий блок этого подмассива из внешней памяти за $O(1)$.
+	\item Результат слияния записывать во внешнюю память блоками.
+\end{enumerate}
+
+Стоимость одного уровня слияния (шаги 2--4): $O(N/B)$ операций ввода-вывода.
+
+Рекуррентная оценка:
+\[
+T(N) = \Theta\!\left(\frac{M}{B}\right) T\!\left(\frac{N}{M/B}\right) + O\!\left(\frac{N}{B}\right).
+\]
+
+Решение:
+\[
+T(N) = O\!\left(\frac{N}{B} \log_{M/B} \frac{N}{B}\right) = O\!\left(\frac{N}{B} \log_{M/B} \frac{N}{M}\right).
+\]
+
+Эту величину обозначают $\operatorname{sort}(N)$.
+
+\subsection{Задача ранжирования связного списка (List Ranking)}
+
+\paragraph{Постановка.}
+Дан массив $A[0..N-1]$, содержащий $N$ узлов кругового однонаправленного связного списка в произвольном порядке. У каждого узла $x$ есть поля $x.\texttt{next}$, $x.w$, $x.\texttt{id}$; изначально $A[i].\texttt{id} = i$.
+
+Ниже $\operatorname{pred}(x)$ обозначает предшественника узла $x$ в текущем списке (это не поле структуры данных, а математическое обозначение для анализа).
+
+Требуется вычислить для каждой вершины $x$ префиксную сумму весов:
+\[
+\mathrm{pref}(x) = \sum_{y \text{ от головы до } x} y.w.
+\]
+После работы алгоритма в поле $x.w$ записывается значение $\mathrm{pref}(x)$.
+
+Если изначально $w \equiv 1$, то $\mathrm{pref}(x)$ есть номер $x$ в списке, считая от головы. Отсортировав узлы по полученным значениям, получаем порядок обхода списка.
+
+\subsection{Идея рекурсивного сжатия}
+
+Пусть $S \subseteq A$ --- множество удаляемых узлов такое, что:
+\[
+\forall x \in S \colon \operatorname{pred}(x) \notin S, \qquad |S| = \Theta(N).
+\]
+
+Тогда все узлы из $S$ можно удалить независимо: для каждого $x \in S$ выполнить
+\[
+\operatorname{pred}(x).w \mathrel{+}= x.w, \qquad \operatorname{pred}(x).\texttt{next} = x.\texttt{next}.
+\]
+
+После этого рекурсивно вычислить префиксные суммы на укороченном списке, затем восстановить удалённые узлы: для каждого $x \in S$
+\[
+\operatorname{pred}(x).\texttt{next} = x, \quad
+\operatorname{pred}(x).w \mathrel{-}= x.w, \quad
+x.w \mathrel{+}= \operatorname{pred}(x).w.
+\]
+
+\subsection{Выбор множества \texorpdfstring{$S$}{S}}
+
+Каждой вершине независимо присваивается случайный бит $x.r \in \{0, 1\}$ с вероятностью $1/2$ каждый; голове списка принудительно назначается $\texttt{head}.r = 0$.
+
+Затем полагаем:
+\[
+x \in S \iff x.r = 1 \ \text{и} \ \operatorname{pred}(x).r = 0.
+\]
+
+\paragraph{Корректность.} Если $x \in S$, то $\operatorname{pred}(x).r = 0$, откуда $\operatorname{pred}(x) \notin S$. Значит, никакие два соседних по списку узла не удаляются одновременно.
+
+\paragraph{Ожидаемый размер $S$.} Для каждой внутренней вершины $x$:
+\[
+\Pr[x \in S] = \Pr[\operatorname{pred}(x).r = 0 \land x.r = 1] = \frac{1}{4}.
+\]
+Поэтому $\mathbb{E}[|S|] \approx N/4$, а после одного шага остаётся в среднем $\approx 3N/4$ вершин.
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[
+		>=Stealth, font=\small,
+		nd/.style={draw=black, thick, rounded corners=2pt, fill=gray!8,
+			minimum width=0.95cm, minimum height=0.7cm},
+		rem/.style={draw=black, thick, dashed, rounded corners=2pt, fill=gray!3,
+			minimum width=0.95cm, minimum height=0.7cm},
+		nx/.style={->, line width=0.85pt},
+		rlab/.style={font=\footnotesize, gray!55!black},
+		wlab/.style={font=\footnotesize},
+		tg/.style={font=\footnotesize\itshape, gray!55!black},
+		]
+		%% ===== BEFORE =====
+		\node[tg, anchor=east] at (-0.7,1.8) {до};
+		\node[nd]  (A) at (0,1.8)  {$A$};
+		\node[rem] (B) at (2,1.8)  {$B$};
+		\node[nd]  (C) at (4,1.8)  {$C$};
+		\node[nd]  (D) at (6,1.8)  {$D$};
+		\node[rem] (E) at (8,1.8)  {$E$};
+		\node[nd]  (F) at (10,1.8) {$F$};
+		\foreach \x/\r in {0/0,2/1,4/0,6/0,8/1,10/0}
+		{ \node[rlab] at (\x,2.55) {$r{=}\r$}; }
+		\foreach \x in {0,2,4,6,8,10}
+		{ \node[wlab] at (\x,1.15) {$w{=}1$}; }
+		\draw[nx] (A) -- (B);
+		\draw[nx] (B) -- (C);
+		\draw[nx] (C) -- (D);
+		\draw[nx] (D) -- (E);
+		\draw[nx] (E) -- (F);
+		\node[tg] at (2,0.72) {$\in S$};
+		\node[tg] at (8,0.72) {$\in S$};
+		
+		%% ===== AFTER =====
+		\node[tg, anchor=east] at (-0.7,-1.4) {после};
+		\node[nd] (A2) at (0,-1.4)  {$A$};
+		\node[nd] (C2) at (4,-1.4)  {$C$};
+		\node[nd] (D2) at (6,-1.4)  {$D$};
+		\node[nd] (F2) at (10,-1.4) {$F$};
+		\node[wlab] at (0,-2.05)  {$w{=}2$};
+		\node[wlab] at (4,-2.05)  {$w{=}1$};
+		\node[wlab] at (6,-2.05)  {$w{=}2$};
+		\node[wlab] at (10,-2.05) {$w{=}1$};
+		\draw[nx] (A2) to[out=22,in=158] (C2);
+		\draw[nx] (C2) -- (D2);
+		\draw[nx] (D2) to[out=22,in=158] (F2);
+	\end{tikzpicture}
+	\caption{Один шаг сжатия списка. Каждой вершине брошен случайный бит $r$; в $S$ попадают вершины шаблона $01$ --- узел с $r{=}1$, у которого предшественник имеет $r{=}0$ (здесь $B$ и $E$). Никакие два таких узла не соседствуют, поэтому их удаляют независимо: вес удаляемого узла прибавляется к предшественнику ($A.w$ и $D.w$ становятся равными $2$), а указатель предшественника перенаправляется на преемника. На укороченном списке ($\approx 3/4$ вершин в среднем) задача решается рекурсивно.}
+\end{figure}
+
+\subsection{Концептуальный рекурсивный алгоритм}
+
+\begin{algorithm}[H]
+	\caption{\textsc{PrefixSums-Conceptual}$(A)$}
+	\begin{algorithmic}[1]
+		\Require Текущий список $A$
+		\Ensure Для каждой вершины $x$ значение $x.w$ равно $\mathrm{pref}(x)$
+		
+		\If{$|A| \le 1$}
+		\State \Return $A$ \Comment{список из одного узла уже отранжирован}
+		\EndIf
+		
+		\State Для каждой вершины $x \in A$ независимо выбрать $x.r \in \{0,1\}$ равновероятно
+		\State $S = \{\, x \in A \mid \operatorname{pred}(x)\ \text{существует},\ \operatorname{pred}(x).r = 0,\ x.r = 1 \,\}$
+		\Comment{$S$ --- «правые концы» шаблона $01$; это независимое множество}
+		
+		\ForAll{$x \in S$} \Comment{сжатие: удаляем узлы из $S$ независимо друг от друга}
+		\State $\operatorname{pred}(x).w \mathrel{+}= x.w$ \Comment{вес $x$ переходит к предшественнику}
+		\State $\operatorname{pred}(x).\texttt{next} = x.\texttt{next}$ \Comment{предшественник перепрыгивает $x$}
+		\EndFor
+		
+		\State \Call{PrefixSums-Conceptual}{$A \setminus S$}
+		\Comment{та же задача на укороченном (в среднем $\approx 3N/4$) списке}
+		
+		\ForAll{$x \in S$} \Comment{восстановление: возвращаем удалённые узлы и дописываем ответы}
+		\State $\operatorname{pred}(x).\texttt{next} = x$ \Comment{возвращаем $x$ в список}
+		\State $\operatorname{pred}(x).w \mathrel{-}= x.w$ \Comment{откат агрегации: теперь $\operatorname{pred}(x).w=\mathrm{pref}(\operatorname{pred}(x))$}
+		\State $x.w \mathrel{+}= \operatorname{pred}(x).w$ \Comment{$\mathrm{pref}(x)=\mathrm{pref}(\operatorname{pred}(x))+x.w$}
+		\EndFor
+		
+		\State \Return $A$
+	\end{algorithmic}
+\end{algorithm}
+
+\subsection{Реализация во внешней памяти через сортировки}
+
+Главная цель --- заменить случайные обращения по указателям на несколько сортировок и линейных проходов.
+
+\paragraph{Ключевое наблюдение.} Пусть $\widetilde A = \Sort(A \text{ по } x.\texttt{next})$. Тогда при одновременном просмотре $A$ (отсортированного по $x.\texttt{id}$) и $\widetilde A$ можно сопоставить каждый узел $A[i]$ с его предшественником $\widetilde A[i]$ (поскольку $\widetilde A[i].\texttt{next} = A[i].\texttt{id}$). Шаблон $01$ — это условие $\widetilde A[i].r = 0$ и $A[i].r = 1$.
+
+После удаления узла $A[i]$ его предшественник $\widetilde A[i]$ начинает указывать туда же, куда раньше указывал $A[i]$. При повторной сортировке по $\texttt{next}$ появляются пары с одинаковым $\texttt{next}$; живая вершина в паре определяется по биту $r$.
+
+\begin{algorithm}[H]
+	\caption{\textsc{Compress}$(A)$}
+	\begin{algorithmic}[1]
+		\Require Массив $A[0..N-1]$, отсортированный по $\texttt{id}$
+		\Ensure Сжатый массив $\widehat A$ и массив удалённых вершин $S$
+		
+		\State Для каждой $x \in A$ независимо выбрать $x.r \in \{0,1\}$ равновероятно
+		\State $\widetilde A = \Sort(A \text{ по } x.\texttt{next})$
+		\Comment{после сортировки $\widetilde A[i]$ --- предшественник $A[i]$, т.к. $\widetilde A[i].\texttt{next}=A[i].\texttt{id}$}
+		\State $S = [\ ]$
+		
+		\Comment{ищем шаблон $01$ и сразу переносим вес удаляемого узла в предшественника}
+		\For{$i = 0$ \textbf{to} $N-1$}
+		\If{$\widetilde A[i].r = 0$ \textbf{and} $A[i].r = 1$} \Comment{предшественник $r{=}0$, сам узел $r{=}1$ $\Rightarrow$ удаляем $A[i]$}
+		\State $\widetilde A[i].w \mathrel{+}= A[i].w$ \Comment{вес удаляемого узла --- предшественнику}
+		\State $\widetilde A[i].\texttt{next} = A[i].\texttt{next}$ \Comment{предшественник указывает на преемника удалённого}
+		\State $S.\textsc{push\_back}(A[i])$ \Comment{сохраняем удалённый узел для восстановления}
+		\EndIf
+		\EndFor
+		
+		\State $\widetilde A = \Sort(\widetilde A \text{ по } x.\texttt{next})$
+		\Comment{предшественник и (ещё присутствующий) удалённый узел теперь имеют общий \texttt{next} $\Rightarrow$ встанут рядом}
+		
+		\State $B = [\ ]$
+		\State $i = 0$
+		\While{$i < N$} \Comment{из каждой пары с общим \texttt{next} оставляем одну живую вершину}
+		\If{$i+1 < N$ \textbf{and} $\widetilde A[i].\texttt{next} = \widetilde A[i+1].\texttt{next}$}
+		\If{$\widetilde A[i].r = 1$} \Comment{вершина с $r{=}1$ --- удалённая}
+		\State swap$(\widetilde A[i],\, \widetilde A[i+1])$ \Comment{ставим живую ($r{=}0$) первой}
+		\EndIf
+		\State $B.\textsc{push\_back}(\widetilde A[i])$ \Comment{в $B$ кладём живую вершину}
+		\State $i \mathrel{+}= 2$
+		\Else
+		\State $B.\textsc{push\_back}(\widetilde A[i])$ \Comment{одиночная вершина --- просто переносим}
+		\State $i \mathrel{+}= 1$
+		\EndIf
+		\EndWhile
+		
+		\Comment{переопределяем \texttt{next}: старые \texttt{id} $\mapsto$ новые (плотные) позиции в массиве}
+		\State $\widetilde B = \Sort(B \text{ по } x.\texttt{next})$
+		\State $i = 0;\ j = 0;\ k = 0$
+		\While{$j < N - |S|$}
+		\While{$k < |S|$ \textbf{and} $i = S[k].\texttt{id}$} \Comment{пропускаем \texttt{id}, принадлежащие удалённым}
+		\State $i \mathrel{+}= 1;\ k \mathrel{+}= 1$
+		\EndWhile
+		\State $\widetilde B[j].\texttt{next} = j$ \Comment{цель указателя получает новый плотный индекс $j$}
+		\State $i \mathrel{+}= 1;\ j \mathrel{+}= 1$
+		\EndWhile
+		
+		\State $\widehat A = \Sort(\widetilde B \text{ по } x.\texttt{id})$ \Comment{возвращаемся к порядку по \texttt{id}; веса уже агрегированы}
+		\State \Return $(\widehat A,\ S)$
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]
+	\caption{\textsc{Restore}$(\widehat A, S, N)$}
+	\begin{algorithmic}[1]
+		\State $\widetilde S = \Sort(S \text{ по } x.\texttt{next})$
+		\State $\widetilde A = \Sort(\widehat A \text{ по } x.\texttt{next})$
+		\Comment{$i$ --- по старым \texttt{id}; $k$ --- по $S$ в порядке \texttt{id}; $j$ --- по живым в порядке \texttt{next}; $m$ --- по $S$ в порядке \texttt{next}}
+		\State $i = 0;\ j = 0;\ k = 0;\ m = 0$
+		
+		\While{$j < N - |S|$}
+		\While{$k < |S|$ \textbf{and} $i = S[k].\texttt{id}$}
+		\State $i \mathrel{+}= 1;\ k \mathrel{+}= 1$
+		\Comment{пропускаем старые \texttt{id} удалённых вершин}
+		\EndWhile
+		
+		\State $\widetilde A[j].\texttt{next} = i$
+		\Comment{восстанавливаем исходный \texttt{id} преемника}
+		
+		\If{$m < |S|$ \textbf{and} $\widetilde A[j].\texttt{next} = \widetilde S[m].\texttt{next}$}
+		\Comment{между этим узлом и его преемником нужно вернуть удалённую вершину}
+		\State $\widetilde A[j].\texttt{next} = \widetilde S[m].\texttt{id}$ \Comment{предшественник снова указывает на восстановленную вершину}
+		\State $\widetilde A[j].w \mathrel{-}= \widetilde S[m].w$
+		\Comment{теперь $\widetilde A[j].w = \mathrm{pref}$ до предшественника}
+		\State $\widetilde S[m].w \mathrel{+}= \widetilde A[j].w$
+		\Comment{теперь $\widetilde S[m].w = \mathrm{pref}$ до восстановленной вершины}
+		\State $m \mathrel{+}= 1$
+		\EndIf
+		
+		\State $i \mathrel{+}= 1;\ j \mathrel{+}= 1$
+		\EndWhile
+		
+		\State $A = \Sort(x \in (\widetilde S \cup \widetilde A) \text{ по } \texttt{id})$ \Comment{сливаем живые и восстановленные, сортируем по \texttt{id}}
+		\State \Return $A$
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]
+	\caption{\textsc{EM\_PrefixSums}$(A)$}
+	\begin{algorithmic}[1]
+		\Require Массив $A$, отсортированный по $\texttt{id}$
+		\Ensure Для каждой вершины $x$ значение $x.w$ равно $\mathrm{pref}(x)$
+		
+		\If{$|A| \le 1$}
+		\State \Return $A$
+		\EndIf
+		
+		\State $(\widehat A,\ S) = \Call{Compress}{A}$ \Comment{удаляем независимое множество, агрегируя веса}
+		\State $\widehat A = \Call{EM\_PrefixSums}{\widehat A}$ \Comment{рекурсия на укороченном списке}
+		\State $A = \Call{Restore}{\widehat A,\ S,\ |A|}$ \Comment{возвращаем удалённые вершины и дописываем им $\mathrm{pref}$}
+		\State \Return $A$
+	\end{algorithmic}
+\end{algorithm}
+
+\subsection{Оценка сложности}
+
+Один уровень рекурсии состоит из константного числа сортировок и линейных проходов по массивам, поэтому существует константа $c > 0$ такая, что работа одного уровня не превосходит $c\,\operatorname{sort}(N)$.
+
+\begin{Theorem}{}{}
+	$\mathbb{E}[T(N)] = O(\operatorname{sort}(N))$.
+\end{Theorem}
+
+\begin{proof}
+	Докажем по индукции, что $\mathbb{E}[T(n)] \le 4c\,\operatorname{sort}(n)$.
+	
+	Раскладывая по возможным значениям $|S|$ и применяя предположение индукции:
+	\[
+	\mathbb{E}[T(n)]
+	\le
+	\sum_{k=0}^{n-1} \Pr[|S|=k]\cdot 4c\,\operatorname{sort}(n-k) + c\,\operatorname{sort}(n).
+	\]
+	
+	Используем оценку $\operatorname{sort}(n-k) \le \frac{n-k}{B}\log_{M/B}\frac{n}{B}$:
+	\[
+	\mathbb{E}[T(n)]
+	\le
+	4c\log_{M/B}\frac{n}{B} \sum_{k=0}^{n-1} \Pr[|S|=k]\frac{n-k}{B}
+	+ c\,\operatorname{sort}(n)
+	=
+	\frac{4c\,\mathbb{E}[n-|S|]}{B}\log_{M/B}\frac{n}{B}
+	+ c\,\operatorname{sort}(n).
+	\]
+	
+	Так как $\mathbb{E}[n - |S|] \le \frac{3n}{4}$:
+	\[
+	\mathbb{E}[T(n)]
+	\le
+	3c\,\operatorname{sort}(n) + c\,\operatorname{sort}(n)
+	= 4c\,\operatorname{sort}(n).
+	\]
+\end{proof}
+
+Таким образом,
+\[
+\mathbb{E}[T(N)] = O(\operatorname{sort}(N))
+= O\!\left(\frac{N}{B}\log_{M/B}\frac{N}{B}\right).
+\]

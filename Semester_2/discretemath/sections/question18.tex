@@ -1,0 +1,81 @@
+% !TEX root = ../discretemath.tex
+
+\section{Существование оптимального решения для матричных игр с нулевой суммой}
+
+\subsection{Теорема существования}
+
+\begin{Theorem}{О существовании оптимальной смешанной стратегии}{}
+	В любой матричной игре $A\in\mathbb{R}^{m\times n}$ существует оптимальная пара смешанных стратегий $(\vec p^{\,*},\vec q^{\,*})$, и тогда
+	\[
+	\upsilon=\max_{\vec p}\min_{\vec q}E(\vec p,\vec q)=\min_{\vec q}\max_{\vec p}E(\vec p,\vec q).
+	\]
+\end{Theorem}
+
+\subsection{Сведение к линейному программированию}
+
+Без ограничения общности $a_{ij}>0$ (к любой матрице можно прибавить константу — оптимальные стратегии не изменятся, цена сдвинется на ту же константу). Тогда цена $\upsilon>0$.
+
+Если 2-й игрок «раскрывает» чистую стратегию $j$ (играет $\vec q=e_j$), условие оптимальности 1-го игрока:
+\[
+\sum_{i=1}^m p_i^*\,a_{ij}\ge\upsilon\qquad\forall j=1,\dots,n,
+\]
+а $\upsilon=\max_{\vec p}\min_j\sum_i p_i a_{ij}$ — наибольшее, что 1-й игрок может гарантировать.
+
+\subsubsection*{Прямая задача (стратегия 1-го игрока)}
+
+После замены $x_i=p_i^*/\upsilon>0$:
+\[
+\begin{cases}
+	\displaystyle\sum_{i=1}^m x_i\,a_{ij}\ge 1,\quad j=1,\dots,n,\\[4pt]
+	x_1,\dots,x_m\ge 0,\\[2pt]
+	\displaystyle\sum_{i=1}^m x_i\longrightarrow\min.
+\end{cases}
+\]
+При этом $p_i^*=x_i/\sum_k x_k$ и $\sum_i x_i=1/\upsilon$, так что минимизация $\sum x_i$ равносильна максимизации $\upsilon$.
+
+\subsubsection*{Двойственная задача (стратегия 2-го игрока)}
+
+После замены $y_j=q_j^*/\upsilon$:
+\[
+\begin{cases}
+	\displaystyle\sum_{j=1}^n a_{ij}\,y_j\le 1,\quad i=1,\dots,m,\\[4pt]
+	y_1,\dots,y_n\ge 0,\\[2pt]
+	\displaystyle\sum_{j=1}^n y_j\longrightarrow\max=\tfrac{1}{\upsilon}.
+\end{cases}
+\]
+
+\begin{Theorem}{Завершение доказательства}{}
+	По теореме двойственности линейного программирования прямая и двойственная задачи разрешимы и их оптимумы совпадают: $\min\sum x_i=\max\sum y_j=1/\upsilon$. Восстанавливая $\vec p^{\,*}=\upsilon\vec x$ и $\vec q^{\,*}=\upsilon\vec y$, получаем оптимальную пару, что и доказывает существование.
+\end{Theorem}
+
+\begin{Remark}{}{}
+	Совпадение оптимумов прямой и двойственной задач — это в точности равенство $\max_{\vec p}\min_{\vec q}E=\min_{\vec q}\max_{\vec p}E$, то есть минимаксная теорема фон Неймана для игр с нулевой суммой.
+\end{Remark}
+
+\subsection{Геометрическая иллюстрация (матрица $2\times2$)}
+
+Для $A=\left(\begin{smallmatrix}-1&3\\3&-5\end{smallmatrix}\right)$ при стратегии $\vec p=(p,1-p)$ ответ 2-го игрока — одна из чистых стратегий: $E(p,0)=-5+8p$ либо $E(p,1)=3-4p$. 1-й игрок максимизирует \emph{нижнюю огибающую} $\min\{E(p,0),E(p,1)\}$; её максимум — в точке пересечения прямых.
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[font=\small, >=Stealth, x=1.0cm, y=1.0cm]
+		% оси: x = 5p (p in [0,1]); y = 0.5*value
+		\draw[->] (0,-2.6) -- (0,1.8) node[above]{$E$};
+		\draw[->] (-0.3,0) -- (5.6,0) node[right]{$p$};
+		\node[below left] at (0,0) {$0$};
+		\draw (5,0.05)--(5,-0.05) node[below]{$1$};
+		% прямая E(p,0) = -5+8p : (0,-5)->(1,3) ; y=0.5*value ; x=5p
+		\draw[thick, blue] (0,-2.5) -- (5,1.5) node[right]{$E(p,0)$};
+		% прямая E(p,1) = 3-4p : (0,3)->(1,-1)
+		\draw[thick, orange!85!black] (0,1.5) -- (5,-0.5) node[right]{$E(p,1)$};
+		% нижняя огибающая, выделена
+		\draw[very thick, red] (0,-2.5) -- (3.333,0.1667) -- (5,-0.5);
+		% точка максимума огибающей
+		\filldraw[red] (3.333,0.1667) circle (2pt);
+		\draw[dashed] (3.333,0) -- (3.333,0.1667);
+		\node[below] at (3.333,0) {$p^*=\tfrac23$};
+		\draw[dashed] (0,0.1667) -- (3.333,0.1667);
+		\node[left] at (0,0.1667) {$\upsilon=\tfrac13$};
+	\end{tikzpicture}
+	\caption{Нахождение цены игры $2\times2$. Красная нижняя огибающая $\min\{E(p,0),E(p,1)\}$ — гарантированный выигрыш 1-го игрока; её максимум достигается в точке пересечения прямых при $p^*=\tfrac23$, давая цену $\upsilon=\tfrac13$.}
+\end{figure}

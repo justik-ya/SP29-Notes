@@ -1,0 +1,46 @@
+% !TEX root = ../algebra_02.tex
+
+\section{Теорема о гомоморфизме для колец}
+
+\begin{Definition}{Гомоморфизм колец}{}
+	Пусть $R$ и $S$ --- кольца. Отображение $\varphi\colon R \to S$ называется гомоморфизмом колец, если:
+	\begin{enumerate}
+		\item $\varphi$ является гомоморфизмом аддитивных групп;
+		\item $\forall a, b \in R \colon \varphi(ab) = \varphi(a)\varphi(b)$;
+		\item $\varphi(1_R) = 1_S$.
+	\end{enumerate}
+\end{Definition}
+
+\begin{Example}{Примеры гомоморфизмов}{}
+	\begin{enumerate}
+		\item Если $S \subset R$ --- подкольцо, то отображение включения $i_S\colon S \to R$, заданное как $a \mapsto a$, является гомоморфизмом.
+		\item Если $I \subset R$ --- идеал, то каноническая проекция $\pi_I\colon R \to R/I$, заданная как $a \mapsto \bar{a}$, является гомоморфизмом.
+	\end{enumerate}
+\end{Example}
+
+\begin{Theorem}{О гомоморфизме колец}{}
+	Пусть $\varphi\colon R \to S$ --- гомоморфизм колец. Тогда, индуцированный гомоморфизм групп $\tilde{\varphi}\colon R/\ker\varphi \to \operatorname{Im}\varphi$ является изоморфизмом колец. При этом $\ker\varphi$ является идеалом в $R$, а $\operatorname{Im}\varphi$ --- подкольцом в $S$.
+\end{Theorem}
+
+\begin{proof}
+	Из теории групп известно, что $\tilde{\varphi}$ корректно определено и является изоморфизмом аддитивных групп. Остается проверить свойства, связанные с умножением и единицей.
+
+	\begin{enumerate}
+		\item Покажем, что $\ker\varphi$ --- идеал в $R$. Пусть $x \in R$, $a \in \ker\varphi$. Тогда:
+		\[ \varphi(xa) = \varphi(x)\varphi(a) = \varphi(x) \cdot 0 = 0 \]
+		Следовательно, $xa \in \ker\varphi$.
+
+		\item Покажем, что $\operatorname{Im}\varphi$ --- подкольцо в $S$. Проверим замкнутость относительно умножения и наличие единицы:
+		\begin{align*}
+			\varphi(a)\varphi(b) &= \varphi(ab) \in \operatorname{Im}\varphi \\
+			1_{\operatorname{Im}\varphi} &= 1_S = \varphi(1_R) \in \operatorname{Im}\varphi
+		\end{align*}
+
+		\item Проверим сохранение умножения для $\tilde{\varphi}$:
+		\[ \tilde{\varphi}(\bar{a} \cdot \bar{b}) = \tilde{\varphi}(\overline{ab}) = \varphi(ab) = \varphi(a)\varphi(b) = \tilde{\varphi}(\bar{a})\tilde{\varphi}(\bar{b}) \]
+
+		\item Проверим сохранение единицы:
+		\[ \tilde{\varphi}(1_{R/\ker\varphi}) = \tilde{\varphi}(\bar{1}_R) = \varphi(1_R) = 1_S = 1_{\operatorname{Im}\varphi} \]
+	\end{enumerate}
+	Таким образом, $\tilde{\varphi}$ является изоморфизмом колец.
+\end{proof}

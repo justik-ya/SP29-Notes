@@ -1,0 +1,26 @@
+% !TEX root = ../algebra_02.tex
+\section{Евклидовы пространства}
+
+\begin{Definition}{Скалярное произведение}{}
+	\textit{Скалярное произведение} на $V/\mathbb{R}$ — это симметрическая билинейная форма $\mathcal{B}$ на $V$ такая, что
+	\[
+	\forall\, v \in V\colon \mathcal{B}(v,v) \geq 0, \quad \mathcal{B}(v,v) = 0 \;\Longleftrightarrow\; v = 0.
+	\] 
+	(Положительная определённость.) 
+\end{Definition}
+
+\begin{Definition}{Евклидово пространство}{}
+	\textit{Евклидово пространство} — вещественное линейное пространство $V$ с фиксированным скалярным произведением.
+	Обозначение: $\mathcal{B}(v, w) =: (v, w)$ или $\langle v, w \rangle$.
+\end{Definition}
+
+Норма вектора: $\|v\| := \sqrt{(v,v)}$. Для неё выполнены:
+\[
+\|\alpha v\| = |\alpha|\cdot\|v\|, \qquad
+|(v,w)| \leq \|v\|\cdot\|w\| \quad \text{(Коши--Буняковский)}, \qquad
+\|v+w\| \leq \|v\| + \|w\|.
+\] 
+
+\begin{Example}{Евклидово пространство на $C[0,1]$}{}
+	$V = C[0,1]$ с $(f,g) = \displaystyle\int_0^1 f(x)\,g(x)\,dx$ — евклидово пространство.
+\end{Example}

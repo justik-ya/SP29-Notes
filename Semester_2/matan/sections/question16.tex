@@ -1,0 +1,92 @@
+% !TEX root = ../matan.tex
+
+\section{Сходимость по норме в гильбертовом пространстве. Линейно независимые и ортогональные системы. Полные системы векторов, базис. Примеры.}
+
+\begin{Definition}[required]{Гильбертово пространство}{}
+	\textbf{Гильбертово пространство} $\mathcal{H}$~--- это линейное пространство над $\RR$, на котором задано скалярное произведение
+	\[
+	\langle \cdot, \cdot \rangle \colon \mathcal{H} \times \mathcal{H} \to \RR,
+	\]
+	полное относительно порождённой им нормы $\|x\| := \sqrt{\langle x, x \rangle}$. Для всех $x,y,z \in \mathcal{H}$ и $\lambda \in \RR$ выполнено:
+	\begin{enumerate}
+		\item $\langle x, x \rangle \ge 0$, причём $\langle x, x \rangle = 0 \Leftrightarrow x = 0$;
+		\item $\langle \lambda x, y \rangle = \lambda \langle x, y \rangle$;
+		\item $\langle x + y, z \rangle = \langle x, z \rangle + \langle y, z \rangle$;
+		\item $\langle x, y \rangle = \langle y, x \rangle$.
+	\end{enumerate}
+\end{Definition}
+
+Норма удовлетворяет неравенству Коши--Буняковского--Шварца $|\langle x,y\rangle|\le\|x\|\,\|y\|$ и неравенству треугольника $\|x+y\|\le\|x\|+\|y\|$; в частности, $\mathcal{H}$~--- нормированное (а значит, метрическое) пространство, и сходимость в нём понимается \textbf{по норме}.
+
+\begin{Definition}{Сходимость по норме и сходимость ряда}{}
+	Пусть $\{x_n\}\subset\mathcal{H}$. Говорят, что $x_n \longrightarrow x$ в $\mathcal{H}$, если
+	\[
+	\|x_n - x\|_{\mathcal{H}} \longrightarrow 0 \qquad (n \to \infty).
+	\]
+	Ряд $\sum_{k=1}^{\infty} x_k$ \textbf{сходится} в $\mathcal{H}$ к сумме $S \in \mathcal{H}$, если последовательность частичных сумм сходится к $S$ по норме:
+	\[
+	\Bigl\| \sum_{k=1}^{N} x_k - S \Bigr\| \longrightarrow 0 \qquad (N \to \infty).
+	\]
+\end{Definition}
+
+\begin{Definition}{Ортогональность, ортогональная система}{}
+	Векторы $x,y \in \mathcal{H}$ \textbf{ортогональны} ($x \perp y$), если $\langle x, y \rangle = 0$.
+
+	Система \textbf{ненулевых} векторов $\{x_\alpha\}_{\alpha \in A}$ называется \textbf{ортогональной}, если $x_\alpha \perp x_\beta$ при всех $\alpha \neq \beta$. Если вдобавок $\|x_\alpha\| = 1$ для всех $\alpha$, система называется \textbf{ортонормированной}.
+\end{Definition}
+
+\begin{Proposition}{Ортогональная система линейно независима}{}
+	Векторы ортогональной системы линейно независимы: если $\sum_{k=1}^{N} \lambda_k x_k = 0$, где $x_k$~--- различные векторы ортогональной системы, то $\lambda_k = 0$ для всех $k$.
+\end{Proposition}
+
+\begin{proof}
+	Зафиксируем $j \in \{1,\ldots,N\}$ и возьмём скалярное произведение равенства $\sum_{k=1}^{N}\lambda_k x_k = 0$ с $x_j$. Пользуясь линейностью скалярного произведения и ортогональностью $\langle x_k, x_j\rangle = 0$ при $k \neq j$, получаем
+	\[
+	0 = \left\langle \sum_{k=1}^{N} \lambda_k x_k,\, x_j \right\rangle
+	= \sum_{k=1}^{N} \lambda_k \langle x_k, x_j \rangle
+	= \lambda_j \|x_j\|^2.
+	\]
+	Так как векторы системы ненулевые, $\|x_j\|^2 > 0$, откуда $\lambda_j = 0$. В силу произвольности $j$ все коэффициенты равны нулю.
+\end{proof}
+
+\begin{Definition}{Полная система, базис}{}
+	Система $\{x_\alpha\}_{\alpha \in A}$ называется \textbf{полной} в $\mathcal{H}$, если замыкание её линейной оболочки совпадает со всем пространством:
+	\[
+	\operatorname{clos}\operatorname{span}\{x_\alpha\}_{\alpha \in A}
+	= \operatorname{clos}\Bigl\{ \textstyle\sum_{k=1}^{N} \lambda_k x_{\alpha_k} \st N \in \NN,\ \lambda_k \in \RR \Bigr\}
+	= \mathcal{H}.
+	\]
+	Полная ортогональная система называется \textbf{базисом} в $\mathcal{H}$, а полная ортонормированная система~--- \textbf{ортонормированным базисом}.
+\end{Definition}
+
+\begin{Remark}{}{}
+	Полнота означает, что любой элемент $x \in \mathcal{H}$ можно сколь угодно точно приблизить по норме конечными линейными комбинациями векторов системы; ортогональность гарантирует линейную независимость, поэтому в базисе нет «лишних» векторов.
+\end{Remark}
+
+\begin{Example}{Стандартный базис в $l^2$}{}
+	В пространстве $l^2 = \bigl\{ x = (x_1, x_2, \ldots) \st \sum_{k=1}^{\infty} x_k^2 < +\infty \bigr\}$ со скалярным произведением $\langle x, y\rangle = \sum_{k=1}^{\infty} x_k y_k$ векторы
+	\[
+	e_k = (0, \ldots, 0, \underset{k}{1}, 0, \ldots), \qquad k \in \NN,
+	\]
+	образуют ортонормированный базис: $\langle e_k, e_j\rangle = \delta_{kj}$, а конечные линейные комбинации $\sum_{k=1}^{N} x_k e_k$ приближают любой $x \in l^2$, поскольку $\bigl\|x - \sum_{k=1}^{N} x_k e_k\bigr\|^2 = \sum_{k=N+1}^{\infty} x_k^2 \to 0$.
+\end{Example}
+
+\begin{Example}{Тригонометрическая система}{}
+	В пространстве $C([0,1])$ со скалярным произведением $\langle f, g\rangle = \int_0^1 f(x)g(x)\,dx$ рассмотрим систему
+	\[
+	g_0(x) = 1, \qquad g_k(x) = \cos 2\pi k x, \qquad f_k(x) = \sin 2\pi k x, \qquad k \in \NN.
+	\]
+	Эта система ортогональна: при $j \neq k$
+	\[
+	\int_0^1 \sin 2\pi k x \,\sin 2\pi j x\,dx = 0, \quad
+	\int_0^1 \cos 2\pi k x \,\cos 2\pi j x\,dx = 0, 
+	\]
+	\[
+	\int_0^1 \sin 2\pi k x \,\cos 2\pi j x\,dx = 0 \ \ \forall j,k.
+	\]
+	Нормировка вычисляется явно: $\int_0^1 \sin^2 2\pi k x\,dx = \int_0^1 \cos^2 2\pi k x\,dx = \tfrac12$, поэтому ортонормированными являются векторы $\sqrt{2}\,\sin 2\pi k x$, $\sqrt{2}\,\cos 2\pi k x$ и $g_0 \equiv 1$ (норма $1$). Эта система полна в $C([0,1])$ по норме $L^2$:
+	\[
+	\operatorname{clos}\operatorname{span}\{\,1,\ \cos 2\pi k x,\ \sin 2\pi k x \,\} = \mathcal{H},
+	\]
+	то есть является (после нормировки) ортонормированным базисом.
+\end{Example}

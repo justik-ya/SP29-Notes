@@ -1,0 +1,162 @@
+% !TEX root = ../algebra_02.tex
+
+\section{Гомоморфизм, образ и ядро}
+
+\begin{Definition}{Гомоморфизм групп}{def:hom}
+	Пусть $G$ и $G'$ --- группы. Отображение $\varphi\colon G \to G'$
+	называется \emph{гомоморфизмом групп}, если для всех $g_1,g_2\in G$ выполнено
+	\[
+	\varphi(g_1g_2)=\varphi(g_1)\varphi(g_2).
+	\]
+\end{Definition}
+
+\begin{Example}{}{ex:hom-examples}
+	\begin{enumerate}
+		\item Определитель:
+		\[
+		\det\colon \GL_n(K) \to K^{\times}, \qquad \det(AB)=\det(A)\det(B).
+		\]
+		\item Знак перестановки:
+		\[
+		\sgn\colon S_n \to \{\pm 1\}, \qquad \sigma \mapsto \sgn(\sigma).
+		\]
+		\item Тождественный и нулевой гомоморфизмы:
+		\[
+		\id_G\colon G\to G, \quad g\mapsto g;
+		\qquad
+		0\colon G\to G', \quad g\mapsto e_{G'}.
+		\]
+		\item Логарифм как гомоморфизм между мультипликативной и аддитивной группами:
+		\[
+		\ln\colon (\RR_{>0},\cdot) \to (\RR,+), \qquad a\mapsto \ln a.
+		\]
+	\end{enumerate}
+\end{Example}
+
+\begin{Lemma}{Сохранение единицы и обратного элемента}{lem:unit-inverse}
+	Пусть $\varphi\colon G\to G'$ --- гомоморфизм. Тогда
+	\begin{enumerate}
+		\item $\varphi(e_G)=e_{G'}$;
+		\item для любого $g\in G$ выполнено
+		\[
+		\varphi(g^{-1})=\varphi(g)^{-1}.
+		\]
+	\end{enumerate}
+\end{Lemma}
+
+\begin{proof}
+	Так как $e_Ge_G=e_G$, имеем
+	\[
+	\varphi(e_G)\varphi(e_G)=\varphi(e_G).
+	\]
+	Умножая это равенство слева на $\varphi(e_G)^{-1}$, получаем $\varphi(e_G)=e_{G'}$.
+
+	Далее,
+	\[
+	\varphi(g^{-1})\varphi(g)=\varphi(g^{-1}g)=\varphi(e_G)=e_{G'},
+	\]
+	и аналогично
+	\[
+	\varphi(g)\varphi(g^{-1})=e_{G'}.
+	\]
+	Следовательно, $\varphi(g^{-1})=\varphi(g)^{-1}$.
+\end{proof}
+
+\begin{Proposition}{Образы и прообразы подгрупп}{image-preimage}
+	Пусть $\varphi\colon G\to G'$ --- гомоморфизм.
+	\begin{enumerate}
+		\item Если $H\le G$, то $\varphi(H)\le G'$.
+		\item Если $H'\le G'$, то $\varphi^{-1}(H')\le G$.
+		\item Если $H'\triangleleft G'$, то $\varphi^{-1}(H')\triangleleft G$.
+	\end{enumerate}
+\end{Proposition}
+
+\begin{proof}
+	\begin{enumerate}
+		\item Пусть $g_1',g_2'\in \varphi(H)$. Тогда существуют $g_1,g_2\in H$ такие, что $g_1'=\varphi(g_1)$ и $g_2'=\varphi(g_2)$. Поскольку $H$ --- подгруппа, $g_1g_2\in H, \qquad g_1^{-1}\in H.$\\
+		Следовательно, $g_1'g_2' = \varphi(g_1)\varphi(g_2)=\varphi(g_1g_2)\in \varphi(H),$ и по лемме $(g_1')^{-1}=\varphi(g_1)^{-1}=\varphi(g_1^{-1})\in \varphi(H).$\\
+		Значит, $\varphi(H)\le G'$.
+		\item Пусть $g_1,g_2\in \varphi^{-1}(H')$. Тогда $\varphi(g_1),\varphi(g_2)\in H'$.\\
+		Так как $H'$ --- подгруппа, $\varphi(g_1g_2)=\varphi(g_1)\varphi(g_2)\in H',$ то есть $g_1g_2\in \varphi^{-1}(H')$.\\
+		Кроме того, $\varphi(g_1^{-1})=\varphi(g_1)^{-1}\in H',$ поэтому $g_1^{-1}\in \varphi^{-1}(H')$. Значит, $\varphi^{-1}(H')\le G$.
+
+		\item Пусть $g\in G$ и $h\in \varphi^{-1}(H')$. Тогда $\varphi(h)\in H'$. Поскольку $H'\triangleleft G'$, имеем
+		\[
+		\varphi(ghg^{-1})=\varphi(g)\varphi(h)\varphi(g)^{-1}\in H'.
+		\]
+		Следовательно, $ghg^{-1}\in \varphi^{-1}(H')$. Значит, $\varphi^{-1}(H')\triangleleft G$.
+	\end{enumerate}
+\end{proof}
+
+\begin{Corollary}{Образ и ядро}{prop:image-kernel}
+	Для любого гомоморфизма $\varphi\colon G\to G'$ имеем
+	\[
+	\Im \varphi := \varphi(G) \le G',
+	\qquad
+	\Ker \varphi := \varphi^{-1}(\{e_{G'}\}) = \{g\in G \mid \varphi(g)=e_{G'}\} \triangleleft G.
+	\]
+\end{Corollary}
+
+\begin{proof}
+	Первая часть следует из пункта 1) предложения~\ref{prop:image-preimage}, вторая --- из пункта 3) того же предложения, поскольку $\{e_{G'}\} \triangleleft G'$.
+\end{proof}
+
+\begin{Example}{}{ex:alternating}
+	Поскольку знак перестановки $\sgn \colon S_n \to (\{ \pm 1 \}, \cdot)$ является гомоморфизмом, то его ядро
+	\[
+	A_n = \Ker(\sgn) \triangleleft S_n
+	\]
+	является нормальной подгруппой.
+\end{Example}
+
+\begin{Proposition}{Критерий инъективности}{prop:inj-kernel}
+	Пусть $\varphi\colon G\to G'$ --- гомоморфизм. Тогда
+	\[
+	\varphi \text{ инъективен } \Longleftrightarrow \Ker\varphi = \{e_G\}.
+	\]
+\end{Proposition}
+
+\begin{proof}
+	Предположим, что $\varphi$ инъективен. Если $h\in \Ker\varphi$, то $\varphi(h)=e_{G'}=\varphi(e_G).$
+
+	Из инъективности следует $h=e_G$, значит, $\Ker\varphi=\{e_G\}$.
+
+	Обратно, пусть $\Ker\varphi=\{e_G\}$ и $\varphi(h_1)=\varphi(h_2).$
+
+	Тогда $\varphi(h_1h_2^{-1})=\varphi(h_1)\varphi(h_2)^{-1}=e_{G'},$ то есть $h_1h_2^{-1}\in \Ker\varphi$. Следовательно, $h_1h_2^{-1}=e_G,$ откуда $h_1=h_2$. Значит, $\varphi$ инъективен.
+\end{proof}
+
+\begin{Definition}{Специальные виды гомоморфизмов}{def:special-homs}
+	\begin{enumerate}
+		\item Инъективный гомоморфизм называется \emph{мономорфизмом}.
+		\item Сюръективный гомоморфизм называется \emph{эпиморфизмом}.
+		\item Биективный гомоморфизм называется \emph{изоморфизмом}.
+		\item Гомоморфизм $G\to G$ называется \emph{эндоморфизмом}.
+		\item Изоморфизм $G\to G$ называется \emph{автоморфизмом}.
+	\end{enumerate}
+\end{Definition}
+
+\begin{Proposition}{Обратное отображение к изоморфизму}{prop:inverse-iso}
+	Если $\varphi\colon G\to G'$ --- изоморфизм, то обратное отображение
+	\[
+	\varphi^{-1}\colon G'\to G
+	\]
+	тоже является изоморфизмом.
+\end{Proposition}
+
+\begin{proof}
+	Так как $\varphi$ биективно, отображение $\varphi^{-1}$ существует и биективно. Для любых $g_1',g_2'\in G'$ положим
+	\[
+	A:=\varphi^{-1}(g_1'g_2'), \qquad B:=\varphi^{-1}(g_1')\varphi^{-1}(g_2').
+	\]
+	Тогда
+	\[
+	\varphi(A)=g_1'g_2'=
+	\varphi\bigl(\varphi^{-1}(g_1')\bigr)\,\varphi\bigl(\varphi^{-1}(g_2')\bigr)=\varphi(B).
+	\]
+	Из инъективности $\varphi$ следует $A=B$. Следовательно,
+	\[
+	\varphi^{-1}(g_1'g_2')=\varphi^{-1}(g_1')\varphi^{-1}(g_2').
+	\]
+	Значит, $\varphi^{-1}$ --- гомоморфизм, а потому изоморфизм.
+\end{proof}

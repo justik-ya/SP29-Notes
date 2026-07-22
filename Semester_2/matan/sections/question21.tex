@@ -1,0 +1,84 @@
+% !TEX root = ../matan.tex
+
+\section{Линейные операторы, действующие в банаховых пространствах и на $\RR^n$. Ограниченные операторы. Норма оператора.}
+
+\begin{Definition}[required]{Линейный оператор}{}
+	Пусть $X, Y$~--- линейные пространства над $\RR$ (или над $\C$). Отображение $\mathcal{A}\colon X \to Y$ называется \textbf{линейным оператором}, если
+	\[
+	\mathcal{A}(x + \lambda y) = \mathcal{A}x + \lambda\,\mathcal{A}y \qquad \forall x, y \in X,\ \forall \lambda \in \RR.
+	\]
+	Если $Y = \RR$ (или $Y=\C$), линейный оператор называется \textbf{линейным функционалом}.
+\end{Definition}
+
+\begin{Definition}[required]{Норма оператора, ограниченность}{}
+	Пусть $X, Y$~--- нормированные пространства. \textbf{Нормой} линейного оператора $\mathcal{A}\colon X \to Y$ называется величина
+	\[
+	\|\mathcal{A}\| := \sup_{\|x\|_X \le 1} \|\mathcal{A}x\|_Y.
+	\]
+	Оператор называется \textbf{ограниченным}, если $\|\mathcal{A}\| < +\infty$. Эквивалентно: ограниченность означает существование $C \ge 0$ такого, что $\|\mathcal{A}x\|_Y \le C\,\|x\|_X$ для всех $x \in X$ (и тогда $\|\mathcal{A}\|$~--- наименьшая такая постоянная $C$).
+\end{Definition}
+
+\begin{Proposition}{Эквивалентные выражения для нормы}{}
+	Для линейного оператора $\mathcal{A}\colon X \to Y$ между нормированными пространствами
+	\[
+	\|\mathcal{A}\| = \sup_{\|x\|_X \le 1} \|\mathcal{A}x\|_Y = \sup_{\|x\|_X = 1} \|\mathcal{A}x\|_Y = \sup_{x \neq 0} \frac{\|\mathcal{A}x\|_Y}{\|x\|_X}.
+	\]
+\end{Proposition}
+
+\begin{proof}
+	Для $x \neq 0$ положим $u = x/\|x\|_X$, тогда $\|u\|_X = 1$ и по однородности нормы и линейности оператора
+	\[
+	\frac{\|\mathcal{A}x\|_Y}{\|x\|_X} = \Bigl\| \mathcal{A}\Bigl(\frac{x}{\|x\|_X}\Bigr) \Bigr\|_Y = \|\mathcal{A}u\|_Y.
+	\]
+	Поэтому $\sup_{x \neq 0} \dfrac{\|\mathcal{A}x\|_Y}{\|x\|_X} = \sup_{\|u\|_X = 1}\|\mathcal{A}u\|_Y$.
+
+	Далее, очевидно $\sup_{\|x\|_X = 1}\|\mathcal{A}x\|_Y \le \sup_{\|x\|_X \le 1}\|\mathcal{A}x\|_Y$. Обратно, для $x$ с $0 < \|x\|_X \le 1$ имеем $\|\mathcal{A}x\|_Y = \|x\|_X\,\|\mathcal{A}u\|_Y \le \|\mathcal{A}u\|_Y \le \sup_{\|u\|_X=1}\|\mathcal{A}u\|_Y$, а при $x = 0$ величина $\|\mathcal{A}x\|_Y = 0$ супремума не увеличивает. Значит, $\sup_{\|x\|_X \le 1}\|\mathcal{A}x\|_Y \le \sup_{\|x\|_X = 1}\|\mathcal{A}x\|_Y$, откуда все три супремума равны.
+\end{proof}
+
+\begin{Proposition}{Линейные операторы на $\RR^n$}{}
+	Всякий линейный оператор $\mathcal{A}\colon \RR^n \to \RR^m$ ограничен (а значит, непрерывен). 
+\end{Proposition}
+
+\begin{proof}
+	Пусть $e_1, \ldots, e_n$~--- стандартный базис $\RR^n$ и $x = \sum_{i=1}^{n} x_i e_i$. По линейности $\mathcal{A}x = \sum_{i=1}^{n} x_i\,\mathcal{A}e_i$, поэтому
+	\[
+	\|\mathcal{A}x\| \le \sum_{i=1}^{n} |x_i|\,\|\mathcal{A}e_i\|
+	\le \Bigl( \max_{1 \le i \le n} \|\mathcal{A}e_i\| \Bigr) \sum_{i=1}^{n} |x_i|.
+	\]
+	По неравенству Коши--Буняковского--Шварца $\sum_{i=1}^{n} |x_i| \le \sqrt{n}\,\bigl(\sum_{i=1}^{n} x_i^2\bigr)^{1/2} = \sqrt{n}\,\|x\|$. Обозначив $M = \max_i \|\mathcal{A}e_i\|$, получаем $\|\mathcal{A}x\| \le M\sqrt{n}\,\|x\|$, то есть $\|\mathcal{A}\| \le M\sqrt{n} < +\infty$.
+\end{proof}
+
+\begin{Proposition}{Ограниченность $\Leftrightarrow$ непрерывность}{}
+	Пусть $X, Y$~--- нормированные пространства, $\mathcal{A}\colon X \to Y$~--- линейный оператор. Тогда равносильны:
+	\[
+	\mathcal{A} \text{ ограничен} \iff \mathcal{A} \text{ непрерывен на } X \iff \mathcal{A} \text{ непрерывен в нуле.}
+	\]
+\end{Proposition}
+
+\begin{proof}
+	\textbf{Ограниченность $\Rightarrow$ непрерывность.} Если $\|\mathcal{A}x\|_Y \le \|\mathcal{A}\|\,\|x\|_X$ для всех $x$, то для любых $x, x_0$
+	\[
+	\|\mathcal{A}x - \mathcal{A}x_0\|_Y = \|\mathcal{A}(x - x_0)\|_Y \le \|\mathcal{A}\|\,\|x - x_0\|_X,
+	\]
+	так что $\mathcal{A}$ (равномерно) непрерывен.
+
+	\textbf{Непрерывность $\Rightarrow$ непрерывность в нуле.} Очевидно ($0 \in X$).
+
+	\textbf{Непрерывность в нуле $\Rightarrow$ ограниченность.} Так как $\mathcal{A}0 = 0$, непрерывность в нуле даёт: для $\eps = 1$ существует $\delta > 0$ такое, что $\|x\|_X \le \delta \Rightarrow \|\mathcal{A}x\|_Y \le 1$. Возьмём любой $x'$ с $\|x'\|_X \le 1$; тогда $\|\delta x'\|_X \le \delta$, поэтому
+	\[
+	\|\mathcal{A}x'\|_Y = \frac{1}{\delta}\,\|\mathcal{A}(\delta x')\|_Y \le \frac{1}{\delta}.
+	\]
+	Беря супремум по $\|x'\|_X \le 1$, получаем $\|\mathcal{A}\| \le 1/\delta < +\infty$.
+\end{proof}
+
+\begin{Example}{Ограниченный и неограниченный операторы}{}
+	Пусть $X = C([0,1])$ с нормой $\|f\|_X = \sup_{x \in [0,1]} |f(x)|$.
+
+	\emph{Ограниченный.} Оператор умножения $(\mathcal{A}f)(x) = f(x)g(x)$ с фиксированной $g \in C([0,1])$ ограничен:
+	\[
+	\|\mathcal{A}f\|_X = \sup_x |f(x)g(x)| \le \sup_x|f(x)|\cdot\sup_x|g(x)| = \|g\|_X\,\|f\|_X,
+	\]
+	поэтому $\|\mathcal{A}\| \le \|g\|_X$.
+
+	\emph{Неограниченный.} Оператор дифференцирования $\mathcal{A}f = f'$ не ограничен: при $f_k(x) = x^k$ имеем $\|f_k\|_X = 1$, но $\|f_k'\|_X = \sup_{[0,1]} |k x^{k-1}| = k \to \infty$. Значит, $\|\mathcal{A}\| = +\infty$.
+\end{Example}

@@ -1,0 +1,207 @@
+% !TEX root = ../algorithms.tex
+
+\section{Хеш-таблицы, ключи. Амортизированное и ожидаемое время работы. Время работы хеш-таблицы с открытой адресацией при идеализированном случайном равновероятном хешировании}
+
+\begin{Definition}{Словарь (хеш-таблица)}{}
+	\emph{Словарь} --- структура данных для хранения пар <<ключ--значение>> $(x \in U,\; v)$, поддерживающая операции:
+	\begin{itemize}
+		\item $\mathrm{insert}(x,\,v)$ --- вставить значение $v$ по ключу $x$;
+		\item $\mathrm{delete}(x)$ --- удалить запись с ключом $x$;
+		\item $v = \mathrm{query}(x)$ --- найти значение по ключу $x$ (или $\mathrm{null}$, если $x$ нет).
+	\end{itemize}
+	Здесь $U$ --- \emph{универсум} всех возможных ключей (большое множество, например $\mathbb{Z}$).
+\end{Definition}
+
+\begin{Remark}{}{}
+	Реализация на основе АВЛ-дерева поддерживает все операции за $O(\log n)$, где $n$ --- текущее количество элементов. Хеш-таблица реализует их в среднем за $O(1)$.
+\end{Remark}
+
+\subsubsection*{Хеширование произвольных ключей}
+
+Если $U$ --- не целые числа, используется один из двух подходов.
+\begin{enumerate}
+	\item \textbf{Уникальные объекты} ($x = y \Leftrightarrow$ это один и тот же объект в памяти): каждому объекту сопоставляется его адрес в памяти $\in \mathbb{N}$ (в C++ это буквально указатель).
+	\item \textbf{Неуникальные объекты} (строки, кортежи, векторы): сопоставляем им \emph{хеш} (например, хеш Карпа--Рабина). Коллизия возникает с малой вероятностью.
+\end{enumerate}
+
+\subsection{Хеш-таблица с открытой адресацией}
+
+\begin{Definition}{}{}
+	Хранится таблица $T[0..m-1]$, где $n < m$, $n$ --- текущее число ключей. \emph{Хеш-функция} $h\colon U \to \{0, \ldots, m-1\}$ определяет, в какую ячейку помещается ключ $x \in U$: он помещается в $T[h(x)]$.
+\end{Definition}
+
+\begin{Definition}{}{}
+	\emph{Коллизия} --- ситуация, когда $h(x) = h(y)$ при $x \neq y$.
+\end{Definition}
+
+\begin{Statement}{}{}
+	Если $|U| > m$, то коллизии неизбежны при любой хеш-функции $h$.
+\end{Statement}
+
+\subsubsection*{Разрешение коллизий линейным зондированием}
+
+При \emph{линейном зондировании} ячейки таблицы просматриваются последовательно начиная с $h(x)$, по кругу. Используются два специальных значения: $\varnothing$ (пустая ячейка) и $\dagger$ (tombstone --- удалённая ячейка).
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[scale=0.85, >=Stealth, font=\small]
+		\def\R{2.2}
+		\def\N{18}
+		\foreach \i in {0,...,17} {
+			\pgfmathsetmacro{\angle}{90 - \i * 360/\N}
+			\pgfmathsetmacro{\ax}{\R * cos(\angle)}
+			\pgfmathsetmacro{\ay}{\R * sin(\angle)}
+			\node[draw, circle, inner sep=2pt, minimum size=10pt, fill=white] at (\ax, \ay) {};
+		}
+		\foreach \i in {2,3,4,5,6} {
+			\pgfmathsetmacro{\angle}{90 - \i * 360/\N}
+			\pgfmathsetmacro{\ax}{\R * cos(\angle)}
+			\pgfmathsetmacro{\ay}{\R * sin(\angle)}
+			\node[draw, circle, inner sep=2pt, minimum size=10pt, fill=gray!60] at (\ax, \ay) {};
+		}
+		\pgfmathsetmacro{\hangle}{90 - 4 * 360/\N}
+		\pgfmathsetmacro{\hx}{\R * cos(\hangle)}
+		\pgfmathsetmacro{\hy}{\R * sin(\hangle)}
+		\draw[->, thick] (\hx + 0.9, \hy + 0.9) -- (\hx + 0.18, \hy + 0.18);
+		\node at (\hx + 1.2, \hy + 1.05) {$h(x)$};
+		\node at (4.2, -0.3) {серия};
+		\draw[->, black!70] (3.5, -0.2) -- (2.6, -0.35);
+	\end{tikzpicture}
+	\caption{Хеш-таблица $T[0..m-1]$ как кольцевой буфер. Серые ячейки образуют \emph{серию} --- максимальную цепочку подряд занятых ячеек. Стрелка отмечает позицию $h(x)$, с которой начинается зондирование; время операции пропорционально длине хвоста серии от $h(x)$ до её конца.}
+\end{figure}
+
+\subsubsection*{Вставка}
+\begin{algorithmic}[1]
+	\Function{insert}{$x, v$}
+	\State $t = h(x)$;\quad $t_{\dagger} = -1$
+	\While{$T[t] \neq \varnothing$ \textbf{and} $(T[t] = \dagger$ \textbf{or} $T[t].\mathit{key} \neq x)$}
+	\If{$T[t] = \dagger$ \textbf{and} $t_{\dagger} = -1$}
+	\State $t_{\dagger} = t$
+	\EndIf
+	\State $t = (t + 1) \bmod m$
+	\EndWhile
+	\If{$T[t].\mathit{key} \neq x$}
+	\If{$t_{\dagger} \neq -1$}
+	\State $t = t_{\dagger}$
+	\EndIf
+	\State $T[t].\mathit{key} = x$;\quad $n = n + 1$
+	\EndIf
+	\State $T[t].\mathit{value} = v$
+	\If{$2n > m$}
+	\State Создать новую пустую таблицу $T'$ размера $2m$
+	\State Перехешировать все элементы из $T$ в $T'$ с учётом нового размера
+	\State $T = T'$;\quad $m = 2m$
+	\EndIf
+	\EndFunction
+\end{algorithmic}
+
+\subsubsection*{Удаление}
+
+\begin{algorithmic}[1]
+	\Function{delete}{$x$}
+	\State $t = h(x)$
+	\While{$T[t] \neq \varnothing$ \textbf{and} $T[t].\mathit{key} \neq x$}
+	\State $t = (t + 1) \bmod m$
+	\EndWhile
+	\If{$T[t] \neq \varnothing$}
+	\State $T[t] = \dagger$ \Comment{$n$ не меняется}
+	\EndIf
+	\EndFunction
+\end{algorithmic}
+
+\subsection{Амортизированное и ожидаемое время работы}
+
+\begin{Definition}{Ожидаемое время работы}{}
+	Пусть $t(a)$ --- (случайное) время работы на входе $a$. \emph{Ожидаемое время работы} алгоритма на входах длины $n$:
+	\[
+	T(n) = \max_{a \in I_n} \mathbf{E}\bigl[t(a)\bigr],
+	\]
+	где $I_n$ --- множество всех входов длины $n$.
+\end{Definition}
+
+\begin{Definition}{Амортизированное время работы}{}
+	Говорят, что \emph{амортизированное время работы} операций структуры данных равно $O(f(n))$, если любая последовательность из $n$ операций, применённых на изначально пустой структуре данных, выполняется за время $O(n\, f(n))$.
+\end{Definition}
+
+\begin{Statement}{}{}
+	Ожидаемое амортизированное время работы операций в хеш-таблице с открытой адресацией равно $O(1)$.
+\end{Statement}
+
+\begin{proof}[Доказательство (набросок)]
+	Из-за линейности математического ожидания достаточно показать, что суммарное ожидаемое количество шагов при выполнении $n$ операций равно $O(n)$. Перестройка таблицы (при $2n > m$) происходит лишь после того, как число элементов удваивается; амортизированная стоимость перестройки не превышает $O(1)$ на операцию вставки (по аналогии с динамическим массивом). Остаётся оценить ожидаемое число шагов одной операции без перестройки --- этим занимается следующая теорема.
+\end{proof}
+
+\subsection{Идеализированное предположение и анализ}
+
+\begin{Definition}{Идеализированное предположение}{}
+	Хеш-функция $h$ генерируется случайно и равновероятно из множества \emph{всех} функций $U \to \{0, \ldots, m-1\}$, т.е. для каждого $x \in U$ значение $h(x)$ выбирается независимо и равновероятно из $\{0, \ldots, m-1\}$.
+\end{Definition}
+
+\begin{Theorem}{}{}
+	При идеализированном предположении ожидаемое время работы каждой операции равно $O(1)$ (если не происходит перестройка таблицы).
+\end{Theorem}
+
+\begin{proof}
+	Будем считать, что все ключи различны и $m = 2n$. Время работы операции с ключом $x$ пропорционально длине <<хвоста>> серии, начиная с позиции $t = h(x)$. Обозначим:
+	\begin{itemize}
+		\item \emph{серия} --- максимальная цепочка подряд занятых ячеек $t', t'+1, \ldots, t'+k-1$, где ячейки $t'-1$ и $t'+k$ пусты (нумерация по модулю $m$);
+		\item $q_k$ --- вероятность того, что в таблице существует серия длины $k$, начинающаяся в фиксированной позиции.
+	\end{itemize}
+	
+	\textbf{Ожидаемое время.} Пусть $p_\ell$ --- вероятность встретить в позиции $t = h(x)$ <<хвост>> длины $\ell$ некоторой серии длины $k \geq \ell$. Если серия имеет длину $k \geq \ell$, то для хвоста длины $\ell$ в позиции $t$ она обязана начинаться в позиции $t - (k-\ell)$, поэтому
+	\[
+	p_\ell = \sum_{k=\ell}^{n} q_k.
+	\]
+	Тогда ожидаемое время равно $O\!\left(\sum_{\ell=0}^{n} p_\ell \cdot \ell\right)$. Преобразуем:
+	\[
+	\sum_{\ell=0}^{n} p_\ell \cdot \ell
+	= \sum_{\ell=0}^{n} \sum_{k=\ell}^{n} q_k \cdot \ell
+	= \sum_{k=0}^{n} q_k \cdot (0 + 1 + \cdots + k)
+	= \sum_{k=0}^{n} q_k \cdot \Theta(k^2).
+	\]
+	
+	\textbf{Оценка $q_k$.} Если в таблице есть серия в позициях $t', t'+1, \ldots, t'+k-1$, то ровно $k$ ключей отображены в эти $k$ ячеек, а остальные $n-k$ --- вне них. При $m = 2n$:
+	\[
+	q_k \leq \binom{n}{k}
+	\left(\frac{k}{2n}\right)^{k}
+	\left(1 - \frac{k}{2n}\right)^{n-k}.
+	\]
+	Оценим каждый множитель сверху, используя неравенства
+	\[
+	\binom{n}{k} \leq \frac{n^n}{k^k(n-k)^{n-k}},
+	\qquad
+	1+x \leq e^x.
+	\]
+	Первое неравенство следует из бинома Ньютона: $n^n = \bigl(k + (n-k)\bigr)^n = \sum_{i=0}^{n} \binom{n}{i} k^i (n-k)^{n-i}$. Все слагаемые этой суммы неотрицательны, поэтому, оставив лишь слагаемое с $i = k$, получаем $n^n \ge \binom{n}{k} k^k (n-k)^{n-k}$. Тогда
+	\begin{align*}
+		q_k
+		&\leq
+		\frac{n^n}{k^k(n-k)^{n-k}}
+		\cdot
+		\frac{k^k}{(2n)^k}
+		\cdot
+		\left(\frac{2n-k}{2n}\right)^{n-k}
+		=
+		\frac{1}{2^k}
+		\cdot
+		\left(\frac{2n-k}{2(n-k)}\right)^{n-k} \\
+		&=
+		\frac{1}{2^k}
+		\cdot
+		\left(1 + \frac{k}{2(n-k)}\right)^{n-k}
+		\leq
+		\frac{1}{2^k}
+		\cdot
+		e^{\,k(n-k)/[2(n-k)]}
+		=
+		\frac{1}{2^k} \cdot e^{k/2}
+		=
+		\left(\frac{\sqrt{e}}{2}\right)^k.
+	\end{align*}
+	Поскольку $\tfrac{\sqrt{e}}{2} < 1$, получаем $q_k \leq e^{-\Omega(k)}$. Следовательно,
+	\[
+	\sum_{k=0}^{n} q_k \cdot \Theta(k^2)
+	\leq \Theta\!\left(\sum_{k=0}^{\infty} k^2 \cdot \left(\tfrac{\sqrt{e}}{2}\right)^k\right) = O(1).
+	\]
+	Таким образом, ожидаемое время операции равно $O(1)$.
+\end{proof}

@@ -1,0 +1,122 @@
+% !TEX root = ../algebra_02.tex
+
+\section{Внутреннее прямое произведение подгрупп}
+
+\begin{Definition}{Внутреннее прямое произведение}{}
+	Пусть $H_1, \dots, H_n < G$. Группа $G$ раскладывается во внутреннее прямое произведение подгрупп $H_1, \dots, H_n$, если:
+	\begin{enumerate}
+		\item $\forall g \in G \quad \exists! \; h_1 \in H_1, \dots, h_n \in H_n \colon g = h_1 \dots h_n$;
+		\item $\forall i \neq j \quad \forall h \in H_i, h' \in H_j \colon hh' = h'h$ (элементы из разных подгрупп коммутируют).
+	\end{enumerate}
+\end{Definition}
+
+\begin{Proposition}{Критерий внутреннего прямого произведения}{}
+	Пусть $H_1, \dots, H_n < G$. Тогда $G$ является внутренним прямым произведением $H_1, \dots, H_n$ тогда и только тогда, когда выполняются условие 2 из определения, а также условия $1'$ и $1''$:
+	\begin{itemize}
+		\item[$1'$)] $G = H_1 \dots H_n$;
+		\item[$1''$)] $\forall i \quad H_i \cap (H_1 \dots \widehat{H}_i \dots H_n) = \{e\}$.
+	\end{itemize}
+\end{Proposition}
+
+\begin{proof}
+	($\Rightarrow$) Условие $1'$ очевидно следует из определения.
+	Докажем $1''$. Пусть $h \in H_i \cap (\dots)$. Тогда $h$ можно выразить двояко:
+	\[
+	h = h_1 \dots \widehat{h}_i \dots h_n \quad \text{и} \quad h = e \dots \underbrace{h}_{i\text{-я позиция}} \dots e.
+	\]
+	Из единственности разложения (условие 1) следует, что $h_j = e$ при $j \neq i$, и $h = e$.
+
+	($\Leftarrow$) Пусть $g = h_1 \dots h_n = h'_1 \dots h'_n$, где $h_i, h'_i \in H_i$. Докажем, что $h_n = h'_n$.
+	\begin{align*}
+		h_1 \dots h_{n-1} &= h'_1 \dots h'_{n-1} h'_n h_n^{-1} \\
+		(h'_{n-1})^{-1} \dots (h'_1)^{-1} h_1 \dots h_{n-1} &= h'_n h_n^{-1}
+	\end{align*}
+	Элемент слева принадлежит $H_1 \dots H_{n-1}$, а элемент справа принадлежит $H_n$. По условию $1''$, их пересечение тривиально, откуда $h'_n h_n^{-1} = e \implies h_n = h'_n$. Аналогично для остальных множителей.
+\end{proof}
+
+\begin{Remark}{Условие нормальности}{}
+	Условие $2$ эквивалентно тому, что $H_i \triangleleft G$ для всех $i = 1, \dots, n$. Действительно, если элементы из разных подгрупп коммутируют, то для $h \in H_i$ и $g = g' h_i g'' \in G$ (где $g' = h_1 \dots h_{i-1}$ и $g'' = h_{i+1} \dots h_n$) имеем:
+	\[
+	ghg^{-1} = g' h_i g'' h (g'')^{-1} h_i^{-1} (g')^{-1} = \widetilde{h} \in H_i,
+	\]
+	что означает $H_i \triangleleft G$. Обратно, если $H_i, H_j \triangleleft G$, рассмотрим коммутатор $[h, h']$:
+	\[
+	[h, h'] = \underbrace{(h h' h^{-1})}_{\in H_j} (h')^{-1} \in H_j \quad \text{и} \quad [h, h'] = h \underbrace{(h' h^{-1} (h')^{-1})}_{\in H_i} \in H_i.
+	\]
+	Следовательно, $\widetilde{h} = [h, h'] \in H_i \cap H_j$. Так как $i \neq j$, пересечение тривиально ($\widetilde{h} = e$), откуда $hh' = h'h$.
+\end{Remark}
+
+\begin{Example}{Примеры прямых произведений}{}
+	\begin{enumerate}
+		\item Группа $G = \mathbb{C}^*$ является прямым произведением подгрупп $H_1 = \mathbb{R}^*_+$ и $H_2 = \mathbb{T} = \{ z \in \mathbb{C}^* \mid |z| = 1 \}$.
+		\item В группе $G = S_3$ подгруппы $H_1 = A_3$ и $H_2 = \langle(1\,2)\rangle$ порождают $G = H_1 H_2$, но это произведение не является прямым. Это полупрямое произведение: $G = H_1 \rtimes H_2$, так как $H_1 \cap H_2 = \{e\}$ и $H_1 \triangleleft G$, но $H_2$ не нормальна.
+	\end{enumerate}
+\end{Example}
+
+\begin{Definition}{Внешнее прямое произведение}{}
+	Пусть $G_1, \dots, G_n$ --- группы. На их декартовом произведении $G = G_1 \times \dots \times G_n$ введем бинарную операцию:
+	\[
+	(g_1, \dots, g_n)(g'_1, \dots, g'_n) = (g_1 g'_1, \dots, g_n g'_n).
+	\]
+\end{Definition}
+
+\begin{Statement}{}{}
+	$G$ является группой. Нейтральный элемент: $e_G = (e, \dots, e)$. Обратный элемент: $(g_1, \dots, g_n)^{-1} = (g_1^{-1}, \dots, g_n^{-1})$.
+\end{Statement}
+
+Рассмотрим подгруппы:
+\[
+G'_i = \{ (e, \dots, e, g_i, e, \dots, e) \mid g_i \in G_i \} < G.
+\]
+Отображение $G_i \to G'_i$, заданное как $g \mapsto (e, \dots, g, \dots, e)$, является изоморфизмом.
+
+\begin{Proposition}{}{}
+	Группа $G$ является внутренним прямым произведением своих подгрупп $G'_1, \dots, G'_n$.
+\end{Proposition}
+
+\begin{proof}
+	Любой $g \in G$ представим в виде:
+	\[
+	g = (g_1, \dots, g_n) = (g_1, e, \dots) \dots (e, \dots, e, g_n) \in G'_1 \dots G'_n.
+	\]
+	Коммутирование элементов из $G'_i$ и $G'_j$ (при $i < j$) проверяется напрямую:
+	\[
+	(e, \dots, g_i, \dots, e)(e, \dots, g'_j, \dots, e) = (e, \dots, g_i, \dots, g'_j, \dots, e) = (e, \dots, g'_j, \dots, e)(e, \dots, g_i, \dots, e).
+	\]
+\end{proof}
+
+\begin{Proposition}{Критерий изоморфизма прямому произведению}{}
+	Пусть $H_1, \dots, H_n < G$. Следующие условия эквивалентны:
+	\begin{enumerate}
+		\item $G$ --- внутреннее прямое произведение $H_1, \dots, H_n$.
+		\item Отображение $\alpha \colon H_1 \times \dots \times H_n \to G$, заданное как $(h_1, \dots, h_n) \mapsto h_1 \dots h_n$, является изоморфизмом.
+	\end{enumerate}
+\end{Proposition}
+
+\begin{proof}
+	Отображение $\alpha$ биективно тогда и только тогда, когда выполнено условие 1 из определения внутреннего произведения. Если выполнено 2 (изоморфизм), то $\alpha$ --- гомоморфизм. Тогда:
+	\[
+	\alpha(gg') = \alpha((h_1 h'_1, \dots, h_n h'_n)) = h_1 h'_1 \dots h_n h'_n.
+	\]
+	При этом $\alpha(g)\alpha(g') = h_1 \dots h_n h'_1 \dots h'_n$. Равенство влечет коммутирование элементов из разных подгрупп. Обратно, если элементы коммутируют и $\alpha$ биективно, покажем гомоморфность $\alpha$. Для $h \in H_i, h' \in H_j$ ($i \neq j$):
+	\begin{align*}
+		hh' &= \alpha(e, \dots, h_i, \dots, e)\alpha(e, \dots, h'_j, \dots, e) \\
+		&= \alpha((e, \dots, h_i, \dots, e)(e, \dots, h'_j, \dots, e)) \\
+		&= \alpha((e, \dots, h_i, \dots, h'_j, \dots, e)) \\
+		&= \alpha((e, \dots, h'_j, \dots, e)(e, \dots, h_i, \dots, e)) = h'h.
+	\end{align*}
+\end{proof}
+
+\begin{Example}{}{}
+	\begin{enumerate}
+		\item $\mathbb{C}^* \cong \mathbb{R}^*_+ \times \mathbb{T} \cong \mathbb{R} \times (\mathbb{R}/\mathbb{Z})$.
+		\item Пусть $m, n \in \mathbb{N}$ и $\gcd(m, n) = 1$. Тогда:
+		\[
+		\mathbb{Z}/mn\mathbb{Z} \cong (\mathbb{Z}/m\mathbb{Z}) \times (\mathbb{Z}/n\mathbb{Z}).
+		\]
+		\textit{Доказательство:} Рассмотрим элемент $g = ([1]_m, [1]_n)$. Его порядок равен $mn$, так как $kg = 0 \Leftrightarrow m \mid k$ и $n \mid k \Leftrightarrow mn \mid k$. Значит, он порождает всю группу:
+		\[
+		\langle ([1]_m, [1]_n) \rangle = (\mathbb{Z}/m\mathbb{Z}) \times (\mathbb{Z}/n\mathbb{Z}) \implies \cong \mathbb{Z}/mn\mathbb{Z}.
+		\]
+	\end{enumerate}
+\end{Example}

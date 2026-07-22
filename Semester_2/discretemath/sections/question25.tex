@@ -1,0 +1,112 @@
+% !TEX root = ../discretemath.tex
+
+\section{Теорема Ван дер Вардена}
+
+\subsection{Формулировка}
+
+\begin{Theorem}{Ван дер Вардена}{vdw}
+	Для любых $r,k\in\mathbb N$ существует конечное $W(r,k)$ такое, что в любой $r$-раскраске $\{1,2,\ldots,W(r,k)\}$ найдётся одноцветная арифметическая прогрессия (АП) длины $k$.
+\end{Theorem}
+
+\begin{Corollary}{}{}
+	При $r$-раскраске всего $\mathbb N$ для любого $k$ найдётся одноцветная АП длины $k$.
+\end{Corollary}
+
+\subsection{Вейеры}
+
+\begin{Definition}{$(m,k)$-вейер}{}
+	\emph{$(m,k)$-вейером} (вентилятором) называется набор из $m$ АП длины $k$ с общим началом $a$:
+	\[
+	a,\ a+d_i,\ a+2d_i,\ \ldots,\ a+(k-1)d_i,\qquad i=1,\ldots,m,
+	\]
+	при условиях: (1) все элементы $i$-й прогрессии, кроме начала $a$, покрашены в один цвет $c_i$; (2) цвета $c_1,\ldots,c_m$ попарно различны.
+\end{Definition}
+
+На рисунке ниже — $(2,3)$-вейер.
+
+\begin{center}
+	\begin{tikzpicture}[scale=1.05]
+		\node[draw, circle, fill=gray!25, minimum size=20pt, inner sep=0, font=\small] (a) at (0,0) {$a$};
+		\foreach \j/\lbl in {1/$a{+}d_1$, 2/$a{+}2d_1$} {
+			\node[draw, circle, fill=red!55, minimum size=16pt, inner sep=0] (r\j) at (\j*2.3, 0.85) {};
+			\node[above=3pt, font=\tiny] at (r\j) {\lbl};
+		}
+		\foreach \j/\lbl in {1/$a{+}d_2$, 2/$a{+}2d_2$} {
+			\node[draw, circle, fill=blue!50, minimum size=16pt, inner sep=0] (b\j) at (\j*2.3,-0.85) {};
+			\node[below=3pt, font=\tiny] at (b\j) {\lbl};
+		}
+		\draw[-] (a) -- (r1) -- (r2);
+		\draw[-] (a) -- (b1) -- (b2);
+		\node[right=6pt, font=\small, red!80!black] at (r2) {цвет $c_1$};
+		\node[right=6pt, font=\small, blue!80!black] at (b2) {цвет $c_2$};
+		\node[below left=4pt, font=\tiny] at (a) {общее начало};
+	\end{tikzpicture}
+\end{center}
+
+\begin{Definition}{$W(r,m,k)$}{}
+	$W(r,m,k)$ — минимальное $N$ такое, что в любой $r$-раскраске $\{1,\ldots,N\}$ есть \emph{либо} одноцветная АП длины $k$, \emph{либо} $(m,k)$-вейер.
+\end{Definition}
+
+\begin{Remark}{}{}
+	При $m>r$ $(m,k)$-вейер невозможен (нужно $m$ различных цветов, а их $r<m$). Поэтому в $r$-раскраске «иметь $(r{+}1,k)$-вейер» вакуозно ложно, и
+	\[
+	W(r,\,r+1,\,k)=W(r,k).
+	\]
+	Значит, конечность $W(r,k)$ вытекает из конечности $W(r,m,k)$.
+\end{Remark}
+
+\subsection{Ключевая лемма о расширении вейера}
+
+\begin{Lemma}{}{}
+	Пусть $A\subset\mathbb N$, $d>0$, и:
+	\begin{enumerate}
+		\item сдвиги $A+d,A+2d,\ldots,A+(k-1)d$ одинаково раскрашены;
+		\item $A+d$ содержит $(m,k)$-вейер с центром $a^1=a+d$, разностями $d_1,\ldots,d_m$ и цветами $c_1,\ldots,c_m$.
+	\end{enumerate}
+	Тогда в $A\cup(A+d)\cup\cdots\cup(A+(k-1)d)$ есть \emph{либо} одноцветная АП длины $k$, \emph{либо} $(m+1,k)$-вейер.
+\end{Lemma}
+
+\begin{proof}
+	Пусть $c_0$ — цвет элементов $a+d,a+2d,\ldots,a+(k-1)d$ (все одного цвета: сдвиги раскрашены одинаково, центр занимает одну позицию).
+
+	\textbf{Случай 1:} $c_0=c_i$ для некоторого $i$ — элементы $\{a+jd\}$ вместе с одноцветной прогрессией вейера дают одноцветную АП длины $k$ — \textbf{победа}.
+
+	\textbf{Случай 2:} $c_0\notin\{c_1,\ldots,c_m\}$. Строим $(m+1,k)$-вейер с центром $a=a^1-d$:
+	\[
+	\text{разности } d+d_i\ (\text{цвет }c_i),\ i=1,\ldots,m;\qquad \text{разность } d\ (\text{новый цвет }c_0).
+	\]
+	Элемент $a+j(d+d_i)=a+jd+jd_i$ лежит в сдвиге $A+jd$ на позиции $jd_i$ от центра; так как все сдвиги раскрашены одинаково, а в $A+d$ позиция $jd_i$ имеет цвет $c_i$, то и этот элемент цвета $c_i$. Новая прогрессия (разность $d$) одноцветна цветом $c_0\neq c_i$.
+\end{proof}
+
+\subsection{Доказательство теоремы}
+
+\begin{Proposition}{}{}
+	Если $W(r,k-1)<\infty$ для всех $r$, то $W(r,m,k)<\infty$ для всех $r,m$.
+\end{Proposition}
+
+\begin{proof}
+	Индукция по $m$.
+
+	\textbf{База} ($m=1$). В $\{1,\ldots,W(r,k-1)\}$ есть одноцветная АП длины $k-1$: $a+d,\ldots,a+(k-1)d$ цвета $c_1$ — это $(1,k)$-вейер с центром $a$. Значит, $W(r,1,k)\le W(r,k-1)<\infty$.
+
+	\textbf{Переход} ($m\to m+1$). Положим $N_1=W(r,m,k)$, $N_2=W(r^{N_1},k-1)$ (оба конечны: $N_1$ — по ИП по $m$, $N_2$ — по внешней ИП по $k$ для $r^{N_1}$ цветов). Рассмотрим $r$-раскраску $N=N_1 N_2$ элементов, разбитых на $N_2$ блоков по $N_1$:
+
+	\begin{center}
+		\begin{tikzpicture}[scale=0.85]
+			\foreach \i in {0,1,2,3,4}{
+				\draw[thick, fill=gray!12, rounded corners=2pt] (\i*2.1,0) rectangle (\i*2.1+1.8, 0.95);
+				\pgfmathtruncatemacro{\idx}{\i+1}
+				\node[font=\small] at (\i*2.1+0.9, 0.475) {$B_{\idx}$};
+			}
+			\node[font=\large] at (11.2,0.475) {$\cdots$};
+			\draw[<->, thick] (0,-0.3) -- (1.8,-0.3) node[midway,below,font=\footnotesize] {$N_1$};
+			\draw[<->, thick] (0,-0.75) -- (11.9,-0.75) node[midway,below,font=\footnotesize] {$N_2$ блоков (итого $N_1\cdot N_2$ эл.)};
+		\end{tikzpicture}
+	\end{center}
+
+	\emph{Блочный цвет} — кортеж из $N_1$ значений раскраски ($r^{N_1}$ вариантов). По $N_2=W(r^{N_1},k-1)$ среди блоков есть монохромная (по блочному цвету) АП длины $k-1$: $B,B+D,\ldots,B+(k-2)D$. В каждом из этих одинаково раскрашенных блоков по $N_1=W(r,m,k)$ элементов, поэтому в каждом — либо одноцветная АП длины $k$ (\textbf{победа}), либо $(m,k)$-вейер (устроенный идентично во всех блоках). Применяя ключевую лемму к $k-1$ одинаковым сдвигам-блокам, получаем либо одноцветную АП длины $k$, либо $(m+1,k)$-вейер. Значит, $W(r,m+1,k)\le N_1 N_2<\infty$.
+\end{proof}
+
+\begin{proof}[Доказательство теоремы~\ref{thm:vdw}]
+	Индукция по $k$. \textbf{База} ($k=1$): один элемент — АП длины $1$, $W(r,1)=1$. \textbf{Переход} ($k-1\to k$): по ИП $W(r,k-1)<\infty$ для всех $r$; по предложению $W(r,m,k)<\infty$ для всех $r,m$; в частности $W(r,k)=W(r,r+1,k)<\infty$.
+\end{proof}

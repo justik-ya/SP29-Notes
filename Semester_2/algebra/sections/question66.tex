@@ -1,0 +1,91 @@
+% !TEX root = ../algebra_02.tex
+\section{Ортогональные операторы в евклидовом пространстве (формулировки)}
+
+\begin{Definition}{Ортогональный оператор}{}
+	Оператор $A \in \mathrm{End}(V)$ называется ортогональным, если $A^* A = \mathcal{E}$, где $\mathcal{E}$ — тождественный оператор.
+\end{Definition}
+
+\begin{Proposition}{Свойства ортогонального оператора}{}
+	Пусть $A \in \mathrm{End}(V)$. Следующие условия эквивалентны:
+	\begin{enumerate}
+		\item $A$ — ортогональный оператор.
+		\item Существует ортонормированный базис $E$, в котором матрица оператора ортогональна: $[A]_E \in O_n$.
+		\item В любом ортонормированном базисе матрица оператора ортогональна.
+		\item $\forall v, w \in V: (Av, Aw) = (v, w)$ (сохраняет скалярное произведение).
+		\item $\forall v \in V: \|Av\| = \|v\|$ (сохраняет длины векторов).
+	\end{enumerate}
+\end{Proposition}
+
+\begin{proof}
+	Докажем эквивалентность последовательно:
+
+	\textbf{$1 \Rightarrow 3$}:
+	Если $A^* A = \mathcal{E}$, то в любом ОНБ $E$:
+	\[
+	[A]_E^T [A]_E = [A^*]_E [A]_E = [A^* A]_E = [\mathcal{E}]_E = E_n
+	\] 
+	Следовательно, матрица $[A]_E$ ортогональна.
+
+	\textbf{$3 \Rightarrow 2$}:
+	Очевидно, так как хотя бы один ОНБ существует по процессу ортогонализации.
+
+	\textbf{$2 \Rightarrow 1$}:
+	Аналогично $1 \Rightarrow 3$.
+	Из равенства $[A]_E^T [A]_E = E_n$ следует $[A^* A]_E = [\mathcal{E}]_E$, значит $A^* A = \mathcal{E}$.
+
+	\textbf{$1 \Rightarrow 4$}:
+	\[
+	(Av, Aw) = (v, A^* A w) = (v, \mathcal{E} w) = (v, w)
+	\] 
+
+	\textbf{$4 \Rightarrow 1$}:
+	По условию для любых $v, w$ выполнено $(Av, Aw) = (v, w)$.
+	Перенесем оператор:
+	\[
+	(v, A^* A w) = (v, \mathcal{E} w) \Rightarrow (v, (A^* A - \mathcal{E}) w) = 0
+	\] 
+	Так как это выполнено для любого вектора $v$, выберем $v = (A^* A - \mathcal{E}) w$:
+	\[
+	((A^* A - \mathcal{E}) w, (A^* A - \mathcal{E}) w) = 0
+	\] 
+	Значит, $(A^* A - \mathcal{E}) w = 0$ для всех $w$.
+	Отсюда $A^* A w = w$, то есть $A^* A = \mathcal{E}$.
+
+	\textbf{$4 \Rightarrow 5$}:
+	Очевидно, достаточно подставить $v = w$.
+
+	\textbf{$5 \Rightarrow 4$}:
+	Для любых $v, w \in V$ по условию 5 имеем $\|A(v+w)\| = \|v+w\|$.
+	Возведем в квадрат:
+	\[
+	(A(v+w), A(v+w)) = (v+w, v+w)
+	\] 
+	Раскроем скобки в обеих частях по линейности:
+	\[
+	(Av, Av) + 2(Av, Aw) + (Aw, Aw) = (v, v) + 2(v, w) + (w, w)
+	\] 
+	Поскольку $(Av, Av) = (v, v)$ и $(Aw, Aw) = (w, w)$, слагаемые сокращаются, и остаётся $(Av, Aw) = (v, w)$.
+\end{proof}
+
+\begin{Example}{Матрица поворота}{}
+	Рассмотрим матрицу поворота $R_\varphi = \begin{pmatrix} \cos\varphi & \sin\varphi \\ -\sin\varphi & \cos\varphi \end{pmatrix} \in O_2$.
+	Её характеристический многочлен:
+	\[
+	\chi_{R_\varphi}(x) = \begin{vmatrix} \cos\varphi - x & \sin\varphi \\ -\sin\varphi & \cos\varphi - x \end{vmatrix} = (\cos\varphi - x)^2 + \sin^2\varphi = x^2 - 2x\cos\varphi + 1
+	\] 
+	Дискриминант $D/4 = \cos^2\varphi - 1 \le 0$.
+	Следовательно, при $\varphi \neq \pi k$ (где $k \in \mathbb{Z}$) многочлен не имеет вещественных корней.
+\end{Example}
+
+\begin{Remark}{}{}
+	Можно добавить условие $\varphi \neq \pi k$, чтобы исключить случаи, когда матрица вырождается в скалярную.
+	При $\varphi = 0$ и $\varphi = \pi$ получаем диагональные матрицы:
+	\[
+	R_0 = \begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix}, \quad R_\pi = \begin{pmatrix} -1 & 0 \\ 0 & -1 \end{pmatrix}
+	\] 
+\end{Remark}
+
+\begin{Theorem}{Спектральная теорема для ортогональных операторов}{}
+	Пусть $A \in \mathrm{End}(V)$ — ортогональный оператор.
+	Тогда существует ортонормированный базис $E$, в котором матрица $[A]_E$ имеет блочно-диагональный вид, причём каждый блок на диагонали имеет вид либо матрицы поворота $R_\varphi$ (при $\varphi \neq \pi k$), либо одномерного блока $(\pm 1)$.
+\end{Theorem}

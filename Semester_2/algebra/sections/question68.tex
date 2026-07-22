@@ -1,0 +1,79 @@
+% !TEX root = ../algebra_02.tex
+
+\section{Классификация простых полей. Простое подполе}
+
+\begin{Definition}{Подполе и простое поле}{}
+	Подмножество $F \subset K$ называется подполем, если $F$ является подкольцом в $K$ и само является полем.
+	Поле $K$ называется простым, если оно не содержит собственных подполей.
+\end{Definition}
+
+\begin{Definition}{Характеристика кольца}{}
+	Пусть $A$ --- кольцо. Характеристикой кольца $A$ называется число $n$, определяемое как:
+	\[ \operatorname{char} A = \min \{n \in \mathbb{N} \mid \underbrace{1 + \dots + 1}_{n \text{ раз}} = 0\} \]
+	Если такого $n$ не существует, полагают $\operatorname{char} A = 0$.
+\end{Definition}
+
+\begin{Lemma}{О характеристике поля}{}
+	Если $K$ --- поле, то $\operatorname{char} K = 0$ или $\operatorname{char} K = p$, где $p$ --- простое число.
+\end{Lemma}
+
+\begin{proof}
+	Пусть $\operatorname{char} K = a \cdot b$, где $a > 1, b > 1$. По определению характеристики:
+	\[ \underbrace{(1 + \dots + 1)}_{a \text{ раз}} \cdot \underbrace{(1 + \dots + 1)}_{b \text{ раз}} = 0 \]
+	Так как в поле нет делителей нуля, хотя бы одна из скобок равна нулю. Это противоречит минимальности характеристики $\operatorname{char} K = ab$. Следовательно, характеристика либо равна нулю, либо является простым числом.
+\end{proof}
+
+\begin{Theorem}{О классификации простых полей}{}
+	Пусть $K$ --- простое поле. Тогда:
+	\begin{enumerate}
+		\item Если $\operatorname{char} K = p \neq 0$, то $K \cong \mathbb{F}_p$.
+		\item Если $\operatorname{char} K = 0$, то $K \cong \mathbb{Q}$.
+	\end{enumerate}
+\end{Theorem}
+
+\begin{proof}
+	Рассмотрим отображение $\varphi\colon \mathbb{Z} \to K$, заданное правилом:
+	\[
+	\varphi(n) =
+	\begin{cases}
+		\underbrace{1 + \dots + 1}_{n \text{ раз}}, & n > 0 \\
+		0, & n = 0 \\
+		-(\underbrace{1 + \dots + 1}_{-n \text{ раз}}), & n < 0
+	\end{cases}
+	\]
+	Отображение $\varphi$ является гомоморфизмом колец. Ядро этого гомоморфизма зависит от характеристики поля $K$:
+	\[
+	\ker\varphi =
+	\begin{cases}
+		(p), & \text{если } \operatorname{char} K = p \neq 0 \\
+		0, & \text{если } \operatorname{char} K = 0
+	\end{cases}
+	\]
+
+	Рассмотрим два случая:
+	\begin{enumerate}
+		\item Пусть $\operatorname{char} K = p \neq 0$. По теореме о гомоморфизме: $\mathbb{Z}/(p) \cong \operatorname{Im}\varphi $
+		
+		Поскольку $\mathbb{Z}/(p)$ --- поле, $\operatorname{Im}\varphi$ также является полем и, следовательно, подполем в $K$. Так как $K$ --- простое поле (не содержит собственных подполей), получаем $\operatorname{Im}\varphi = K$.
+		Таким образом, $K \cong \mathbb{Z}/(p) = \mathbb{F}_p$.
+
+		\item Пусть $\operatorname{char} K = 0$. Тогда $\ker\varphi = 0$, следовательно, $\varphi$ --- инъективно.
+		Построим отображение $\varphi_1\colon \mathbb{Q} \to K$, заданное правилом $\varphi_1\left(\frac{a}{b}\right) = \frac{\varphi(a)}{\varphi(b)}$. (Так как $b \neq 0$, то $\varphi(b) \neq 0$).
+		Проверим корректность:
+		\[ \frac{a}{b} = \frac{a'}{b'} \implies ab' = a'b \implies \varphi(a)\varphi(b') = \varphi(a')\varphi(b) \implies \frac{\varphi(a)}{\varphi(b)} = \frac{\varphi(a')}{\varphi(b')} \]
+		Легко проверить, что $\varphi_1$ является гомоморфизмом колец.
+		Найдем ядро: $\varphi_1\left(\frac{a}{b}\right) = 0 \implies \varphi(a) = 0 \implies a = 0 \implies \frac{a}{b} = 0$. Значит, $\ker\varphi_1 = 0$.
+		По теореме о гомоморфизме $\mathbb{Q} \cong \operatorname{Im}\varphi_1$.
+		Следовательно, $\operatorname{Im}\varphi_1$ --- подполе в $K$. Так как $K$ --- простое поле, $\operatorname{Im}\varphi_1 = K$, откуда $K \cong \mathbb{Q}$.
+	\end{enumerate}
+\end{proof}
+
+\begin{Proposition}{Простое подполе}{}
+	Любое поле содержит простое подполе.
+\end{Proposition}
+
+\begin{proof}
+	Пусть $K$ --- поле. Рассмотрим пересечение всех его подполей:
+	\[ F_0 := \bigcap_{F \text{ --- подполе } K} F \]
+	Очевидно, что $F_0$ само является подполем в $K$. Любое подполе $F \subset K$ содержит $F_0$, поэтому $F_0$ не содержит собственных подполей и по определению является простым полем.
+\end{proof}

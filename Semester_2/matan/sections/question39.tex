@@ -1,0 +1,69 @@
+% !TEX root = ../matan.tex
+
+\section{Частные производные, матрица Якоби.}
+
+Пусть $\Omega\subset\R^d$ открыто, $x\in\Omega$, $f\colon\Omega\to\R^m$; через $e_j$ обозначаем $j$-й базисный вектор в $\R^d$.
+
+\begin{Definition}{Частная производная}{}
+	\emph{Частной производной} функции $f$ по переменной $x_j$ в точке $x$ называется предел
+	\[
+	\frac{\partial f}{\partial x_j}(x)=\lim_{t\to0}\frac{f(x+te_j)-f(x)}{t},
+	\]
+	если он существует. Для $f=(f_1,\dots,f_m)$ предел берётся покоординатно:
+	\[
+	\frac{\partial f}{\partial x_j}(x)=\left(\frac{\partial f_1}{\partial x_j}(x),\dots,\frac{\partial f_m}{\partial x_j}(x)\right).
+	\]
+	Иными словами, $\partial f/\partial x_j(x)$ --- обычная производная функции одной переменной $t\mapsto f(x+te_j)$ в точке $t=0$, то есть производная вдоль координатного направления $e_j$.
+\end{Definition}
+
+\begin{Statement}[required]{Необходимое условие}{}
+	Если $f\colon\Omega\to\R^m$ дифференцируема в точке $x$, то в этой точке существуют все частные производные $\partial f/\partial x_j$ ($j=1,\dots,d$), причём
+	\[
+	\frac{\partial f}{\partial x_j}(x)=d_xf(e_j).
+	\]
+\end{Statement}
+
+\begin{proof}
+	Подставим в определение дифференцируемости приращение $h=te_j$ (при малых $t$ точка $x+te_j\in\Omega$, так как $\Omega$ открыто):
+	\[
+	f(x+te_j)=f(x)+d_xf(te_j)+o(|te_j|)=f(x)+t\,d_xf(e_j)+o(|t|),
+	\]
+	где использовано $|te_j|=|t|$ и линейность $d_xf$. Перенесём $f(x)$, разделим на $t\ne0$ и перейдём к пределу $t\to0$:
+	\[
+	\frac{f(x+te_j)-f(x)}{t}=d_xf(e_j)+\frac{o(|t|)}{t}\xrightarrow[t\to0]{}d_xf(e_j).
+	\]
+	Левая часть по определению стремится к $\partial f/\partial x_j(x)$; значит, этот предел существует и равен $d_xf(e_j)$.
+\end{proof}
+
+\begin{Corollary}{Матрица Якоби}{}
+	Если $f=(f_1,\dots,f_m)\colon\Omega\to\R^m$ дифференцируема в точке $x$, то матрица линейного оператора $d_xf\colon\R^d\to\R^m$ в стандартных базисах есть \emph{матрица Якоби}, столбцами которой служат векторы $d_xf(e_j)=\partial f/\partial x_j(x)$:
+	\[
+	J_f(x)=\left(\frac{\partial f_i}{\partial x_j}(x)\right)_{\substack{1\le i\le m\\ 1\le j\le d}}
+	=\begin{pmatrix}
+		\dfrac{\partial f_1}{\partial x_1}(x) & \cdots & \dfrac{\partial f_1}{\partial x_d}(x)\\[8pt]
+		\vdots & \ddots & \vdots\\[4pt]
+		\dfrac{\partial f_m}{\partial x_1}(x) & \cdots & \dfrac{\partial f_m}{\partial x_d}(x)
+	\end{pmatrix}.
+	\]
+	Для любого приращения $h\in\R^d$ выполнено $d_xf(h)=J_f(x)\,h$.
+\end{Corollary}
+
+\begin{proof}
+	Столбцами матрицы линейного оператора в стандартном базисе служат образы базисных векторов $d_xf(e_j)\in\R^m$. По доказанному утверждению $d_xf(e_j)=\partial f/\partial x_j(x)$ --- столбец с компонентами $\partial f_i/\partial x_j(x)$, $i=1,\dots,m$. Расставляя эти столбцы при $j=1,\dots,d$, получаем указанную $(m\times d)$-матрицу. Равенство $d_xf(h)=J_f(x)h$ есть запись действия линейного оператора через его матрицу.
+\end{proof}
+
+\begin{Remark}{Скалярный случай: градиент}{}
+	При $m=1$ матрица Якоби --- это строка, которую отождествляют с вектором \emph{градиента}
+	\[
+	\nabla f(x)=\left(\frac{\partial f}{\partial x_1}(x),\dots,\frac{\partial f}{\partial x_d}(x)\right),
+	\qquad d_xf(h)=\langle\nabla f(x),\,h\rangle.
+	\]
+\end{Remark}
+
+\begin{Remark}{Существования частных производных недостаточно}{}
+	Обратное к необходимому условию неверно: из существования всех частных производных в точке \emph{не} следует ни дифференцируемость, ни даже непрерывность. Например, для
+	\[
+	f(x_1,x_2)=\begin{cases}\dfrac{x_1x_2}{x_1^2+x_2^2},&(x_1,x_2)\ne(0,0),\\[6pt] 0,&(x_1,x_2)=(0,0),\end{cases}
+	\]
+	в нуле обе частные производные существуют и равны нулю (вдоль каждой оси $f\equiv0$), однако $f$ разрывна в $(0,0)$ (вдоль прямой $x_1=x_2$ значение равно $1/2$), а потому недифференцируема. Достаточное условие дифференцируемости разобрано в вопросе~40.
+\end{Remark}

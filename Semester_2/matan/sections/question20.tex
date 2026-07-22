@@ -1,0 +1,80 @@
+% !TEX root = ../matan.tex
+
+\section{Разложение в ряд Фурье, изометрия с $\ell^2$, равенство Парсеваля.}
+
+Пусть $\mathcal{H}$~--- сепарабельное гильбертово пространство, $\{e_k\}_{k \in \NN}$~--- ортонормированный базис, $c_k = \langle x, e_k\rangle$~--- коэффициенты Фурье $x \in \mathcal{H}$ (см. вопрос~19). Обозначим частичные суммы ряда Фурье $S_N = \sum_{k=1}^{N} c_k e_k$.
+
+\begin{Theorem}{Критерий разложения в ряд Фурье и равенство Парсеваля}{}
+	Для ортонормированной системы $\{e_k\}_{k \in \NN}$ следующие условия эквивалентны:
+	\begin{enumerate}
+		\item $\{e_k\}$~--- ортонормированный базис (полная система);
+		\item для всякого $x \in \mathcal{H}$ ряд Фурье сходится к $x$: $\ x = \sum_{k=1}^{\infty} c_k e_k$;
+		\item для всякого $x \in \mathcal{H}$ выполнено \textbf{равенство Парсеваля} $\ \displaystyle\sum_{k=1}^{\infty} c_k^2 = \|x\|^2$.
+	\end{enumerate}
+\end{Theorem}
+
+\begin{proof}
+	По теореме о наилучшем приближении (вопрос~19) при всех $N$
+	\[
+	\|x - S_N\|^2 = \dist^2\bigl(x, \operatorname{span}\{e_k\}_{k=1}^{N}\bigr) = \|x\|^2 - \sum_{k=1}^{N} c_k^2. \tag{$\ast$}
+	\]
+
+	$(1)\Rightarrow(2)$. Полнота означает $\operatorname{clos}\operatorname{span}\{e_k\} = \mathcal{H}$, поэтому для любого $x$ и любого $\eps > 0$ найдётся конечная линейная комбинация $\sum_{k=1}^{N}\mu_k e_k$ с $\bigl\|x - \sum_{k=1}^{N}\mu_k e_k\bigr\| < \eps$. Но $S_N$~--- наилучшее приближение в $\operatorname{span}\{e_k\}_{k=1}^{N}$, поэтому $\|x - S_N\| \le \bigl\|x - \sum_{k=1}^{N}\mu_k e_k\bigr\| < \eps$. Так как $\|x - S_N\|$ не возрастает по $N$ (подпространства вложены), отсюда $\|x - S_N\| \to 0$, то есть $S_N \to x$.
+
+	$(2)\Leftrightarrow(3)$. Прямо из $(\ast)$: $\|x - S_N\|^2 \to 0$ равносильно $\sum_{k=1}^{N} c_k^2 \to \|x\|^2$.
+
+	$(2)\Rightarrow(1)$. Если для каждого $x$ ряд Фурье сходится к $x$, то $x \in \operatorname{clos}\operatorname{span}\{e_k\}$, то есть система полна.
+\end{proof}
+
+\begin{Theorem}{Рисс--Фишер}{}
+	Пусть $\{e_k\}_{k \in \NN}$~--- ортонормированный базис в $\mathcal{H}$ и $c = (c_1, c_2, \ldots) \in \ell^2$. Тогда существует единственный элемент $x \in \mathcal{H}$ такой, что $c_k = \langle x, e_k\rangle$ для всех $k$, причём $\|x\|_{\mathcal{H}} = \|c\|_{\ell^2}$.
+\end{Theorem}
+
+\begin{proof}
+	\textbf{Существование.} Положим $x := \sum_{k=1}^{\infty} c_k e_k$ и докажем сходимость ряда. Последовательность частичных сумм $S_N = \sum_{k=1}^{N} c_k e_k$ фундаментальна: при $N$ и $m \in \NN$, пользуясь ортонормированностью,
+	\[
+	\|S_{N+m} - S_N\|^2 = \Bigl\| \sum_{k=N+1}^{N+m} c_k e_k \Bigr\|^2 = \sum_{k=N+1}^{N+m} c_k^2.
+	\]
+	Так как $\sum_{k=1}^{\infty} c_k^2 = \|c\|_{\ell^2}^2 < +\infty$, хвост ряда стремится к нулю: $\forall \eps > 0\ \exists N(\eps)\ \forall N \ge N(\eps),\ \forall m:\ \sum_{k=N+1}^{N+m} c_k^2 < \eps^2$. Значит, $\{S_N\}$~--- последовательность Коши; в силу полноты $\mathcal{H}$ она сходится к некоторому $x \in \mathcal{H}$.
+
+	Проверим, что $\langle x, e_k\rangle = c_k$. Для $N \ge k$
+	\[
+	\langle S_N, e_k\rangle = \Bigl\langle \sum_{j=1}^{N} c_j e_j, e_k \Bigr\rangle = c_k,
+	\]
+	а поправка оценивается неравенством Коши--Буняковского--Шварца:
+	\[
+	|\langle x, e_k\rangle - c_k| = |\langle x - S_N, e_k\rangle| \le \|x - S_N\|\cdot\|e_k\| = \|x - S_N\| \xrightarrow{N \to \infty} 0,
+	\]
+	откуда $\langle x, e_k\rangle = c_k$. Равенство норм $\|x\| = \|c\|_{\ell^2}$ следует из равенства Парсеваля.
+
+	\textbf{Единственность.} Пусть $\langle x, e_k\rangle = \langle y, e_k\rangle = c_k$ для всех $k$. Тогда $z := x - y$ ортогонален всем $e_k$, и все его коэффициенты Фурье равны нулю. По равенству Парсеваля $\|z\|^2 = \sum_{k=1}^{\infty}\langle z, e_k\rangle^2 = 0$, поэтому $z = 0$, то есть $x = y$.
+\end{proof}
+
+\begin{Corollary}{Изометрия с $\ell^2$}{}
+	Всякое сепарабельное гильбертово пространство $\mathcal{H}$ изометрически изоморфно $\ell^2$: отображение
+	\[
+	\mathcal{A} \colon \mathcal{H} \to \ell^2, \qquad \mathcal{A}x = (c_k)_{k \in \NN}, \quad c_k = \langle x, e_k\rangle,
+	\]
+	является линейной биекцией, сохраняющей скалярное произведение:
+	\[
+	\langle \mathcal{A}x, \mathcal{A}y\rangle_{\ell^2} = \langle x, y\rangle_{\mathcal{H}}, \qquad \text{в частности} \quad \|\mathcal{A}x\|_{\ell^2} = \|x\|_{\mathcal{H}}.
+	\]
+\end{Corollary}
+
+\begin{proof}
+	\emph{Линейность} $\mathcal{A}$ следует из линейности скалярного произведения по первому аргументу: $\langle x + \lambda y, e_k\rangle = \langle x, e_k\rangle + \lambda\langle y, e_k\rangle$. \emph{Корректность} ($\mathcal{A}x \in \ell^2$) обеспечивается неравенством Бесселя, а \emph{сюръективность} и \emph{инъективность}~--- теоремой Рисса--Фишера (существование и единственность $x$ по набору коэффициентов).
+
+	Сохранение скалярного произведения. Пусть $d_k = \langle y, e_k\rangle$, $S_N = \sum_{k=1}^{N} c_k e_k$, $\tilde{S}_N = \sum_{k=1}^{N} d_k e_k$. Разложим
+	\[
+	\langle x, y\rangle = \langle x - S_N,\, y - \tilde{S}_N\rangle + \langle x - S_N,\, \tilde{S}_N\rangle + \langle S_N,\, y - \tilde{S}_N\rangle + \langle S_N,\, \tilde{S}_N\rangle.
+	\]
+	Поскольку $\{e_k\}$~--- базис, $\|x - S_N\| \to 0$ и $\|y - \tilde{S}_N\| \to 0$, а нормы $\|S_N\| \le \|x\|$, $\|\tilde{S}_N\| \le \|y\|$ ограничены; по неравенству Коши--Буняковского--Шварца первые три слагаемых стремятся к нулю. Последнее слагаемое равно
+	\[
+	\langle S_N, \tilde{S}_N\rangle = \Bigl\langle \sum_{k=1}^{N} c_k e_k,\ \sum_{j=1}^{N} d_j e_j \Bigr\rangle = \sum_{k=1}^{N} c_k d_k.
+	\]
+	Переходя к пределу при $N \to \infty$, получаем
+	\[
+	\langle x, y\rangle_{\mathcal{H}} = \sum_{k=1}^{\infty} c_k d_k = \langle \mathcal{A}x, \mathcal{A}y\rangle_{\ell^2}.
+	\]
+	При $y = x$ это даёт равенство Парсеваля и изометричность $\|\mathcal{A}x\|_{\ell^2} = \|x\|_{\mathcal{H}}$.
+\end{proof}

@@ -1,0 +1,69 @@
+% !TEX root = ../algebra_02.tex
+\section{Свойства ортогональных дополнений}
+
+\begin{Definition}{Ортогональность векторов и ортогональное дополнение}{}
+	Два вектора $u, v \in V$ называются ортогональными ($u \perp v$), если их скалярное произведение $(u, v) = 0$.
+	Пусть $V$ — евклидово пространство, $W \subset V$. Ортогональным дополнением к $W$ называется множество:
+	\[
+	W^\perp = \{v \in V \mid \forall w \in W: v \perp w\}
+	\] 
+	Очевидно, что $W^\perp$ всегда является линейным подпространством в $V$.
+\end{Definition}
+
+\begin{Statement}{Свойства ортогонального дополнения}{}
+	Пусть $V$ — евклидово пространство конечной размерности ($\dim V = n < \infty$), а $W, W_1, W_2$ — его подпространства.
+	Тогда:
+	\begin{enumerate}
+		\item $V^\perp = \{0\}$ 
+		\item $\{0\}^\perp = V$ 
+		\item Если $\dim W = m$, то $\dim W^\perp = n - m$ 
+		\item $V = W \oplus W^\perp$ 
+		\item $W_1 \subset W_2 \Rightarrow W_2^\perp \subset W_1^\perp$ 
+		\item $(W_1 + W_2)^\perp = W_1^\perp \cap W_2^\perp$ 
+		\item $(W_1 \cap W_2)^\perp = W_1^\perp + W_2^\perp$ 
+		\item $(W^\perp)^\perp = W$ 
+	\end{enumerate}
+\end{Statement}
+
+\begin{proof}
+	Докажем свойства последовательно:
+	\begin{itemize}
+		\item \textbf{Свойство 1:} Если $v \in V^\perp$, то $v \perp v \Rightarrow (v, v) = 0 \Rightarrow v = 0$.
+		\item \textbf{Свойство 2:} Для любого $v \in V$ выполнено $(v, 0) = 0 \cdot (v, 0) = 0$.
+		\item \textbf{Свойство 3 и 4:} Пусть $e_1, \dots, e_m$ — ОНБ в $W$.
+		Дополним его до базиса всего пространства векторами $v_{m+1}, \dots, v_n$.
+		Применим процесс ортогонализации Грама-Шмидта и получим ОНБ всего пространства $V$: $(e_1, \dots, e_m, e_{m+1}, \dots, e_n)$.
+		Для любого $v \in W^\perp$ выполнено $(v, w) = 0$ для всех $w \in W$.
+		В частности, $(v, e_j) = 0$ для $j = 1, \dots, m$.
+		Разложим $v$ по построенному базису: $v = \sum_{i=1}^n \alpha_i e_i$.
+		Из условия ортогональности получаем $\alpha_j = 0$ для $j = 1, \dots, m$.
+		Значит, $v \in \mathrm{Lin}(e_{m+1}, \dots, e_n)$, то есть $W^\perp = \mathrm{Lin}(e_{m+1}, \dots, e_n)$. Отсюда $\dim W^\perp = n - m$.
+		Если $w \in W \cap W^\perp$, то $(w, w) = 0 \Rightarrow w = 0$.
+		Следовательно, сумма прямая: $W + W^\perp = W \oplus W^\perp$.
+		Считаем размерность: $\dim(W \oplus W^\perp) = \dim W + \dim W^\perp = m + (n - m) = n$.
+		Следовательно, $W \oplus W^\perp = V$.
+
+		\item \textbf{Свойство 5:} Следует напрямую из определения.
+		Если вектор ортогонален всем элементам б\'ольшего множества $W_2$, то он ортогонален и всем элементам его подмножества $W_1$.
+		\item \textbf{Свойство 6:} Из свойства 5 имеем $(W_1 + W_2)^\perp \subset W_1^\perp$ и $(W_1 + W_2)^\perp \subset W_2^\perp$, то есть $(W_1 + W_2)^\perp \subset W_1^\perp \cap W_2^\perp$.
+		Обратно: пусть $v \in W_1^\perp \cap W_2^\perp$. Произвольный вектор $w \in W_1 + W_2$ можно представить как $w = w_1 + w_2$, где $w_1 \in W_1, w_2 \in W_2$.
+		Тогда:
+		\[
+		(v, w) = (v, w_1) + (v, w_2) = 0 + 0 = 0
+		\] 
+		Значит, $v \in (W_1 + W_2)^\perp$, откуда $W_1^\perp \cap W_2^\perp \subset (W_1 + W_2)^\perp$.
+		Равенство доказано.
+
+		\item \textbf{Свойство 8:} Очевидно, что $W \subset (W^\perp)^\perp$, так как любой вектор из $W$ ортогонален любому вектору из $W^\perp$.
+		Посчитаем размерность:
+		\[
+		\dim(W^\perp)^\perp = n - \dim W^\perp = n - (n - \dim W) = \dim W
+		\] 
+		Так как $W \subset (W^\perp)^\perp$ и их размерности равны, то $W = (W^\perp)^\perp$.
+		\item \textbf{Свойство 7:} Применим свойство 6 к подпространствам $W_1^\perp$ и $W_2^\perp$, а затем используем свойство 8:
+		\[
+		(W_1^\perp + W_2^\perp)^\perp = (W_1^\perp)^\perp \cap (W_2^\perp)^\perp = W_1 \cap W_2
+		\] 
+		Взяв ортогональное дополнение от обеих частей, получим $(W_1^\perp + W_2^\perp)^{\perp\perp} = (W_1 \cap W_2)^\perp$, откуда $W_1^\perp + W_2^\perp = (W_1 \cap W_2)^\perp$.
+	\end{itemize}
+\end{proof}

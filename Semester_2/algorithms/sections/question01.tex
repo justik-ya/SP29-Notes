@@ -1,0 +1,467 @@
+% !TEX root = ../algorithms.tex
+
+\section{Дискретное преобразование Фурье (DFT), обратное DFT. Свёртки и умножение многочленов при помощи алгоритма FFT. Обобщения на другие кольца, NTT. Вычислительная схема FFT (преобразования бабочки).}
+
+\subsection*{Свёртка и умножение многочленов}
+
+\begin{Definition}{}{}
+	Пусть заданы последовательности чисел
+	$a_0,\dots,a_{n-1}$ и $b_0,\dots,b_{n-1}$.
+	Определим последовательность $c_0,\dots,c_{2n-2}$ по формуле
+	\[
+	c_k=\sum_{t=0}^{n-1} a_t\, b_{k-t}, \qquad k=0,\dots,2n-2,
+	\]
+	(считаем $a_i=b_i=0$ при $i\notin[0,n-1]$).
+	Эта операция называется \textbf{конволюцией (сверткой)} и обозначается $c=a*b$.
+\end{Definition}
+
+\subsubsection*{Умножение многочленов}
+
+Рассмотрим многочлены
+\[
+A(x)=a_0+a_1x+\dots+a_{n-1}x^{n-1},
+\qquad
+B(x)=b_0+b_1x+\dots+b_{n-1}x^{n-1}.
+\]
+Тогда их произведение
+\[
+C(x)=A(x)B(x)= c_0+c_1x+\dots+c_{2n-2}x^{2n-2},
+\]
+где коэффициенты $c_k$ задаются конволюцией $c=a*b$. Таким образом, умножение многочленов и вычисление свёртки их коэффициентов — одна и та же задача.
+
+\subsubsection*{Сложность}
+
+\begin{itemize}
+	\item Наивное умножение: $O(n^2)$.
+	\item Карацуба: $O\!\left(n^{\log_2 3}\right)$.
+	\item FFT (быстрое преобразование Фурье): $O(n\log n)$.
+\end{itemize}
+
+\subsection*{Идея FFT-умножения}
+
+Хотим быстро вычислить свёртку (а значит, и произведение многочленов).
+Для этого:
+
+\begin{enumerate}
+	\item Выбираем число точек $N$ так, чтобы $N\ge 2n-1$ и обычно $N=2^t$.
+	Коэффициенты $A,B$ дополняем нулями до длины $N$.
+	\item Быстро считаем значения в $N$ точках $A(\omega_k)$, $B(\omega_k)$, $k=0,\dots,N-1$,
+	где $\omega$ — примитивный $N$-й корень из единицы.
+	\item Перемножаем покомпонентно: $y_k = A(\omega_k)\,B(\omega_k)$.
+	\item По значениям $y_k$ восстанавливаем коэффициенты $C$ обратным FFT.
+\end{enumerate}
+
+Ключевой факт: можно выбрать точки $\omega_k$ так, что и «вычисление значений»,
+и «восстановление коэффициентов» делаются за $O(N\log N)$.
+
+\subsection*{Реализация FFT}
+
+Далее считаем, что $N=2^t$. Если исходная длина не степень двойки,
+дополняем нулями.
+
+\subsubsection*{Прямое FFT: из коэффициентов в значения}
+
+Выбираем
+\[
+\omega = e^{2\pi i/N}=\cos\frac{2\pi}{N}+i\sin\frac{2\pi}{N},
+\qquad
+\omega_k=\omega^k.
+\]
+
+% -------------------------------------------------------
+% Рисунок 1: N=8 корни из единицы (и квадраты → N=4)
+% -------------------------------------------------------
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[scale=1.5, >=Stealth, font=\small]
+		
+		% ---- Левый: N=8 ----
+		\begin{scope}[xshift=-2.4cm]
+			\draw[line width=0.9pt] (-1.3,0) -- (1.3,0) node[right,font=\small] {Re};
+			\draw[line width=0.9pt] (0,-1.3) -- (0,1.33) node[above,font=\small] {Im};
+			\draw[line width=0.8pt] (0,0) circle (1cm);
+			
+			\foreach \k in {0,...,7} {
+				\pgfmathsetmacro\angr{\k*45}
+				\pgfmathsetmacro\cx{cos(\angr)}
+				\pgfmathsetmacro\cy{sin(\angr)}
+				\draw[->, line width=1.0pt, blue!80!black] (0,0) -- (\cx,\cy);
+			}
+			
+			\node[font=\scriptsize, right] at (1.08, 0.1) {$\omega_0$};
+			\node[font=\scriptsize, above] at (0.2, 1.16) {$\omega_2$};
+			\node[font=\scriptsize, left]  at (-1.08, 0.1) {$\omega_4$};
+			\node[font=\scriptsize, below] at (0.2,-1.18) {$\omega_6$};
+			
+			\node[font=\scriptsize] at ({1.28*cos(45)},{1.28*sin(45)})   {$\omega_1$};
+			\node[font=\scriptsize] at ({1.28*cos(135)},{1.28*sin(135)}) {$\omega_3$};
+			\node[font=\scriptsize] at ({1.28*cos(225)},{1.28*sin(225)}) {$\omega_5$};
+			\node[font=\scriptsize] at ({1.28*cos(315)},{1.28*sin(315)}) {$\omega_7$};
+			
+			\node[below,font=\footnotesize] at (0,-1.5) {$N=8$};
+		\end{scope}
+		
+		% ---- Правый: квадраты → N/2=4 точки ----
+		\begin{scope}[xshift=2.4cm]
+			\draw[-, line width=0.9pt] (-1.3,0) -- (1.3,0) node[right,font=\small] {Re};
+			\draw[-, line width=0.9pt] (0,-1.3) -- (0,1.3) node[above,font=\small] {Im};
+			\draw[line width=0.8pt] (0,0) circle (1cm);
+			
+			\foreach \angr/\lab in {45/{$\omega_1$},135/{$\omega_3$},
+				225/{$\omega_5$},315/{$\omega_7$}} {
+				\draw[->, line width=0.9pt, dashed, gray!95!black] (0,0)
+				-- ({cos(\angr)},{sin(\angr)});
+				\node[font=\scriptsize, gray!95!black] at
+				({1.28*cos(\angr)},{1.28*sin(\angr)}) {\lab};
+			}
+			
+			\draw[->, line width=1.1pt, red!70](0,0)--(1,0);
+			\node[font=\scriptsize,right] at (1.05, 0.2) {$(\omega_0)^2{=}\omega_0$};
+			
+			\draw[->, line width=1.1pt, red!70](0,0)--(0,1);
+			\node[font=\scriptsize,above right] at (0.05,1.08) {$(\omega_1)^2{=}\omega_2$};
+			
+			\draw[->, line width=1.1pt, red!70](0,0)--(-1,0);
+			\node[font=\scriptsize,left] at (-1.05,0.2) {$(\omega_2)^2{=}\omega_4$};
+			
+			\draw[->, line width=1.1pt, red!70](0,0)--(0,-1);
+			\node[font=\scriptsize,below right] at (0.05,-1.12) {$(\omega_3)^2{=}\omega_6$};
+			
+			\node[below,font=\footnotesize,align=center] at (0,-1.5)
+			{$\omega^{2k}$ — лишь $N/2{=}4$ точки};
+		\end{scope}
+		
+	\end{tikzpicture}
+	\caption{Слева — корни из единицы $\omega_k=e^{2\pi ik/8}$ при $N=8$.
+		При возведении в квадрат восемь корней попарно сливаются: квадраты
+		$\omega^{2k}$ (справа, красные стрелки) пробегают лишь $N/2=4$ различные точки.
+		Именно это позволяет свести задачу размера $N$ к двум задачам размера $N/2$.
+		Серые пунктирные стрелки — нечётные узлы $\omega_1,\omega_3,\omega_5,\omega_7$.}
+	\label{fig:roots}
+\end{figure}
+
+Нужно вычислить
+\[
+y_k = A(\omega^k)=\sum_{j=0}^{N-1} a_j(\omega^k)^j,\qquad k=0,\dots,N-1.
+\]
+
+Разобьём $A$ на чётные и нечётные коэффициенты:
+\[
+A_0(x)=a_0+a_2x+\cdots+a_{N-2}x^{\frac{N}{2}-1},
+\qquad
+A_1(x)=a_1+a_3x+\cdots+a_{N-1}x^{\frac{N}{2}-1}.
+\]
+Тогда $A(x)=A_0(x^2)+xA_1(x^2)$, и при подстановке $x=\omega^k$ получаем
+\[
+A(\omega^k)=A_0(\omega^{2k})+\omega^k A_1(\omega^{2k}).
+\]
+Обозначим $y_k^{(0)}=A_0(\omega^{2k})$ и $y_k^{(1)}=A_1(\omega^{2k})$.
+Так как значения $\omega^{2k}$ пробегают только $N/2$ различных точек,
+достаточно посчитать $y_k^{(0)},y_k^{(1)}$ для $k=0,\dots,\frac{N}{2}-1$ (рекурсивно),
+а затем «склеить» ответы:
+\[
+y_k = y_k^{(0)} + \omega^k\, y_k^{(1)},
+\qquad
+y_{k+\frac{N}{2}} = y_k^{(0)} - \omega^k\, y_k^{(1)}.
+\]
+(Здесь использовано $\omega^{k+N/2}=-\omega^k$.)
+
+\subsubsection*{Оценка времени прямого FFT}
+
+На каждом уровне рекурсии решаем $2$ подзадачи размера $N/2$
+и делаем склейку за $O(N)$, поэтому $T(N)=2T\!\left(N/2\right)+O(N)=O(N\log N)$.
+
+\subsubsection*{Обратное FFT: из значений в коэффициенты}
+
+Прямое преобразование можно записать матрично:
+\[
+\begin{pmatrix}
+	1 & 1 & 1 & \cdots & 1 \\
+	1 & \omega^1 & (\omega^1)^2 & \cdots & (\omega^1)^{N-1} \\
+	1 & \omega^2 & (\omega^2)^2 & \cdots & (\omega^2)^{N-1} \\
+	\vdots & \vdots & \vdots & \ddots & \vdots \\
+	1 & \omega^{N-1} & (\omega^{N-1})^2 & \cdots & (\omega^{N-1})^{N-1}
+\end{pmatrix}
+\begin{pmatrix}
+	a_0\\ a_1\\ \vdots\\ a_{N-1}
+\end{pmatrix}
+=
+\begin{pmatrix}
+	y_0\\ y_1\\ \vdots\\ y_{N-1}
+\end{pmatrix}.
+\]
+Это матрица Вандермонда $F_\omega$.
+
+\begin{Statement}{}{}
+	Выполнено $F_\omega \,F_{\omega^{-1}} = N\cdot \mathbf{I}$.
+\end{Statement}
+
+\begin{proof}
+	Элемент произведения в позиции $(i,j)$ равен
+	\[
+	\sum_{k=0}^{N-1}(\omega^i)^k(\omega^{-j})^k
+	=\sum_{k=0}^{N-1}(\omega^{i-j})^k.
+	\]
+	Если $i\neq j$, то $q:=\omega^{i-j}\neq 1$, и по формуле суммы геометрической прогрессии $\sum_{k=0}^{N-1} q^k=\frac{1-q^N}{1-q}$
+	получаем
+	\[
+	\sum_{k=0}^{N-1}(\omega^{i-j})^k
+	=\frac{1-(\omega^{i-j})^N}{1-\omega^{i-j}}
+	=\frac{1-(\omega^N)^{\,i-j}}{1-\omega^{i-j}}
+	=\frac{1-1}{1-\omega^{i-j}}=0.
+	\]
+	Если же $i=j$, то $\sum_{k=0}^{N-1}(\omega^{i-j})^k=\sum_{k=0}^{N-1}1=N$.
+\end{proof}
+
+Следовательно, обратное преобразование — это прямое FFT с корнем $\omega^{-1}$,
+после чего нужно поделить все коэффициенты на $N$: $a = \frac{1}{N}\,F_{\omega^{-1}}\,y$.
+
+\subsubsection*{Сложность умножения многочленов через FFT}
+
+Нужно:
+\begin{itemize}
+	\item одно прямое FFT для $A$,
+	\item одно прямое FFT для $B$,
+	\item покомпонентное умножение ($O(N)$),
+	\item одно обратное FFT.
+\end{itemize}
+Итого $O(N\log N)$, где $N$ — ближайшая степень двойки, не меньшая $2n-1$.
+При этом $2n-1 \le N < 2(2n-1) < 4n$, то есть $N=\Theta(n)$, поэтому итоговая сложность равна $O(n\log n)$.
+
+\subsection*{Обобщение: NTT (Number-Theoretic Transform)}
+
+Вместо $\mathbb{C}$ можно работать в кольце/поле $R$, если:
+\begin{itemize}
+	\item в $R$ существует элемент $\omega$ порядка $N$ (примитивный $N$-й корень из единицы);
+	\item число $N$ обратимо в $R$ (нужно для деления на $N$ в обратном преобразовании).
+\end{itemize}
+
+\subsubsection*{Пример (поле $\mathbb{Z}_p$)}
+
+Пусть $R=\mathbb{Z}_p$, где $p$ — простое, и $N=2^k$, $p=c\cdot 2^k+1$.
+Тогда $p-1$ кратно $N$, и существует первообразный корень $g$ по модулю $p$
+(порождает мультипликативную группу порядка $p-1$).
+Можно взять $\omega \equiv g^c \pmod p$; тогда $\omega$ имеет порядок $N$, и NTT работает полностью по модулю $p$.
+
+\subsection*{Приложение: смысл коэффициентов DFT}
+
+Пусть дан сигнал (последовательность) $a_0,a_1,\dots,a_{N-1}$.
+Определим дискретное преобразование Фурье:
+\[
+y_k=\sum_{t=0}^{N-1} a_t\,\omega^{kt},\qquad k=0,\dots,N-1,
+\quad \text{где }\ \omega=e^{2\pi i/N}.
+\]
+Так как $\omega^{kt}=\cos\!\left(\frac{2\pi k}{N}t\right)+i\sin\!\left(\frac{2\pi k}{N}t\right)$, то
+\[
+\Re(y_k)=\sum_{t=0}^{N-1} a_t\cos\!\left(\frac{2\pi k}{N}t\right),
+\qquad
+\Im(y_k)=\sum_{t=0}^{N-1} a_t\sin\!\left(\frac{2\pi k}{N}t\right).
+\]
+
+% -------------------------------------------------------
+% Рисунок 2: Смысл DFT — выделение частоты
+% -------------------------------------------------------
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}
+		\begin{axis}[
+			width=13cm, height=5.5cm,
+			domain=0:1, samples=400,
+			xmin=0, xmax=1,
+			ymin=-1.25, ymax=1.25,
+			axis lines=left,
+			xlabel={$t/N$},
+			xtick={0,0.25,0.5,0.75,1},
+			xticklabels={$0$,$\tfrac{N}{4}$,$\tfrac{N}{2}$,$\tfrac{3N}{4}$,$N$},
+			ytick={-1,0,1},
+			tick label style={font=\small},
+			label style={font=\small},
+			legend style={at={(1.25,1.19)},anchor=north east,font=\small,
+				draw=none, fill=white, fill opacity=0.7},
+			]
+			% Шумный сигнал: основная частота + гармоники
+			\addplot[blue!70, thick, opacity=0.9]
+			{ 0.55*sin(deg(2*pi*3*x))
+				+ 0.20*sin(deg(2*pi*7*x + 0.5))
+				+ 0.14*sin(deg(2*pi*11*x + 1.1))
+				+ 0.10*sin(deg(2*pi*17*x + 0.3))
+				+ 0.08*sin(deg(2*pi*23*x + 0.9))
+			};
+			\addlegendentry{сигнал $a_t$ (несколько гармоник)}
+			
+			% Доминирующая частота k=3
+			\addplot[red!80, very thick, dashed]
+			{ 0.55*sin(deg(2*pi*3*x)) };
+			\addlegendentry{частота $k{=}3$: $|y_3|$ велик}
+			
+		\end{axis}
+	\end{tikzpicture}
+	\caption{Если в сигнале (синий) доминирует частота $k{=}3$,
+		то коэффициент $y_3 = \sum_t a_t\,e^{2\pi i \cdot 3t/N}$ велик по модулю:
+		вклады $a_t\cos\tfrac{2\pi\cdot 3\, t}{N}$ складываются (красный пунктир),
+		а для других $k$ — взаимно компенсируются.}
+	\label{fig:dft_meaning}
+\end{figure}
+
+Эти суммы — скалярные произведения сигнала с косинусом и синусом частоты $k$.
+Если в сигнале сильно выражена гармоника частоты $k$, то вклады «складываются»,
+и модуль $|y_k|$ получается большим; если такой частоты нет — вклады
+в основном взаимно компенсируются и $|y_k|$ близок к нулю.
+
+\subsection*{Вычислительная схема FFT: преобразование бабочки}
+
+% ===========================================================
+% Рис. 3. Одна «бабочка» FFT
+% ===========================================================
+\begin{figure}[H]\centering
+	\begin{tikzpicture}[>=Stealth, font=\small, scale=0.95]
+		\def\H{1.2}
+		% входы
+		\node[left] at (0,\H)  {$y_k^{(0)}$};
+		\node[left] at (0,-\H) {$y_k^{(1)}$};
+		% горизонтальные участки
+		\draw (0,\H)  -- (1.5,\H);
+		\draw (0,-\H) -- (0.5,-\H);
+		% блок умножения
+		\draw[rounded corners=3pt,thick] (0.5,-\H-0.45) rectangle (1.7,-\H+0.45);
+		\node at (1.1,-\H) {$\times\omega^k$};
+		% точки ветвления
+		\filldraw (1.5,\H)  circle (2.5pt);
+		\filldraw (1.7,-\H) circle (2.5pt);
+		% «крест» бабочки
+		\draw (1.5,\H)  -- (3.6,\H);
+		\draw (1.7,-\H) -- (3.6,-\H);
+		\draw (1.5,\H)  -- (3.6,-\H);
+		\draw (1.7,-\H) -- (3.6,\H);
+		% узлы суммирования
+		\node[circle,draw,inner sep=1.5pt,fill=white,minimum size=7mm] (P) at (4.1,\H)  {$+$};
+		\node[circle,draw,inner sep=1.5pt,fill=white,minimum size=7mm] (M) at (4.1,-\H) {$-$};
+		\draw (3.6,\H)  -- (P);
+		\draw (3.6,-\H) -- (M);
+		% выходы
+		\draw[->] (P) -- (6.1,\H)
+		node[right] {$y_k \;=\; y_k^{(0)}+\omega^k\, y_k^{(1)}$};
+		\draw[->] (M) -- (6.1,-\H)
+		node[right] {$y_{k+n/2} = y_k^{(0)}-\omega^k\, y_k^{(1)}$};
+	\end{tikzpicture}
+	\caption{Одна «бабочка» — элементарный шаг схемы FFT.
+		Нижний входной провод умножается на $\omega^k$;
+		затем два провода попарно складываются и вычитаются.
+		Знак минус объясняется тем, что $\omega^{k+n/2}=-\omega^k$.}
+	\label{fig:fft-butterfly}
+\end{figure}
+
+Рекурсивная схема FFT состоит из двух блоков $\mathrm{FFT}_{n/2}$, к выходам которых добавляется один слой из $n/2$ бабочек: $k$-я бабочка умножает правый вход на $\omega^k$, а затем складывает и вычитает.
+
+% ===========================================================
+% Рис. 4. Рекурсивная схема FFT (два блока FFT_{n/2} + бабочки)
+% ===========================================================
+\begin{figure}[H]\centering
+	\begin{tikzpicture}[>=Stealth, font=\small]
+		\def\sep{0.62}
+		% входы a_0..a_7 (0-based)
+		\foreach \i in {0,...,7}{
+			\pgfmathsetmacro{\x}{\i*\sep}
+			\draw[thin] (\x,5.2) -- (\x,4.0);
+			\node[above,font=\scriptsize] at (\x,5.2) {$a_{\i}$};
+		}
+		% чётные коэффициенты -> левый блок (позиции 0..3)
+		\foreach \i/\t in {0/0,2/1,4/2,6/3}{
+			\pgfmathsetmacro{\xs}{\i*\sep}
+			\pgfmathsetmacro{\xt}{\t*\sep}
+			\draw[thin] (\xs,4.0) -- (\xt,2.8);
+		}
+		% нечётные коэффициенты -> правый блок (позиции 4..7)
+		\foreach \i/\t in {1/4,3/5,5/6,7/7}{
+			\pgfmathsetmacro{\xs}{\i*\sep}
+			\pgfmathsetmacro{\xt}{\t*\sep}
+			\draw[thin,dashed] (\xs,4.0) -- (\xt,2.8);
+		}
+		
+		\def\bw{2.0}
+		\draw[thick,rounded corners=3pt] (0,1.8) rectangle (\bw,2.8);
+		\node at (\bw/2, 2.3) {$\mathrm{FFT}_{n/2}$};
+		\node[below,font=\scriptsize] at (\bw/2,1.8) {$y^{(0)}$ (чётные)};
+		\pgfmathsetmacro{\rx}{4*\sep}
+		\draw[thick,rounded corners=3pt] (\rx,1.8) rectangle (\rx+\bw,2.8);
+		\node at (\rx+\bw/2, 2.3) {$\mathrm{FFT}_{n/2}$};
+		\node[below,font=\scriptsize] at (\rx+\bw/2,1.8) {$y^{(1)}$ (нечётные)};
+		
+		\draw[thick,dashed,rounded corners=3pt]
+		(-0.2,-0.1) rectangle (\rx+\bw+0.2,1.6);
+		\pgfmathsetmacro{\midx}{(\rx+\bw)/2}
+		\node[font=\small, align=center] at (\midx,0.75)
+		{Слой из $n/2$ бабочек:\\
+			$\times\omega^0,\;\times\omega^1,\;\dots,\;\times\omega^{n/2-1}$};
+		
+		\foreach \i in {0,...,3}{
+			\pgfmathsetmacro{\x}{\i*\sep}
+			\draw[thin] (\x,1.8) -- (\x,1.6);
+			\pgfmathsetmacro{\xr}{\rx+\i*\sep}
+			\draw[thin] (\xr,1.8) -- (\xr,1.6);
+		}
+		
+		\foreach \i in {0,...,7}{
+			\pgfmathsetmacro{\x}{\i*\sep}
+			\draw[thin,->] (\x,-0.1) -- (\x,-0.8);
+			\node[below,font=\scriptsize] at (\x,-0.8) {$y_{\i}$};
+		}
+	\end{tikzpicture}
+	\caption{Рекурсивная схема FFT (на примере $n=8$): чётные коэффициенты
+		$a_0,a_2,a_4,a_6$ поступают в левый блок $\mathrm{FFT}_{n/2}$ (он даёт $y^{(0)}$),
+		нечётные $a_1,a_3,a_5,a_7$ — в правый (он даёт $y^{(1)}$);
+		затем слой из $n/2$ бабочек объединяет результаты в $y_0,\dots,y_{n-1}$.}
+	\label{fig:fft-recursive}
+\end{figure}
+
+\subsubsection*{Сложность}
+
+Для схемы FFT глубина есть $O(\log n)$, а размер — $O(n\log n)$.
+Глубина удовлетворяет рекуррентности $T(n)=T(n/2)+O(1)$, откуда $T(n)=O(\log n)$;
+размер удовлетворяет $S(n)=2S(n/2)+O(n)$, откуда по мастер-теореме $S(n)=O(n\log n)$.
+
+\begin{Proposition}{}{rem:fft-exercise}
+	Пусть $y = F_{\omega} a$, где
+	\[
+	F_\omega = (\omega^{jk})_{j,k=0}^{n-1},
+	\]
+	а $\omega$ — примитивный корень степени $n$ из единицы.
+	Тогда $F_\omega^2 = nP$,
+	где $P$ — перестановка $P(a_0,a_1,\dots,a_{n-1}) = (a_0,a_{n-1},a_{n-2},\dots,a_1)$.
+\end{Proposition}
+
+\begin{proof}
+	Для любого $a=(a_0,\dots,a_{n-1})^T$ и любого $i=0,\dots,n-1$ имеем
+	\[
+	(F_\omega^2 a)_i
+	=
+	\sum_{j=0}^{n-1}\omega^{ij}\sum_{k=0}^{n-1}\omega^{jk}a_k
+	=
+	\sum_{k=0}^{n-1} a_k \sum_{j=0}^{n-1}\omega^{j(i+k)}.
+	\]
+	Но
+	\[
+	\sum_{j=0}^{n-1}\omega^{jt}
+	=
+	\begin{cases}
+		n, & t \equiv 0 \pmod n,\\
+		0, & t \not\equiv 0 \pmod n.
+	\end{cases}
+	\]
+	Следовательно, $(F_\omega^2 a)_i = n\,a_{-i \bmod n}$, то есть
+	$F_\omega^2 a = n\,(a_0,a_{n-1},a_{n-2},\dots,a_1)^T = nPa$, откуда $F_\omega^2 = nP$.
+	
+	Отсюда, если $y=F_\omega a$ и $\tilde a = F_\omega y$, то
+	\[
+	\tilde a = F_\omega^2 a = nPa,
+	\qquad
+	a = \frac1n P\tilde a.
+	\]
+\end{proof}
+
+Итак, чтобы восстановить $a$ по $y$, достаточно:
+\begin{enumerate}
+	\item вычислить $\tilde a = F_\omega y$;
+	\item обратить порядок координат $\tilde a_1,\dots,\tilde a_{n-1}$, оставив $\tilde a_0$ на месте;
+	\item разделить все координаты на $n$.
+\end{enumerate}

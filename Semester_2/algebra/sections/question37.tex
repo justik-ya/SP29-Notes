@@ -1,0 +1,45 @@
+% !TEX root = ../algebra_02.tex
+
+\section{Теорема о гомоморфизме}
+
+\begin{Theorem}{Первая теорема об изоморфизме}{thm:first-iso}
+	Пусть $\varphi\colon G\to G'$ --- гомоморфизм. Тогда индуцированный гомоморфизм
+	\[
+	\overline\varphi\colon G/\Ker\varphi \to \Im\varphi,
+	\qquad
+	\overline\varphi(g\Ker\varphi)=\varphi(g)
+	\]
+	является изоморфизмом. В частности,
+	\[
+	G/\Ker\varphi \cong \Im\varphi.
+	\]
+\end{Theorem}
+
+\begin{proof}
+	Существование и гомоморфность следуют из теоремы об индуцированном гомоморфизме. По определению
+	\[
+	\Im\overline\varphi=\Im\varphi.
+	\]
+	Кроме того,
+	\[
+	\Ker\overline\varphi = \{g\Ker\varphi \mid \varphi(g)=e\} = \{g\Ker\varphi \mid g\in \Ker\varphi\} = \{\Ker\varphi\}.
+	\]
+	Следовательно, $\overline\varphi$ инъективен. Значит, $\overline\varphi$ --- изоморфизм.
+\end{proof}
+
+\begin{Example}{Применение первой теоремы об изоморфизме}{ex:sln}
+	Определитель задаёт сюръективный гомоморфизм
+	\[
+	\det\colon \GL_n(K)\to K^{\times}.
+	\]
+	Его ядро равно
+	\[
+	\Ker(\det)=\SL_n(K)=\{A\in \GL_n(K)\mid \det A=1\}.
+	\]
+	Поэтому
+	\[
+	\SL_n(K)\triangleleft \GL_n(K),
+	\qquad
+	\GL_n(K)/\SL_n(K)\cong K^{\times}.
+	\]
+\end{Example}

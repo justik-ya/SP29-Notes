@@ -1,0 +1,59 @@
+% ==================================================================
+%  Общие стили иллюстраций. Всё, что используется больше одного раза,
+%  живёт здесь; разовые стили — внутри самого рисунка.
+% ==================================================================
+
+\definecolor{figA}{HTML}{3B4A8C}   % основной
+\definecolor{figB}{HTML}{46815F}   % второй ряд данных
+\definecolor{figC}{HTML}{8C3A50}   % акцент / «плохой случай»
+\definecolor{figD}{HTML}{9A7423}   % третий ряд
+\definecolor{figGray}{HTML}{9A9AA8}
+\definecolor{figFill}{HTML}{EDEFF7}
+
+\tikzset{
+  % --- узлы графов
+  vx/.style        = {circle, draw=ink, line width=0.6pt, fill=white,
+                      minimum size=6.5mm, inner sep=0pt, font=\small},
+  vx fill/.style   = {vx, fill=figFill},
+  vx acc/.style    = {vx, draw=figA, fill=figA!12, text=figA},
+  % --- рёбра
+  ed/.style        = {draw=ink, line width=0.6pt},
+  edA/.style       = {ed, draw=figA, line width=1.1pt},
+  edDash/.style    = {ed, dashed, draw=figGray},
+  arr/.style       = {-{Stealth[length=4.5pt, width=3.2pt]}, line width=0.6pt},
+  arrA/.style      = {arr, draw=figA, line width=1pt},
+  % --- ячейки массивов / блоки
+  cell/.style      = {draw=ink, line width=0.5pt, minimum width=8mm,
+                      minimum height=6mm, inner sep=1pt, font=\small},
+  cell fill/.style = {cell, fill=figFill},
+  cell empty/.style= {cell, draw=figGray, dash pattern=on 2pt off 2pt},
+  blk/.style       = {draw=ink, line width=0.6pt, rounded corners=2pt,
+                      align=center, inner sep=5pt, font=\small},
+  % --- подписи
+  lbl/.style       = {font=\small, text=ink},
+  lblS/.style      = {font=\footnotesize, text=inkSoft},
+  brace/.style     = {decorate, decoration={brace, amplitude=4pt, raise=2pt},
+                      draw=inkSoft, line width=0.5pt},
+}
+
+\pgfplotsset{
+  notestyle/.style={
+    width=0.82\linewidth, height=5.2cm,
+    axis lines=left,
+    axis line style={draw=inkSoft, line width=0.5pt},
+    tick style={draw=inkSoft, line width=0.5pt},
+    tick label style={font=\footnotesize, color=inkSoft},
+    label style={font=\small, color=ink},
+    title style={font=\small\sffamily, color=ink},
+    legend style={font=\footnotesize, draw=ruleC, fill=white,
+                  cells={anchor=west}, row sep=1pt},
+    grid=major,
+    grid style={draw=ruleC, line width=0.4pt},
+    every axis plot/.append style={line width=1pt},
+    cycle list={
+      {figA, mark=*, mark size=1.5pt},
+      {figB, mark=square*, mark size=1.4pt},
+      {figC, mark=triangle*, mark size=1.8pt},
+      {figD, mark=diamond*, mark size=1.7pt}},
+  },
+}

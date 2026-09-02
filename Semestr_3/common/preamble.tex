@@ -1,0 +1,310 @@
+% ==================================================================
+%  SP29-Notes — общая преамбула конспектов
+%  Движок: XeLaTeX
+%  Подключается из main.tex каждого предмета; не редактируется под предмет
+%  (для предметных настроек есть meta.tex).
+% ==================================================================
+
+% ---------- язык и шрифты -----------------------------------------
+\usepackage{polyglossia}
+\setdefaultlanguage{russian}
+\setotherlanguage{english}
+
+\usepackage{unicode-math}
+% Шрифты Libertinus загружаются по именам файлов: так они находятся
+% через kpathsea в TeX Live (пакет libertinus-otf) и не требуют
+% установки в систему и локальной папки fonts/ в репозитории.
+\setmainfont{LibertinusSerif-Regular.otf}[
+  BoldFont       = LibertinusSerif-Bold.otf,
+  ItalicFont     = LibertinusSerif-Italic.otf,
+  BoldItalicFont = LibertinusSerif-BoldItalic.otf,
+  Ligatures=TeX, Numbers=Proportional]
+% Гротеск — Fira Sans (пакет fira в TeX Live). Libertinus Sans не берём:
+% в его файле Bold лежат засечковые начертания, кириллица уезжает в сериф.
+\setsansfont{FiraSans-Regular.otf}[
+  BoldFont       = FiraSans-SemiBold.otf,
+  ItalicFont     = FiraSans-Italic.otf,
+  BoldItalicFont = FiraSans-SemiBoldItalic.otf,
+  Ligatures=TeX, Scale=MatchLowercase]
+\setmonofont{FiraMono-Regular.otf}[Scale=MatchLowercase]
+\setmathfont{LibertinusMath-Regular.otf}
+
+\usepackage{microtype}
+
+% ---------- геометрия ---------------------------------------------
+\usepackage[
+  a4paper,
+  top=24mm, bottom=22mm, left=26mm, right=32mm,
+  marginparwidth=20mm, marginparsep=6mm,
+  headsep=7mm, footskip=12mm
+]{geometry}
+
+\usepackage[skip=6pt plus 2pt, indent=0pt]{parskip}
+\linespread{1.04}
+
+% ---------- палитра -----------------------------------------------
+\usepackage[dvipsnames]{xcolor}
+
+\definecolor{ink}      {HTML}{1B1B23}   % основной текст
+\definecolor{inkSoft}  {HTML}{5C5C6B}   % вторичный текст
+\definecolor{ruleC}    {HTML}{DCDCE4}   % линейки
+\definecolor{accent}   {HTML}{3B4A8C}   % акцент: номера, ссылки
+
+% Приглушённая палитра, сгруппированная по смыслу:
+% утверждения — синяя семья (различаются светлотой), определения — бирюза,
+% примеры — зелень, замечания — тёплый серый, вставки составителя — охра.
+\definecolor{cThm}     {HTML}{4C5C96}   % теорема
+\definecolor{cLem}     {HTML}{6B7BA6}   % лемма
+\definecolor{cCor}     {HTML}{7E6FA6}   % следствие
+\definecolor{cProp}    {HTML}{5D7A93}   % предложение
+\definecolor{cStmt}    {HTML}{5D7A93}   % утверждение
+\definecolor{cDef}     {HTML}{3E7C78}   % определение
+\definecolor{cEx}      {HTML}{628A6B}   % пример
+\definecolor{cRem}     {HTML}{7A7A82}   % замечание
+\definecolor{cAdd}     {HTML}{A08050}   % дополнение составителя
+
+\color{ink}
+
+% ---------- математика --------------------------------------------
+\usepackage{amsmath, amsthm, mathtools}   % amssymb не нужен: символы даёт unicode-math
+\usepackage{bm}
+
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\vphi}{\varphi}
+\newcommand{\bigO}{\mathcal{O}}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\setlength{\abovedisplayskip}{7pt}
+\setlength{\belowdisplayskip}{7pt}
+\setlength{\abovedisplayshortskip}{4pt}
+\setlength{\belowdisplayshortskip}{4pt}
+
+% ---------- списки, таблицы, рисунки ------------------------------
+\usepackage{enumitem}
+\setlist{itemsep=2pt, topsep=4pt, parsep=0pt}
+\setlist[enumerate]{label=\arabic*., leftmargin=1.5em}
+\setlist[itemize]{label=\textcolor{inkSoft}{\textbullet}, leftmargin=1.3em}
+
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\captionsetup{
+  font={small}, labelfont={sf,bf,color=ink}, textfont={color=inkSoft},
+  labelsep=period, skip=6pt
+}
+
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{arrows.meta, positioning, calc, decorations.pathreplacing,
+  fit, backgrounds, patterns, shapes.geometric, matrix, intersections, quotes}
+\usepackage{tikz-cd}
+
+% polyglossia делает " активным символом (русские шорткаты вроде "-).
+% Это ломает синтаксис подписей tikz-cd: \arrow[r, "f"] превращается
+% в неизвестный ключ /tikz/"f". Шорткаты нам не нужны — возвращаем катод.
+\AtBeginDocument{\catcode`\"=12\relax}
+
+% ---------- заголовки ---------------------------------------------
+\usepackage{titlesec}
+
+\titleformat{\section}[hang]
+  {\sffamily\bfseries\Large\color{ink}}
+  {\color{accent}\thesection}{0.55em}{}
+  [\vspace{-3pt}{\color{ruleC}\titlerule[0.6pt]}]
+\titlespacing*{\section}{0pt}{18pt plus 4pt}{9pt}
+
+\titleformat{\subsection}[hang]
+  {\sffamily\bfseries\large\color{ink}}
+  {\color{accent}\thesubsection}{0.5em}{}
+\titlespacing*{\subsection}{0pt}{13pt plus 3pt}{5pt}
+
+\titleformat{\subsubsection}[runin]
+  {\sffamily\bfseries\color{ink}}{}{0pt}{}[.\quad]
+\titlespacing*{\subsubsection}{0pt}{9pt}{0.6em}
+
+% ---------- колонтитулы -------------------------------------------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{ruleC}\leaders\hrule height \headrulewidth\hfill}}
+\fancyhead[L]{\footnotesize\sffamily\color{inkSoft}\subjectshort}
+\fancyhead[R]{\footnotesize\sffamily\color{inkSoft}\nouppercase{\leftmark}}
+\fancyfoot[C]{\footnotesize\sffamily\color{inkSoft}\thepage}
+\fancypagestyle{plain}{\fancyhf{}\renewcommand{\headrulewidth}{0pt}%
+  \fancyfoot[C]{\footnotesize\sffamily\color{inkSoft}\thepage}}
+\renewcommand{\sectionmark}[1]{\markboth{#1}{}}
+
+% ---------- ссылки ------------------------------------------------
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true, linkcolor=accent, urlcolor=accent, citecolor=accent,
+  linktoc=all, bookmarksnumbered=true, pdfencoding=unicode
+}
+\usepackage{bookmark}
+\usepackage[nameinlink]{cleveref}
+
+% ==================================================================
+%  Окружения
+% ==================================================================
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{breakable, skins, theorems}
+
+% Форма: без рамки, светлая подложка, акцентная планка слева,
+% левый край прямой (заподлицо с планкой), правые углы скруглены.
+% Заголовок — не «ярлык», а первая строка внутри блока.
+\tcbset{
+  notebox/.style={
+    enhanced, breakable,
+    boxrule=0pt, frame hidden,
+    sharp corners=west, arc=2mm,
+    left=12pt, right=12pt, top=8pt, bottom=8pt,
+    before skip=12pt, after skip=12pt,
+    fonttitle=\sffamily\bfseries\small,
+    detach title,
+    separator sign={\ \textperiodcentered\ },
+  }
+}
+
+% Все утверждения нумеруются одним счётчиком внутри секции:
+% Определение 1.1, Теорема 1.2, Лемма 1.3, ... — номер однозначен.
+\tcbset{
+  boxlook/.style={
+    colback=#1!6!white,
+    coltitle=#1,
+    borderline west={2.4pt}{0pt}{#1},
+    before upper={\tcbtitle\par\vspace{3pt}},
+  }
+}
+
+\newcommand{\declarebox}[4]{%
+  % #1 внутреннее имя, #2 подпись, #3 цвет, #4 префикс метки
+  \newtcbtheorem[use counter from=Theorem]{#1}{#2}{
+    notebox, boxlook=#3,
+  }{#4}%
+}
+
+\newtcbtheorem[auto counter, number within=section]{Theorem}{Теорема}{
+  notebox, boxlook=cThm,
+}{thm}
+\declarebox{Lemma}      {Лемма}        {cLem} {lem}
+\declarebox{Corollary}  {Следствие}    {cCor} {cor}
+\declarebox{Proposition}{Предложение}  {cProp}{prop}
+\declarebox{Statement}  {Утверждение}  {cStmt}{stmt}
+\declarebox{Definition} {Определение}  {cDef} {def}
+\declarebox{Example}    {Пример}       {cEx}  {ex}
+\declarebox{Remark}     {Замечание}    {cRem} {rem}
+
+% Дополнение составителя: пунктирная рамка, без нумерации
+\newtcolorbox{Addition}[1][]{
+  notebox, boxlook=cAdd,
+  title={\addedglypht\ \,Дополнение\ifstrempty{#1}{}{: #1}},
+  fontupper=\small,
+}
+
+% Доказательство: без рамки, тонкая линейка слева
+\newtcolorbox{prooof}[1][Доказательство]{
+  enhanced, breakable, colback=white, colframe=white,
+  boxrule=0pt, sharp corners,
+  borderline west={0.8pt}{0pt}{ruleC},
+  left=9pt, right=0pt, top=3pt, bottom=3pt,
+  before skip=9pt, after skip=11pt,
+  before upper={\textbf{#1.}\hspace{0.5em}},
+}
+\newcommand{\qedsym}{\textcolor{inkSoft}{\rule[0.02ex]{1.25ex}{1.25ex}}}
+\renewenvironment{proof}[1][Доказательство]
+  {\begin{prooof}[#1]}{\hfill\qedsym\end{prooof}}
+
+% ---------- пометка «дописано составителем» -----------------------
+\usepackage{marginnote}
+\renewcommand*{\marginfont}{\footnotesize\sffamily\color{cAdd}}
+
+\newcommand{\addedglyph}{%
+  \tikz[baseline=-0.55ex]{
+    \node[draw=cAdd, line width=0.6pt, circle, inner sep=1.1pt,
+          font=\tiny\sffamily\bfseries, text=cAdd] {+};}%
+}
+% \dop        — значок на полях
+% \dop[текст] — значок с короткой подписью
+\newcommand{\addedglypht}{%
+  \tikz[baseline=-0.55ex]{
+    \node[draw=cAdd, line width=0.7pt, circle, inner sep=1.1pt,
+          font=\tiny\sffamily\bfseries, text=cAdd] {+};}%
+}
+\newcommand{\dop}[1][]{%
+  \marginnote{\addedglyph\ifstrempty{#1}{}{\\[1pt]\scriptsize #1}}%
+}
+
+\newcommand{\legend}{%
+  \begingroup\small\sffamily\color{inkSoft}
+  \noindent{\color{ruleC}\rule{\textwidth}{0.5pt}}\\[4pt]
+  \addedglyph\quad фрагмент дописан составителем: на лекции он не приводился
+  или был дан устно.\par\vspace{2pt}
+  \noindent{\color{ruleC}\rule{\textwidth}{0.5pt}}
+  \endgroup\vspace{4pt}%
+}
+
+% ---------- русские имена для \cref --------------------------------
+\makeatletter
+\newcommand{\tcbcrefname}[3]{%
+  \crefname{tcb@cnt@#1}{#2}{#3}\Crefname{tcb@cnt@#1}{\MakeUppercase#2}{\MakeUppercase#3}}
+% счётчик один на все утверждения, поэтому \cref печатает только номер,
+% а нужное слово в нужном падеже пишется руками: «по лемме~\ref{lem:...}»
+\tcbcrefname{Theorem}{п.}{пп.}
+\makeatother
+\crefname{equation}{}{}
+\crefname{figure}{рис.}{рис.}
+\Crefname{figure}{Рис.}{Рис.}
+\crefname{section}{§}{§§}
+\Crefname{section}{§}{§§}
+\crefname{algocf}{алгоритм}{алгоритмы}
+\Crefname{algocf}{Алгоритм}{Алгоритмы}
+
+% ---------- псевдокод ---------------------------------------------
+\usepackage[ruled, vlined, linesnumbered, noend]{algorithm2e}
+% Ключевые слова — стандартные английские (if / for / while / Input).
+% Русифицирована только подпись; убрать — закомментировать строку ниже.
+\SetAlgorithmName{Алгоритм}{алгоритм}{Список алгоритмов}
+\SetAlFnt{\sffamily\small}
+\SetAlCapFnt{\sffamily\bfseries\color{ink}}
+\SetAlCapNameFnt{\sffamily\color{inkSoft}}
+\SetAlgoNlRelativeSize{-1}
+\SetNlSty{textnormal}{\color{inkSoft}}{}
+\SetAlgoInsideSkip{smallskip}
+
+% ---------- разное ------------------------------------------------
+\usepackage{needspace}
+\newcommand{\term}[1]{\textbf{#1}}          % вводимый термин
+\newcommand{\eng}[1]{\textup{\textenglish{#1}}}
+
+% ---------- шапка лекции ------------------------------------------
+% \lecture{номер}{дата}{название}
+\newcommand{\lecture}[3]{%
+  \needspace{4\baselineskip}
+  \section{#3}%
+  \vspace{-3pt}
+  {\footnotesize\sffamily\color{inkSoft}Лекция~#1 \quad$\cdot$\quad #2\par}
+  \vspace{4pt}%
+}
+
+% Компактная шапка, когда лекция компилируется отдельным файлом
+\newcommand{\standalonehead}{%
+  \thispagestyle{plain}
+  \begingroup\sffamily
+  {\footnotesize\color{inkSoft}\subjectshort\ \ $\cdot$\ \ \lecturer\par}
+  \vspace{2pt}
+  {\color{ruleC}\rule{\textwidth}{0.8pt}}
+  \endgroup\vspace{-8pt}%
+}

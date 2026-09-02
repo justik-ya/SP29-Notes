@@ -1,0 +1,107 @@
+% ==================================================================
+%  Обложка и страница содержания
+%  Требует определённых в meta.tex: \subjectname, \subjectshort,
+%  \lecturer, \subjectcolor, \coursemeta, \compiler, \compilergh
+% ==================================================================
+
+\usepackage{anyfontsize}
+\usepackage{tocloft}
+
+% ---------- содержание --------------------------------------------
+\renewcommand{\cfttoctitlefont}{\sffamily\bfseries\Large\color{ink}}
+\renewcommand{\cftsecfont}{\sffamily\color{ink}}
+\renewcommand{\cftsecpagefont}{\sffamily\color{inkSoft}}
+\renewcommand{\cftsecleader}{\color{ruleC}\cftdotfill{\cftdotsep}}
+\renewcommand{\cftsecnumwidth}{2.2em}
+\setlength{\cftbeforesecskip}{5pt}
+\renewcommand{\cftaftertoctitleskip}{12pt}
+
+% ---------- обложка -----------------------------------------------
+\newcommand{\makecover}{%
+  \begin{titlepage}
+  \thispagestyle{empty}
+  \begingroup\sffamily
+  \begin{tikzpicture}[remember picture, overlay,
+    % TikZ фиксирует \spaceskip по внешнему кеглю; без сброса межсловные
+    % пробелы в крупном заголовке схлопываются
+    every node/.append style={execute at begin node={\spaceskip=0pt\relax}}]
+    \fill[\subjectcolor] (current page.south west) rectangle (current page.north east);
+
+    % генеративный фон: диагональная сетка + дуги + несколько ярких линий
+    \begin{scope}
+      \clip (current page.south west) rectangle (current page.north east);
+      % частая мелкая сетка
+      \foreach \i in {0,...,40}{
+        \draw[coverline, opacity=0.10, line width=0.3pt]
+          ($(current page.north west)+(-3,-\i*0.8)$) --
+          ($(current page.north east)+(0,-\i*0.8-13)$);}
+      % дуги из верхнего правого угла
+      \foreach \r in {5,7,...,29}{
+        \draw[coverline, opacity=0.16, line width=0.5pt]
+          ($(current page.north east)+(-1,1)$) circle (\r);}
+      % встречные диагонали снизу
+      \foreach \i in {0,...,14}{
+        \draw[coverline, opacity=0.09, line width=0.4pt]
+          ($(current page.south west)+(0,\i*1.6)$) --
+          ($(current page.south east)+(0,\i*1.6+11)$);}
+      % акцентные линии
+      \foreach \i in {4,11,18,25}{
+        \draw[coverline, opacity=0.34, line width=0.6pt]
+          ($(current page.north west)+(-3,-\i*0.8)$) --
+          ($(current page.north east)+(0,-\i*0.8-13)$);}
+      \foreach \r in {13,21}{
+        \draw[coverline, opacity=0.30, line width=0.7pt]
+          ($(current page.north east)+(-1,1)$) circle (\r);}
+    \end{scope}
+
+    \draw[coverline, opacity=0.45, line width=0.7pt]
+      ($(current page.north west)+(2cm,-2.6cm)$) --
+      ($(current page.north east)+(-2cm,-2.6cm)$);
+
+    % верхняя строка
+    \node[anchor=north west, white, inner sep=0pt]
+      at ($(current page.north west)+(2cm,-1.75cm)$)
+      {\fontsize{11}{13}\selectfont\bfseries\MakeUppercase{\coursemeta}};
+
+    % заголовок
+    \node[anchor=west, white, inner sep=0pt, text width=15.5cm, align=left]
+      at ($(current page.west)+(2cm,1.1cm)$)
+      {{\fontsize{44}{50}\bfseries\selectfont \subjectname\par}
+       \vspace{0.55cm}
+       {\fontsize{17}{20}\selectfont\color{white!72} Конспект лекций\par}};
+
+    % лектор
+    \draw[coverline, opacity=0.40, line width=0.6pt]
+      ($(current page.west)+(2cm,-3.55cm)$) -- ($(current page.west)+(8cm,-3.55cm)$);
+    \node[anchor=north west, white, inner sep=0pt, text width=12cm, align=left]
+      at ($(current page.west)+(2cm,-4.15cm)$)
+      {{\fontsize{10}{12}\selectfont\color{white!55}\MakeUppercase{Лектор}\par}
+       \vspace{2pt}
+       {\fontsize{15}{18}\selectfont \lecturer\par}};
+
+    % низ
+    \node[anchor=south west, white, inner sep=0pt]
+      at ($(current page.south west)+(2cm,1.9cm)$)
+      {\fontsize{11}{13}\selectfont\color{white!55} Санкт-Петербург,~\the\year};
+  \end{tikzpicture}
+  \endgroup
+  \end{titlepage}
+  \clearpage
+}
+
+% ---------- страница содержания -----------------------------------
+\newcommand{\maketoc}{%
+  \thispagestyle{empty}
+  \begingroup
+  \setcounter{tocdepth}{1}
+  \tableofcontents
+  \vfill
+  \begingroup\footnotesize\sffamily\color{inkSoft}
+  \noindent{\color{ruleC}\rule{\textwidth}{0.5pt}}\\[6pt]
+  \noindent Составитель: \compiler\ \ \href{https://github.com/\compilergh}{@\compilergh}\\[3pt]
+  \noindent\addedglyph\ \ фрагмент дописан составителем: на лекции не приводился
+  или был дан устно.\par
+  \endgroup
+  \endgroup
+  \clearpage
+}
